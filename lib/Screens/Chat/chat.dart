@@ -41,6 +41,12 @@ class _ChatState extends ConsumerState<Chat> {
   }
 
   @override
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final friendRef = ref.watch(friendProvider.notifier);
     return Column(
@@ -118,7 +124,9 @@ class _ChatState extends ConsumerState<Chat> {
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
-                                      return Container(width: 10,);
+                                      return Container(
+                                        width: 10,
+                                      );
                                     }
                                     Map badge = snapshot.data!
                                         .data()!['chatNotification'];

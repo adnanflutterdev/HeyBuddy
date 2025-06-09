@@ -1,0 +1,154 @@
+{
+  "project_info": {
+    "project_number": "129587485294",
+    "project_id": "facebook-42691",
+    "storage_bucket": "facebook-42691.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:129587485294:android:738662831c04b6d7d7e47f",
+        "android_client_info": {
+          "package_name": "com.android.application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "129587485294-1lni35nb3ig8aq7db671hc6t6r5gl834.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-LmycdtMEejx0n-ms90Ohom9UzR1xDYs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "129587485294-1lni35nb3ig8aq7db671hc6t6r5gl834.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "129587485294-c7hlejcgfrnu6g8rl9pbi1i9umg8767a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.facebook.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:129587485294:android:256e52659e1f4220d7e47f",
+        "android_client_info": {
+          "package_name": "com.example.facebook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "129587485294-1lni35nb3ig8aq7db671hc6t6r5gl834.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-LmycdtMEejx0n-ms90Ohom9UzR1xDYs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "129587485294-1lni35nb3ig8aq7db671hc6t6r5gl834.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "129587485294-c7hlejcgfrnu6g8rl9pbi1i9umg8767a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.facebook.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:129587485294:android:138cd94a247dcf41d7e47f",
+        "android_client_info": {
+          "package_name": "com.example.hey_buddy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "129587485294-1lni35nb3ig8aq7db671hc6t6r5gl834.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-LmycdtMEejx0n-ms90Ohom9UzR1xDYs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "129587485294-1lni35nb3ig8aq7db671hc6t6r5gl834.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "129587485294-c7hlejcgfrnu6g8rl9pbi1i9umg8767a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.facebook.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:129587485294:android:ae3707e8b1ddc62bd7e47f",
+        "android_client_info": {
+          "package_name": "com.example.heybuddy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "129587485294-1lni35nb3ig8aq7db671hc6t6r5gl834.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-LmycdtMEejx0n-ms90Ohom9UzR1xDYs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "129587485294-1lni35nb3ig8aq7db671hc6t6r5gl834.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "129587485294-c7hlejcgfrnu6g8rl9pbi1i9umg8767a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.facebook.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

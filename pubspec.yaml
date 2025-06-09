@@ -1,0 +1,91 @@
+name: heybuddy
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.0
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
+
+  # Firebase Dependencies
+  firebase_auth: ^5.2.1
+  firebase_core: ^3.4.1
+  cloud_firestore: ^5.4.1
+  firebase_storage: ^12.3.0
+  firebase_messaging: ^15.1.6
+
+  # File pickers
+  file_picker: ^8.1.2
+  image_cropper: ^8.0.2
+  image_picker: ^1.1.2
+
+  googleapis_auth: ^1.6.0
+  flutter_local_notifications: ^18.0.1
+  stroke_text: ^0.0.3
+  font_awesome_flutter: ^10.7.0
+  cached_network_image: ^3.4.1
+  uuid: ^4.5.0
+  custom_clippers: ^2.0.0
+  encrypt: ^5.0.3
+  video_player: ^2.9.2
+  http: ^1.2.2
+  app_settings: ^5.1.1
+  scrollable_positioned_list: ^0.3.8
+  audioplayers: ^6.4.0
+  flutter_riverpod: ^2.6.1
+  camera: ^0.11.1
+  image: ^4.5.3
+  # my_video_player:
+  #   path: "C:/my_video_player"
+  camera_image_picker: 
+     path: "C:/Desktop/camera_image_picker"
+  internet_connection_checker: ^3.0.1
+  my_progress_bar: ^2.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+   - assets/icons/
+   - assets/audio/
+  #   - images/a_dot_ham.jpeg
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/to/resolution-aware-images
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/to/asset-from-package
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  fonts:
+    - family: JotiOne
+      fonts:
+        - asset: assets/fonts/JotiOne-Regular.ttf
+        
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/to/font-from-package

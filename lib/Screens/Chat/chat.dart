@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heybuddy/Consts/colors.dart';
+import 'package:heybuddy/Consts/debug_print.dart';
 import 'package:heybuddy/Consts/spacers.dart';
 import 'package:heybuddy/Functions/decrypter.dart';
 import 'package:heybuddy/Provider/friend_provider.dart';
@@ -19,10 +20,11 @@ class Chat extends ConsumerStatefulWidget {
 
 class _ChatState extends ConsumerState<Chat> {
   String myUid = FirebaseAuth.instance.currentUser!.uid;
-  late Future<List> friends;
+  late Future<Map> friends;
   late FocusNode focusNode;
+  List searchedFriends = [];
 
-  Future<List> loadFriends() async {
+  Future<Map> loadFriends() async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
         .collection('userData')
         .doc(myUid)
@@ -30,7 +32,7 @@ class _ChatState extends ConsumerState<Chat> {
     if (snapshot.exists) {
       return snapshot.get('friendList');
     }
-    return [];
+    return {};
   }
 
   @override
@@ -39,6 +41,8 @@ class _ChatState extends ConsumerState<Chat> {
     friends = loadFriends();
     focusNode = FocusNode();
   }
+
+  void searchFriend(String str) async {}
 
   @override
   void dispose() {
@@ -57,6 +61,9 @@ class _ChatState extends ConsumerState<Chat> {
           padding: const EdgeInsets.all(10.0),
           child: TextField(
             focusNode: focusNode,
+            onChanged: (value) {
+              searchFriend(value);
+            },
             decoration: InputDecoration(
                 hintText: 'Search Friends',
                 hintStyle: TextStyle(fontSize: 12, color: bgColor),
@@ -70,7 +77,6 @@ class _ChatState extends ConsumerState<Chat> {
 
         // Vertical space
         h15,
-
         FutureBuilder(
           future: friends,
           builder: (context, snapshot) {
@@ -82,12 +88,23 @@ class _ChatState extends ConsumerState<Chat> {
             if (snapshot.hasError) {
               return Text('No friends');
             }
-            final allFriends = snapshot.data;
+            final allFriends = snapshot.data!;
+            List fUids = allFriends.keys.toList();
+            debugprint(allFriends);
+            debugprint(fUids);
+            debugprint('HI');
+
+            // final search = [];
+            // if (searchedFriends.isNotEmpty) {
+            //   for (final x in searchedFriends) {
+            //     if(allFriends.)
+            //   }
+            // }
             return Expanded(
               child: ListView.builder(
-                itemCount: allFriends!.length,
+                itemCount: fUids.length,
                 itemBuilder: (context, index) {
-                  final fUid = allFriends[index].keys.first;
+                  final fUid = fUids[index];
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Card(
@@ -103,7 +120,7 @@ class _ChatState extends ConsumerState<Chat> {
                               return Container();
                             }
                             final friendData = snapshot.data!.data()!;
-                            String chatId = allFriends[index].values.first;
+                            String chatId = allFriends[fUid];
                             return ListTile(
                               onTap: () {
                                 friendRef.updateFriend(fUid, friendData);
@@ -144,18 +161,21 @@ class _ChatState extends ConsumerState<Chat> {
                                               : '')),
                                     );
                                   }),
-                              leading: CachedNetworkImage(
-                                imageUrl: friendData['image'],
-                                placeholder: (context, url) => CircleAvatar(
-                                  radius: 25,
-                                ),
-                                imageBuilder: (context, imageProvider) {
-                                  return CircleAvatar(
-                                    radius: 25,
-                                    backgroundImage: imageProvider,
-                                  );
-                                },
-                              ),
+                              leading: friendData['image'] != ''
+                                  ? CachedNetworkImage(
+                                      imageUrl: friendData['image'],
+                                      placeholder: (context, url) =>
+                                          CircleAvatar(
+                                        radius: 25,
+                                      ),
+                                      imageBuilder: (context, imageProvider) {
+                                        return CircleAvatar(
+                                          radius: 25,
+                                          backgroundImage: imageProvider,
+                                        );
+                                      },
+                                    )
+                                  : Image.asset('assets/icons/heyBuddy.png'),
                               title: Text(
                                 friendData['name'],
                                 style: TextStyle(
@@ -166,7 +186,7 @@ class _ChatState extends ConsumerState<Chat> {
                               subtitle: StreamBuilder(
                                 stream: FirebaseFirestore.instance
                                     .collection('userChats')
-                                    .doc(allFriends[index].values.first)
+                                    .doc(allFriends[fUid])
                                     .collection(myUid)
                                     .snapshots(),
                                 builder: (context, snapshot) {

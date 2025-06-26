@@ -7,7 +7,7 @@ import 'package:heybuddy/Consts/spacers.dart';
 import 'package:heybuddy/Consts/text_style.dart';
 import 'package:heybuddy/Functions/send_notification.dart';
 import 'package:heybuddy/Functions/time_and_date.dart';
-import 'package:heybuddy/Screens/Notifications.dart/user_notifications.dart';
+import 'package:heybuddy/Notification/user_notifications.dart';
 
 class Users extends StatelessWidget {
   const Users({super.key});
@@ -70,10 +70,8 @@ class Users extends StatelessWidget {
           }
           final myData = snapshots.data!.data()!;
           String myName = myData['name'];
-          List keys = [];
-          for (final x in myData['friendList']) {
-            keys.add(x.keys.first);
-          }
+          List keys = myData['friendList'].keys.toList();
+
           return StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection('userData')
@@ -166,7 +164,8 @@ class Users extends StatelessWidget {
                                                         name: myName,
                                                         myUid: myUid,
                                                         userId: users[index].id,
-                                                        imageUrl: myData['image']);
+                                                        imageUrl:
+                                                            myData['image']);
                                               },
                                               icon: userData['otherRequest']
                                                       .contains(myUid)

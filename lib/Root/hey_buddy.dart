@@ -3,14 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:heybuddy/Consts/colors.dart';
-import 'package:heybuddy/Consts/debug_print.dart';
 import 'package:heybuddy/Consts/spacers.dart';
 import 'package:heybuddy/Consts/colored_text.dart';
 import 'package:heybuddy/Consts/text_style.dart';
 import 'package:heybuddy/Functions/time_and_date.dart';
 import 'package:heybuddy/Notification/notification_service.dart';
 import 'package:heybuddy/Screens/Chat/chat.dart';
-import 'package:heybuddy/Screens/Notifications.dart/notification_icon.dart';
+import 'package:heybuddy/Notification/notification_icon.dart';
 import 'package:heybuddy/Screens/Users/users_screen.dart';
 import 'package:heybuddy/Screens/Videos/video_upload_screen.dart';
 import 'package:heybuddy/widgets/my_details.dart';
@@ -28,7 +27,6 @@ class Heybuddy extends StatefulWidget {
 }
 
 class _HeybuddyState extends State<Heybuddy> with WidgetsBindingObserver {
-  // AppLifecycleState? lastLifecycleState;
   late int pageIndex;
   String myUid = FirebaseAuth.instance.currentUser!.uid;
   late PageController pageController;
@@ -225,16 +223,17 @@ class _HeybuddyState extends State<Heybuddy> with WidgetsBindingObserver {
                                   shape: BoxShape.circle,
                                   border: Border.all(color: neonGreen)),
                               child: Center(
-                                child: CachedNetworkImage(
-                                  imageUrl: userData!['image'],
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
-                                  imageBuilder: (context, imageProvider) =>
-                                      CircleAvatar(
-                                    radius: 23,
-                                    backgroundImage: imageProvider,
-                                  ),
-                                ),
+                                child: userData!['image'] != ''
+                                    ? CachedNetworkImage(
+                                        imageUrl: userData['image'],
+                                        imageBuilder:
+                                            (context, imageProvider) =>
+                                                CircleAvatar(
+                                          radius: 23,
+                                          backgroundImage: imageProvider,
+                                        ),
+                                      )
+                                    : Image.asset('assets/icons/heyBuddy.png'),
                               ),
                             ),
                           );
@@ -317,8 +316,9 @@ class _HeybuddyState extends State<Heybuddy> with WidgetsBindingObserver {
                                 snapshot.data!.data()!['chatNotification'];
 
                             return Badge(
-                              label:
-                                  Text(data.keys.length > 0 ? '${data.keys.length}' : ''),
+                              label: Text(data.keys.length > 0
+                                  ? '${data.keys.length}'
+                                  : ''),
                               backgroundColor: data.keys.length < 1
                                   ? Colors.transparent
                                   : Colors.red,

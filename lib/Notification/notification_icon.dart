@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:heybuddy/Consts/text_style.dart';
-import 'package:heybuddy/Screens/Notifications.dart/user_notifications.dart';
+import 'package:heybuddy/Notification/user_notifications.dart';
 
 class NotificationIcon extends StatelessWidget {
   const NotificationIcon({super.key});

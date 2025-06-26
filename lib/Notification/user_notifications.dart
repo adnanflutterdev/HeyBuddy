@@ -27,20 +27,23 @@ class UserNotifications extends StatelessWidget {
     }) async {
       final dt = dateTime();
       final chatId = '$myUid+$requestUid';
-      await FirebaseFirestore.instance
-          .collection('userData')
-          .doc(myUid)
-          .update({
+      final fire = FirebaseFirestore.instance;
+
+      DocumentSnapshot myFriendList =
+          await fire.collection('userData').doc(myUid).get();
+      Map<String, dynamic> myFriends = myFriendList.get('friendList');
+      myFriends.addAll({requestUid: chatId});
+      DocumentSnapshot friendsFriendList =
+          await fire.collection('userData').doc(requestUid).get();
+      Map<String, dynamic> friendsFriends = friendsFriendList.get('friendList');
+      friendsFriends.addAll({myUid: chatId});
+
+      await fire.collection('userData').doc(myUid).update({
         'notification': FieldValue.arrayRemove([notification]),
         'otherRequest': FieldValue.arrayRemove([requestUid]),
-        'friendList': FieldValue.arrayUnion([
-          {requestUid: chatId}
-        ])
+        'friendList': myFriends
       });
-      await FirebaseFirestore.instance
-          .collection('userData')
-          .doc(requestUid)
-          .update({
+      await fire.collection('userData').doc(requestUid).update({
         'notification': FieldValue.arrayUnion([
           {
             'time': dt[1],
@@ -52,11 +55,9 @@ class UserNotifications extends StatelessWidget {
           }
         ]),
         'yourRequest': FieldValue.arrayRemove([myUid]),
-        'friendList': FieldValue.arrayUnion([
-          {myUid: '$myUid+$requestUid'}
-        ])
+        'friendList': friendsFriends
       });
-      await FirebaseFirestore.instance.collection('userChats').doc(chatId).set({
+      await fire.collection('userChats').doc(chatId).set({
         '${myUid}LastIndex': -1,
         '${requestUid}LastIndex': -1,
         'media': [],
@@ -230,28 +231,32 @@ class UserNotifications extends StatelessWidget {
                                   child: Row(
                                     children: [
                                       w10,
-                                      CachedNetworkImage(
-                                        imageUrl: userData['image'],
-                                        placeholder: (context, url) =>
-                                            CircleAvatar(
-                                          radius: 20,
-                                          backgroundColor: textField,
-                                        ),
-                                        imageBuilder:
-                                            (context, imageProvider) =>
-                                                CircleAvatar(
-                                          radius: 20,
-                                          backgroundImage: imageProvider,
-                                        ),
-                                      ),
+                                      userData['image'] != ''
+                                          ? CachedNetworkImage(
+                                              imageUrl: userData['image'],
+                                              placeholder: (context, url) =>
+                                                  CircleAvatar(
+                                                radius: 20,
+                                                backgroundColor: textField,
+                                              ),
+                                              imageBuilder:
+                                                  (context, imageProvider) =>
+                                                      CircleAvatar(
+                                                radius: 20,
+                                                backgroundImage: imageProvider,
+                                              ),
+                                            )
+                                          : Image.asset(
+                                              'assets/icons/heyBuddy.png',
+                                              width: 40,
+                                            ),
                                       w10,
                                       Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
                                           StrokeText(
-                                            text:
-                                                userData['name'],
+                                            text: userData['name'],
                                             textStyle: roboto(
                                                 fontSize: 16, color: neonBlue),
                                           ),
@@ -290,8 +295,7 @@ class UserNotifications extends StatelessWidget {
                                                     requestUid: notification[
                                                         'requestUid'],
                                                     imageUrl: myData['image'],
-                                                    name:
-                                                        myData['name'],
+                                                    name: myData['name'],
                                                     userToken:
                                                         userData['token'],
                                                     index: index,
@@ -324,8 +328,7 @@ class UserNotifications extends StatelessWidget {
                                                       'requestUid'],
                                                   fToken: userData['token'],
                                                   imageUrl: myData['image'],
-                                                  name:
-                                                      '${myData['fName']} ${myData['lName']}',
+                                                  name: myData['name'],
                                                   notification: notification,
                                                   // index: index,
                                                 );

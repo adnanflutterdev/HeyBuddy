@@ -1,10 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:heybuddy/Consts/colored_text.dart';
 import 'package:heybuddy/Consts/colors.dart';
+import 'package:heybuddy/Consts/debug_print.dart';
 import 'package:heybuddy/Consts/spacers.dart';
 import 'package:heybuddy/Consts/text_style.dart';
+import 'package:heybuddy/Root/home_page.dart';
 import 'package:heybuddy/Screens/Posts/my_posts.dart';
 import 'package:heybuddy/Screens/Videos/videos.dart';
 import 'package:heybuddy/widgets/image_viewer.dart';
@@ -55,65 +58,77 @@ class MyDetails extends StatelessWidget {
                     top: 0,
                     left: 0,
                     right: 0,
-                    child: InkWell(
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ImageViewer(
-                          images: [myDetails['coverImg']],
-                          i: 0,
-                        ),
-                      )),
-                      child: Hero(
-                        tag: myDetails['coverImg'],
-                        child: CachedNetworkImage(
-                          fit: BoxFit.fitHeight,
-                          height: 190,
-                          imageUrl: myDetails['coverImg'],
-                          placeholder: (context, url) => const Center(
-                            child: SizedBox(
-                              width: 15,
-                              height: 15,
-                              child: CircularProgressIndicator(),
-                            ),
-                          ),
-                        ),
-                      ),
+                    child: GestureDetector(
+                      onTap: () => myDetails['coverImg'] != ''
+                          ? Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => ImageViewer(
+                                images: [myDetails['coverImg']],
+                                i: 0,
+                              ),
+                            ))
+                          : null,
+                      child: myDetails['coverImg'] != ''
+                          ? Hero(
+                              tag: myDetails['coverImg'],
+                              child: CachedNetworkImage(
+                                fit: BoxFit.fitHeight,
+                                height: 190,
+                                imageUrl: myDetails['coverImg'],
+                                placeholder: (context, url) => const Center(
+                                  child: SizedBox(
+                                    width: 15,
+                                    height: 15,
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Opacity(
+                              opacity: 0.6,
+                              child: Image.asset(
+                                'assets/icons/heyBuddy.png',
+                              )),
                     ),
                   ),
                   Positioned(
                       bottom: 0,
                       left: MediaQuery.of(context).size.width / 2 - 60,
                       right: MediaQuery.of(context).size.width / 2 - 60,
-                      child: CachedNetworkImage(
-                        imageUrl: myDetails['image'],
-                        placeholder: (context, url) => const Center(
-                          child: SizedBox(
-                            width: 15,
-                            height: 15,
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
-                        imageBuilder: (context, imageProvider) => Container(
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: neonGreen, width: 2)),
-                          child: InkWell(
-                            onTap: () =>
-                                Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => ImageViewer(
-                                images: [myDetails['image']],
-                                i: 0,
+                      child: myDetails['image'] != ''
+                          ? CachedNetworkImage(
+                              imageUrl: myDetails['image'],
+                              placeholder: (context, url) => const Center(
+                                child: SizedBox(
+                                  width: 15,
+                                  height: 15,
+                                  child: CircularProgressIndicator(),
+                                ),
                               ),
-                            )),
-                            child: Hero(
-                              tag: myDetails['image'],
-                              child: CircleAvatar(
-                                radius: 60,
-                                backgroundImage: imageProvider,
+                              imageBuilder: (context, imageProvider) =>
+                                  Container(
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border:
+                                        Border.all(color: neonGreen, width: 2)),
+                                child: InkWell(
+                                  onTap: () => Navigator.of(context)
+                                      .push(MaterialPageRoute(
+                                    builder: (context) => ImageViewer(
+                                      images: [myDetails['image']],
+                                      i: 0,
+                                    ),
+                                  )),
+                                  child: Hero(
+                                    tag: myDetails['image'],
+                                    child: CircleAvatar(
+                                      radius: 60,
+                                      backgroundImage: imageProvider,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        ),
-                      ))
+                            )
+                          : Image.asset('assets/icons/heyBuddy.png'))
                 ],
               ),
             ),
@@ -232,9 +247,21 @@ class MyDetails extends StatelessWidget {
           const Spacer(),
           Center(
             child: InkWell(
-              onTap: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.of(context).pop();
+              onTap: () async {
+                final uid = FirebaseAuth.instance.currentUser!.uid;
+                debugprint(uid);
+                await FirebaseFirestore.instance
+                    .collection('userData')
+                    .doc(uid)
+                    .update({'token': ''});
+                await FirebaseAuth.instance.signOut();
+                if (!context.mounted) {
+                  return;
+                }
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const HomePage()),
+                  (route) => false,
+                );
                 ScaffoldMessenger.of(context).clearSnackBars();
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     behavior: SnackBarBehavior.floating,

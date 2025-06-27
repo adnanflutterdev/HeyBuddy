@@ -244,7 +244,6 @@ class _VideoPreviewState extends State<VideoPreview> {
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
     double h = w / videoPlayerController.value.aspectRatio;
-    debugprint(videoPlayerController.value.aspectRatio);
     return isInitializing
         ? Center(child: CircularProgressIndicator())
         : Center(

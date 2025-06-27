@@ -62,7 +62,6 @@ class _AllChatsState extends ConsumerState<AllChats> {
   }
 
   void clearChatNotification(String fUid) async {
-    debugprint('function called');
     final fire = FirebaseFirestore.instance.collection('userData').doc(myUid);
     DocumentSnapshot snapshot = await fire.get();
     Map chatNotification = snapshot.get('chatNotification');
@@ -122,7 +121,6 @@ class _AllChatsState extends ConsumerState<AllChats> {
                       (index) => allChats[index].id,
                     );
 
-                    debugprint(allDocs.length);
                     updateSeen();
                     updateLastIndex(allChats.length);
                    

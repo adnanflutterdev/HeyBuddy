@@ -114,7 +114,6 @@ class _ImageViewerState extends State<ImageViewer> {
                           ? lastImage
                           : null;
                   if (currentImage != null) {
-                    debugprint(currentImage);
                     bool imageVisible = currentImage.itemLeadingEdge >= 0 &&
                         currentImage.itemTrailingEdge <= 1;
                     if (!imageVisible) {

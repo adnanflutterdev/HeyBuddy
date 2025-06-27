@@ -249,7 +249,6 @@ class MyDetails extends StatelessWidget {
             child: InkWell(
               onTap: () async {
                 final uid = FirebaseAuth.instance.currentUser!.uid;
-                debugprint(uid);
                 await FirebaseFirestore.instance
                     .collection('userData')
                     .doc(uid)

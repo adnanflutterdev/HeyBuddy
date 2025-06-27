@@ -6,12 +6,10 @@ class LongPressedNotifier extends StateNotifier<bool> {
 
   void start() {
     state = true;
-    debugprint(state);
   }
 
   void stop() {
     state = false;
-    debugprint(state);
   }
 }
 
@@ -20,17 +18,14 @@ class ChatSelectionNotifier extends StateNotifier<List> {
 
   void addChat(int index) {
     state = [...state, index];
-    debugprint(state);
   }
 
   void removeChat(int index) {
     state = state.where((i) => i != index).toList();
-    debugprint(state);
   }
 
   void clear() {
     state = [];
-    debugprint(state);
   }
 }
 

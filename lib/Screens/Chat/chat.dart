@@ -22,7 +22,8 @@ class _ChatState extends ConsumerState<Chat> {
   String myUid = FirebaseAuth.instance.currentUser!.uid;
   late Future<Map> friends;
   late FocusNode focusNode;
-  List searchedFriends = [];
+  List friendsData = [];
+  Map searchedFriends = {};
 
   Future<Map> loadFriends() async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
@@ -30,9 +31,19 @@ class _ChatState extends ConsumerState<Chat> {
         .doc(myUid)
         .get();
     if (snapshot.exists) {
-      return snapshot.get('friendList');
+      Map friendList = snapshot.get('friendList');
+      getFriendData(allFriends: friendList.keys.toList());
+      return friendList;
     }
     return {};
+  }
+
+  void getFriendData({required List allFriends}) async {
+    for (final x in allFriends) {
+      DocumentSnapshot snapshot =
+          await FirebaseFirestore.instance.collection('userData').doc(x).get();
+      friendsData.add({'uid': x, 'name': snapshot.get('name')});
+    }
   }
 
   @override
@@ -42,7 +53,18 @@ class _ChatState extends ConsumerState<Chat> {
     focusNode = FocusNode();
   }
 
-  void searchFriend(String str) async {}
+  void searchFriend(String str) async {
+    searchedFriends = {};
+    if (str != '') {
+      final allFriends = await friends;
+      str = str.trim().toLowerCase();
+      for (Map x in friendsData) {
+        if (x['name'].toString().toLowerCase().contains(str)) {
+          searchedFriends.addAll({x['uid']: allFriends[x['uid']]});
+        }
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -63,6 +85,7 @@ class _ChatState extends ConsumerState<Chat> {
             focusNode: focusNode,
             onChanged: (value) {
               searchFriend(value);
+              setState(() {});
             },
             decoration: InputDecoration(
                 hintText: 'Search Friends',
@@ -89,20 +112,15 @@ class _ChatState extends ConsumerState<Chat> {
               return Text('No friends');
             }
             final allFriends = snapshot.data!;
-            List fUids = allFriends.keys.toList();
-            debugprint(allFriends);
-            debugprint(fUids);
-            debugprint('HI');
+            List fUids = searchedFriends.isEmpty
+                ? allFriends.keys.toList()
+                : searchedFriends.keys.toList();
 
-            // final search = [];
-            // if (searchedFriends.isNotEmpty) {
-            //   for (final x in searchedFriends) {
-            //     if(allFriends.)
-            //   }
-            // }
             return Expanded(
               child: ListView.builder(
-                itemCount: fUids.length,
+                itemCount: searchedFriends.isEmpty
+                    ? fUids.length :searchedFriends.length,
+                    
                 itemBuilder: (context, index) {
                   final fUid = fUids[index];
                   return Padding(

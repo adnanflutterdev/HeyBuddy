@@ -215,17 +215,19 @@ class ChatHeader extends ConsumerWidget {
                           shape: BoxShape.circle,
                           border: Border.all(color: neonGreen)),
                       child: Center(
-                        child: CachedNetworkImage(
-                          imageUrl: friendData['image'],
-                          placeholder: (context, url) => CircleAvatar(
-                            radius: 25,
-                          ),
-                          imageBuilder: (context, imageProvider) =>
-                              CircleAvatar(
-                            radius: 25,
-                            backgroundImage: imageProvider,
-                          ),
-                        ),
+                        child: friendData['image'] != ''
+                            ? CachedNetworkImage(
+                                imageUrl: friendData['image'],
+                                placeholder: (context, url) => CircleAvatar(
+                                  radius: 25,
+                                ),
+                                imageBuilder: (context, imageProvider) =>
+                                    CircleAvatar(
+                                  radius: 25,
+                                  backgroundImage: imageProvider,
+                                ),
+                              )
+                            : Image.asset('assets/icons/heyBuddy.png'),
                       ),
                     ),
                     w10,

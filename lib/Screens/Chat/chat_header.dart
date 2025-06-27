@@ -196,10 +196,8 @@ class ChatHeader extends ConsumerWidget {
                     IconButton(
                       onPressed: () {
                         if (replyProvider.isNotEmpty) {
-                          debugprint('yes');
                           replyNotifier.clear();
                         } else {
-                          debugprint('no');
                           updateActiveStatus();
                           Navigator.of(context).pop();
                         }

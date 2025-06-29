@@ -72,7 +72,7 @@ class _SendChatState extends ConsumerState<SendChat> {
             .doc(widget.chatId);
 
         DocumentSnapshot userChatsSnapshot = await fire.get();
-        final isActive = userChatsSnapshot.get(fUid);
+        bool isActive = userChatsSnapshot.get(fUid);
 
         DocumentSnapshot userDataSnapshot = await FirebaseFirestore.instance
             .collection('userData')

@@ -42,7 +42,7 @@ class _AllChatsState extends ConsumerState<AllChats> {
     if (snapshot.exists) {
       return snapshot.get('${myUid}LastIndex');
     }
-    return 0;
+    return -1;
   }
 
   void updateLastIndex(int length) async {
@@ -123,14 +123,15 @@ class _AllChatsState extends ConsumerState<AllChats> {
 
                     updateSeen();
                     updateLastIndex(allChats.length);
-                   
+                    debugprint(allChats.length);
+                    debugprint(unseenIndex);
+
                     if (!wasFirstLoad &&
                         widget.itemScrollController.isAttached) {
-                      
                       widget.itemScrollController.scrollTo(
                           index: allChats.length - 1,
                           duration: Duration(milliseconds: 300));
-                    } else{
+                    } else {
                       clearChatNotification(friendRef.first);
                     }
                     return ScrollablePositionedList.builder(
@@ -144,6 +145,7 @@ class _AllChatsState extends ConsumerState<AllChats> {
 
                         // In chat bubble, if index is '0' then the chat will be displayed directly without checking
                         // Otherwise passing current and a previous chat for checking
+
                         return ChatBubble(
                             index: index,
                             allDocs: allDocs,

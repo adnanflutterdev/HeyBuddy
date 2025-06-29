@@ -122,7 +122,7 @@ class Users extends StatelessWidget {
                                 ),
                               );
                             }
-                            final userData = snapshot.data!.data();
+                            final userData = snapshot.data!.data()!;
                             return Padding(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 2),
@@ -136,14 +136,19 @@ class Users extends StatelessWidget {
                                       horizontal: 5.0, vertical: 2),
                                   child: Row(
                                     children: [
-                                      CachedNetworkImage(
-                                        imageUrl: userData!['image'],
-                                        imageBuilder:
-                                            (context, imageProvider) =>
-                                                CircleAvatar(
-                                          backgroundImage: imageProvider,
-                                        ),
-                                      ),
+                                      userData['image'] != ''
+                                          ? CachedNetworkImage(
+                                              imageUrl: userData['image'],
+                                              imageBuilder:
+                                                  (context, imageProvider) =>
+                                                      CircleAvatar(
+                                                backgroundImage: imageProvider,
+                                              ),
+                                            )
+                                          : Image.asset(
+                                              'assets/icons/heyBuddy.png',
+                                              width: 40,
+                                            ),
                                       w10,
                                       Text(
                                         userData['name'],

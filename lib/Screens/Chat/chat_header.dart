@@ -11,6 +11,7 @@ import 'package:heybuddy/Consts/text_style.dart';
 import 'package:heybuddy/Provider/chat_reply_provider.dart';
 import 'package:heybuddy/Provider/chats_provider.dart';
 import 'package:heybuddy/Provider/friend_provider.dart';
+import 'package:heybuddy/Screens/Chat/freind_details.dart';
 import 'package:my_progress_bar/loaders.dart';
 
 class ChatHeader extends ConsumerWidget {
@@ -191,69 +192,80 @@ class ChatHeader extends ConsumerWidget {
                   return Text('Error Occured');
                 }
                 final friendData = snapshot.data!.data()!;
-                return Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        if (replyProvider.isNotEmpty) {
-                          replyNotifier.clear();
-                        } else {
-                          updateActiveStatus();
-                          Navigator.of(context).pop();
-                        }
-                      },
-                      icon: Icon(
-                        Icons.arrow_back,
-                        color: neonGreen,
-                        size: 30,
-                      ),
-                    ),
-                    Container(
-                      width: 52,
-                      height: 52,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: neonGreen)),
-                      child: Center(
-                        child: friendData['image'] != ''
-                            ? CachedNetworkImage(
-                                imageUrl: friendData['image'],
-                                placeholder: (context, url) => CircleAvatar(
-                                  radius: 25,
-                                ),
-                                imageBuilder: (context, imageProvider) =>
-                                    CircleAvatar(
-                                  radius: 25,
-                                  backgroundImage: imageProvider,
-                                ),
-                              )
-                            : Image.asset('assets/icons/heyBuddy.png'),
-                      ),
-                    ),
-                    w10,
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          friendData['name'],
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: neonBlue,
-                              fontWeight: FontWeight.bold),
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => FriendDetails(
+                          friendData: friendData,
+                          chatUid: chatId,
+                          fUid: friendRef.first,
+                          myUid: myUid),
+                    ));
+                  },
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          if (replyProvider.isNotEmpty) {
+                            replyNotifier.clear();
+                          } else {
+                            updateActiveStatus();
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        icon: Icon(
+                          Icons.arrow_back,
+                          color: neonGreen,
+                          size: 30,
                         ),
-                        Text(
-                          friendData['isActive'],
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: friendData['isActive'] == 'Online'
-                                  ? neonGreen
-                                  : Colors.red,
-                              fontWeight: FontWeight.w300),
-                        )
-                      ],
-                    )
-                  ],
+                      ),
+                      Container(
+                        width: 52,
+                        height: 52,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: neonGreen)),
+                        child: Center(
+                          child: friendData['image'] != ''
+                              ? CachedNetworkImage(
+                                  imageUrl: friendData['image'],
+                                  placeholder: (context, url) => CircleAvatar(
+                                    radius: 25,
+                                  ),
+                                  imageBuilder: (context, imageProvider) =>
+                                      CircleAvatar(
+                                    radius: 25,
+                                    backgroundImage: imageProvider,
+                                  ),
+                                )
+                              : Image.asset('assets/icons/heyBuddy.png'),
+                        ),
+                      ),
+                      w10,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            friendData['name'],
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: neonBlue,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            friendData['isActive'],
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: friendData['isActive'] == 'Online'
+                                    ? neonGreen
+                                    : Colors.red,
+                                fontWeight: FontWeight.w300),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
                 );
               },
             ),

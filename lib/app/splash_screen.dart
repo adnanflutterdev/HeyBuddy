@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_colors.dart';
+import 'package:hey_buddy/core/const/app_navigator.dart';
+import 'package:hey_buddy/features/auth/presentation/screens/auth_state_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -39,7 +41,9 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void animationListener(AnimationStatus status) {
-    if (status == .completed) {}
+    if (status == .completed) {
+      AppNavigator.pushReplaceMent(const AuthStateScreen());
+    }
   }
 
   void initGradientStopAnimation() {

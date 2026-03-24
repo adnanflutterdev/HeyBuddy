@@ -9,7 +9,7 @@ class AppDarkColors {
 
   // Backgrounds
   static const Color bg = Color(0xff1F2937);
-  static const Color card = Color(0xff1F1937);
+  static const Color card = Color(0xff6B7280);
   static const Color appbar = Color(0xff374151);
   static const Color container = Color(0xff4B5563);
 

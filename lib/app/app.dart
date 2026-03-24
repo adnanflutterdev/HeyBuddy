@@ -22,6 +22,7 @@ class App extends ConsumerWidget {
       themeMode: themeMode,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
+      
       navigatorKey: AppNavigator.navigatorKey,
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),

@@ -12,11 +12,7 @@ TextTheme textTheme = const TextTheme(
   ),
 
   // For AppBar Titles
-  titleLarge: TextStyle(
-    fontSize: 22,
-    letterSpacing: 2,
-    fontFamily: 'PoppinsBold',
-  ),
+  titleLarge: TextStyle(fontSize: 24, letterSpacing: 2, fontFamily: 'Joti'),
 
   // For Body Headings
   titleMedium: TextStyle(
@@ -37,7 +33,7 @@ TextTheme textTheme = const TextTheme(
   bodyLarge: TextStyle(fontSize: 14, fontFamily: 'PoppinsBold'),
 
   // Medium body text
-  bodyMedium: TextStyle(fontSize: 14, fontWeight: .w600),
+  bodyMedium: TextStyle(fontSize: 14, fontWeight: .w500),
 
   // Normal body text
   bodySmall: TextStyle(fontSize: 14),

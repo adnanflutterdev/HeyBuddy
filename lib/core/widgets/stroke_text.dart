@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 
 class StrokeText extends StatelessWidget {
-  const StrokeText({super.key, required this.text, required this.style});
+  const StrokeText({
+    super.key,
+    required this.text,
+    required this.style,
+    this.strokeWidth = 1.5,
+  });
   final String text;
   final TextStyle style;
+  final double strokeWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +20,7 @@ class StrokeText extends StatelessWidget {
           style: style.copyWith(
             foreground: Paint()
               ..style = PaintingStyle.stroke
-              ..strokeWidth = 1.5
+              ..strokeWidth = strokeWidth
               ..color = Colors.black,
           ),
         ),

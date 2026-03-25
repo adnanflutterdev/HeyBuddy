@@ -26,7 +26,7 @@ class AppTheme {
       suffixIconColor: AppLightColors.neonGreen,
       fillColor: AppLightColors.card,
       focusedErrorBorder: outlinedBorder(color: AppLightColors.error),
-      enabledBorder: outlinedBorder(color: AppLightColors.bg),
+      enabledBorder: outlinedBorder(color: AppLightColors.border),
       focusedBorder: outlinedBorder(color: AppLightColors.neonBlue, width: 1),
       hintStyle: textTheme.bodySmall?.copyWith(
         color: AppLightColors.secondaryText,

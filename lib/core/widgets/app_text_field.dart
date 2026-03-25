@@ -89,7 +89,8 @@ class AppTextField extends StatelessWidget {
           controller: controller,
           keyboardType: textInputType,
           obscureText: isObscure,
-          style: textStyle ?? context.style.b3,
+          obscuringCharacter: '●',
+          style: textStyle ?? context.style.b2,
           decoration: InputDecoration(
             prefixIconConstraints: BoxConstraints(
               maxWidth:

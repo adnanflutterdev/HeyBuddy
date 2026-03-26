@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:hey_buddy/config/provider/settings_provider.dart';
+import 'package:hey_buddy/app/riverpod/settings_provider.dart';
 
 extension ThemeModeX on ThemeMode {
   static ThemeMode getThemeMode(String appThemeMode) {

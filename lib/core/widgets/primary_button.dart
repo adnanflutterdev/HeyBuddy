@@ -53,6 +53,7 @@ class PrimaryButton extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: .circular(8)),
         iconAlignment: alignment,
         iconSize: iconSize,
+        iconColor: context.colors.neonGreen,
         disabledBackgroundColor: context.colors.neonBlue,
       ),
     );

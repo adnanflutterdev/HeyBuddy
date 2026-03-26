@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
+import 'package:hey_buddy/core/const/app_validators.dart';
 import 'package:hey_buddy/core/widgets/app_logo.dart';
 import 'package:hey_buddy/core/widgets/app_text_field.dart';
 import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
 import 'package:hey_buddy/core/widgets/primary_button.dart';
 import 'package:hey_buddy/core/widgets/stroke_text.dart';
 import 'package:hey_buddy/core/widgets/title_text.dart';
+import 'package:hey_buddy/features/auth/presentation/riverpod/auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,10 +21,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen>
     with SingleTickerProviderStateMixin {
-  final ValueNotifier<bool> _isLoginScreen = .new(true);
-
   final ValueNotifier<bool> _isObscure = .new(true);
-  final ValueNotifier<bool> _isSigning = .new(false);
+  final ValueNotifier<bool> _isLoginScreen = .new(true);
 
   final TextEditingController _nameController = .new();
   final TextEditingController _emailController = .new();
@@ -38,7 +39,6 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void initState() {
     super.initState();
-
     _initAnimation();
   }
 
@@ -58,11 +58,33 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
+  void _authenticate(WidgetRef ref) {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      if (_isLoginScreen.value) {
+        ref
+            .read(authProvider.notifier)
+            .login(
+              _emailController.text.trim(),
+              _passwordController.text.trim(),
+            );
+      } else {
+        ref
+            .read(authProvider.notifier)
+            .signup(
+              _nameController.text.trim(),
+              _emailController.text.trim(),
+              _passwordController.text.trim(),
+            );
+      }
+    }
+  }
+
   @override
   void dispose() {
     _isObscure.dispose();
-    _isSigning.dispose();
 
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
 
@@ -84,121 +106,156 @@ class _LoginScreenState extends State<LoginScreen>
               return Column(
                 spacing: 30,
                 children: [
-                  TitleText(
-                    text: isLoginScreen ? ('Log', 'in') : ('Sign', 'up'),
-                    fontSize: 30,
-                  ),
-                  AnimatedBuilder(
-                    animation: _blurRadius,
-                    builder: (context, child) {
-                      return Container(
-                        padding: AppPadding.p16,
-                        decoration: BoxDecoration(
-                          color: context.colors.container,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: context.colors.neonGreen,
-                              blurRadius: _blurRadius.value,
-                            ),
-                            BoxShadow(
-                              color: context.colors.neonBlue,
-                              blurRadius: (_end - _blurRadius.value).abs(),
-                            ),
-                          ],
-                        ),
-                        child: child,
-                      );
-                    },
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        spacing: 20,
-                        children: [
-                          if (!isLoginScreen)
-                            AppTextField(
-                              label: 'Name',
-                              controller: _nameController,
-                              hintText: 'your name',
-                            ),
-                          AppTextField(
-                            label: 'Email',
-                            controller: _emailController,
-                            hintText: 'email@example.com',
-                          ),
-                          Column(
-                            mainAxisSize: .min,
-                            crossAxisAlignment: .end,
-                            children: [
-                              ValueListenableBuilder(
-                                valueListenable: _isObscure,
-                                builder: (context, isObscure, child) {
-                                  return AppTextField(
-                                    label: 'Password',
-                                    isObscure: isObscure,
-                                    hintText: '●●●●●●●●',
-                                    controller: _passwordController,
-                                    suffixIcon: isObscure
-                                        ? Icons.lock
-                                        : Icons.lock_open,
-                                    onSuffixIconTapped: () {
-                                      _isObscure.value = !isObscure;
-                                    },
-                                  );
-                                },
-                              ),
-                              const Text('Forget password?'),
-                            ],
-                          ),
-
-                          Column(
-                            children: [
-                              ValueListenableBuilder(
-                                valueListenable: _isSigning,
-                                builder: (context, isSigning, child) {
-                                  return PrimaryButton(
-                                    onPressed: () {},
-                                    label: isLoginScreen ? 'Login' : 'Signup',
-                                    isLoading: isSigning,
-                                  );
-                                },
-                              ),
-                              Wrap(
-                                crossAxisAlignment: .center,
-                                alignment: .center,
-                                children: [
-                                  Text(
-                                    '${isLoginScreen ? 'Don\'t' : 'Already'} have an account? ',
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _isLoginScreen.value = !isLoginScreen;
-                                      });
-                                    },
-                                    child: StrokeText(
-                                      strokeWidth: 1,
-                                      text: isLoginScreen ? 'Signup' : 'Login',
-                                      style: context.style.b1.copyWith(
-                                        color: context.colors.neonGreen,
-                                        letterSpacing: 2,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  _buildTitle(isLoginScreen),
+                  _buildFormContainer(isLoginScreen),
                 ],
               );
             },
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTitle(bool isLoginScreen) {
+    return TitleText(
+      text: isLoginScreen ? ('Log', 'in') : ('Sign', 'up'),
+      fontSize: 30,
+    );
+  }
+
+  Widget _buildFormContainer(bool isLoginScreen) {
+    return AnimatedBuilder(
+      animation: _blurRadius,
+      builder: (context, child) {
+        return Container(
+          padding: AppPadding.p16,
+          decoration: BoxDecoration(
+            color: context.colors.container,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: context.colors.neonGreen,
+                blurRadius: _blurRadius.value,
+              ),
+              BoxShadow(
+                color: context.colors.neonBlue,
+                blurRadius: (_end - _blurRadius.value).abs(),
+              ),
+            ],
+          ),
+          child: child,
+        );
+      },
+      child: _buildForm(isLoginScreen),
+    );
+  }
+
+  Widget _buildForm(bool isLoginScreen) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        spacing: 20,
+        children: [
+          if (!isLoginScreen)
+            AppTextField(
+              label: 'Name',
+              controller: _nameController,
+              hintText: 'your name',
+              validator: AppValidators.name,
+            ),
+          AppTextField(
+            label: 'Email',
+            controller: _emailController,
+            hintText: 'email@example.com',
+            validator: AppValidators.email,
+          ),
+          Column(
+            mainAxisSize: .min,
+            crossAxisAlignment: .end,
+            children: [
+              ValueListenableBuilder(
+                valueListenable: _isObscure,
+                builder: (context, isObscure, child) {
+                  return AppTextField(
+                    label: 'Password',
+                    isObscure: isObscure,
+                    hintText: '●●●●●●●●',
+                    controller: _passwordController,
+                    suffixIcon: isObscure ? Icons.lock : Icons.lock_open,
+                    onSuffixIconTapped: () {
+                      _isObscure.value = !isObscure;
+                    },
+                    validator: AppValidators.password,
+                  );
+                },
+              ),
+              const Text('Forget password?'),
+            ],
+          ),
+
+          Column(
+            children: [
+              _buildAuthenticationButton(isLoginScreen),
+              Wrap(
+                crossAxisAlignment: .center,
+                alignment: .center,
+                children: [
+                  Text(
+                    '${isLoginScreen ? 'Don\'t' : 'Already'} have an account? ',
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isLoginScreen.value = !isLoginScreen;
+                      });
+                    },
+                    child: StrokeText(
+                      strokeWidth: 1,
+                      text: isLoginScreen ? 'Signup' : 'Login',
+                      style: context.style.b1.copyWith(
+                        color: context.colors.neonGreen,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAuthenticationButton(bool isLoginScreen) {
+    return Consumer(
+      builder: (context, ref, child) {
+        ref.listen(authProvider, (previous, next) {
+          next.when(
+            data: (response) {
+              if (response == null) return;
+              if (!response.success) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(response.message)));
+              }
+            },
+            error: (error, stackTrace) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(error.toString())));
+            },
+            loading: () {},
+          );
+        });
+        final authState = ref.watch(authProvider);
+        return PrimaryButton(
+          onPressed: () => _authenticate(ref),
+          label: isLoginScreen ? 'Login' : 'Signup',
+          isLoading: authState.isLoading,
+        );
+      },
     );
   }
 }

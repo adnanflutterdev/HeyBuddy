@@ -14,7 +14,6 @@ class AppTheme {
     appBarTheme: const AppBarThemeData(
       elevation: 0,
       backgroundColor: AppLightColors.appbar,
-      iconTheme: IconThemeData(color: AppLightColors.neonGreen, size: 25),
     ),
     colorScheme: AppColorScheme.light,
     cardColor: AppLightColors.container,
@@ -40,7 +39,6 @@ class AppTheme {
     fontFamily: 'Poppins',
     appBarTheme: const AppBarThemeData(
       elevation: 0,
-      iconTheme: IconThemeData(color: AppDarkColors.neonGreen, size: 25),
       backgroundColor: AppDarkColors.appbar,
     ),
     colorScheme: AppColorScheme.dark,

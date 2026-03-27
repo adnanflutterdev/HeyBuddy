@@ -5,6 +5,8 @@ import 'package:hey_buddy/app/riverpod/tab_provider.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/size_extention.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
+import 'package:hey_buddy/core/widgets/app_logo.dart';
+import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -26,6 +28,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final tabIndex = ref.watch(tabProvider);
     return Scaffold(
+      appBar: _buildAppbar() as PreferredSizeWidget,
       body: SafeArea(
         child: Column(
           children: [
@@ -45,6 +48,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAppbar() {
+    return CustomAppBar(
+      leading: const AppLogo(),
+      title: ('Hey ', 'Buddy'),
+      actions: [
+        IconButton(onPressed: () {}, icon: const Icon(Icons.add)),
+        IconButton(onPressed: () {}, icon: const Icon(Icons.notifications)),
+      ],
     );
   }
 

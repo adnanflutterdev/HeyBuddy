@@ -85,7 +85,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 curve: Curves.easeInCubic,
               );
             },
-            child: SizedBox(
+            child: Container(
+              color: Colors.transparent,
               width: width,
               height: 60,
               child: Column(
@@ -105,17 +106,3 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 }
-
-/*
-Consumer(
-              builder: (context, ref, _) {
-                return PrimaryButton(
-                  onPressed: () {
-                    ref.read(authProvider.notifier).logout();
-                  },
-                  label: 'Logout',
-                  icon: Icons.logout,
-                );
-              },
-            ),
-*/

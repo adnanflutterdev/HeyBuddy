@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:hey_buddy/features/auth/data/models/user_dto.dart';
-import 'package:hey_buddy/features/auth/domain/entity/auth_response.dart';
+import 'package:hey_buddy/features/auth/domain/entity/auth_response_entity.dart';
 import 'package:hey_buddy/features/auth/domain/repository/auth_repository.dart';
 import 'package:hey_buddy/features/auth/data/data_sources/auth_remote_data_source.dart';
 
@@ -36,9 +35,7 @@ class AuthRepositoryImpl extends AuthRepository {
       if (response.user == null) {
         return AuthResponseEntity.failure('User is null');
       } else {
-        final String uid = response.user!.uid;
-        UserDto userDto = UserDto(uid: uid, name: name, email: email);
-        await remote.saveUser(userDto);
+        await remote.saveUser(response.user!.uid, name, email);
         return AuthResponseEntity.success('Signup success');
       }
     } on FirebaseAuthException catch (e) {

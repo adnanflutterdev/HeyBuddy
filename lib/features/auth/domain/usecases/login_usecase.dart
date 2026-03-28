@@ -1,4 +1,4 @@
-import 'package:hey_buddy/features/auth/domain/entity/auth_response.dart';
+import 'package:hey_buddy/features/auth/domain/entity/auth_response_entity.dart';
 import 'package:hey_buddy/features/auth/domain/repository/auth_repository.dart';
 
 class LoginUsecase {

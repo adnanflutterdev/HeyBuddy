@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hey_buddy/features/auth/domain/entity/auth_response.dart';
+import 'package:hey_buddy/features/auth/domain/entity/auth_response_entity.dart';
 import 'package:hey_buddy/features/auth/domain/usecases/login_usecase.dart';
 import 'package:hey_buddy/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:hey_buddy/features/auth/domain/usecases/signup_usecase.dart';

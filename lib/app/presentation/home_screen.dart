@@ -7,6 +7,10 @@ import 'package:hey_buddy/config/extensions/size_extention.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/widgets/app_logo.dart';
 import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
+import 'package:hey_buddy/features/chat/presentation/pages/chat_screen.dart';
+import 'package:hey_buddy/features/post/presentation/pages/post_screen.dart';
+import 'package:hey_buddy/features/profile/presentation/pages/profile_screen.dart';
+import 'package:hey_buddy/features/video/presentation/pages/video_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -17,6 +21,12 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final PageController _pageController = PageController();
+  final List<Widget> pages = [
+    const PostScreen(),
+    const VideoScreen(),
+    const ChatScreen(),
+    const ProfileScreen(),
+  ];
 
   @override
   void dispose() {
@@ -34,13 +44,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
             Expanded(
               child: PageView.builder(
-                itemCount: 4,
+                itemCount: pages.length,
                 controller: _pageController,
                 onPageChanged: (value) {
                   ref.read(tabProvider.notifier).changeTab(value);
                 },
                 itemBuilder: (context, index) {
-                  return const Placeholder();
+                  return pages[index];
                 },
               ),
             ),
@@ -74,15 +84,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       color: context.colors.appbar,
       child: Row(
         children: List.generate(tabs.length, (index) {
-          final tab = tabs[index];
-          final color = tabIndex == index ? context.colors.neonBlue : null;
+          TabModel tab = tabs[index];
+          double size = tabIndex == index ? 30 : 25;
+          Color? color = tabIndex == index ? context.colors.neonBlue : null;
 
           return GestureDetector(
             onTap: () {
+              int diff = (tabIndex - index).abs();
               _pageController.animateToPage(
                 index,
-                duration: const Duration(milliseconds: 400),
-                curve: Curves.easeInCubic,
+                duration: Duration(milliseconds: (diff * 250).clamp(250, 600)),
+                curve: Curves.easeInBack,
               );
             },
             child: Container(
@@ -92,7 +104,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Column(
                 mainAxisAlignment: .center,
                 children: [
-                  Icon(tab.icon, color: color),
+                  Icon(tab.icon, color: color, size: size),
                   Text(
                     tab.label,
                     style: context.style.bs1.copyWith(color: color),

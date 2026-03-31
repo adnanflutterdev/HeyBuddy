@@ -1,4 +1,4 @@
-import 'package:hey_buddy/features/auth/domain/entity/user_entity.dart';
+import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 
 extension AccountTypeX on AccountType {
   static AccountType fromFirebase(String accountType) {
@@ -29,7 +29,7 @@ class UserModel extends UserEntity {
 
   factory UserModel.fromFirebase(Map<String, dynamic> user) {
     return UserModel(
-      uid: user['uid'],
+      uid: user['uid'] ?? '',
       profile: Profile.fromFirebase(user['profile']),
       account: Account.fromFirebase(user['account']),
       details: Details.fromFirebase(user['details']),
@@ -60,8 +60,8 @@ class Details extends DetailsEntity {
 
   factory Details.fromFirebase(Map<String, dynamic> details) {
     return Details(
-      name: details['name'],
-      email: details['email'],
+      name: details['name'] ?? '',
+      email: details['email'] ?? '',
       dob: details['dob'],
       gender: details['gender'],
     );
@@ -93,11 +93,13 @@ class Account extends AccountEntity {
 
   factory Account.fromFirebase(Map<String, dynamic> account) {
     return Account(
-      isOnline: account['isOnline'],
-      isVerified: account['isVerified'],
-      accountType: AccountTypeX.fromFirebase(account['accountType']),
-      createdAt: account['createdAt'],
-      lastActive: account['lastActive'],
+      isOnline: account['isOnline'] ?? false,
+      isVerified: account['isVerified'] ?? false,
+      accountType: account['accountType'] == null
+          ? AccountType.public
+          : AccountTypeX.fromFirebase(account['accountType']),
+      createdAt: account['createdAt'] ?? .now(),
+      lastActive: account['lastActive'] ?? .now(),
     );
   }
 

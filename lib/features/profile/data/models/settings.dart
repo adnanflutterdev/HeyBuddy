@@ -1,4 +1,4 @@
-import 'package:hey_buddy/features/auth/domain/entity/settings_entity.dart';
+import 'package:hey_buddy/features/profile/domain/entity/settings_entity.dart';
 
 extension AllowMessagesFromX on AllowMessagesFrom {
   static AllowMessagesFrom fromFirebase(String allowMessagesFrom) {

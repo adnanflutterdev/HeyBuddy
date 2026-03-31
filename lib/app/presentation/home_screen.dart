@@ -38,7 +38,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final tabIndex = ref.watch(tabProvider);
     return Scaffold(
-      appBar: _buildAppbar() as PreferredSizeWidget,
+      appBar: _buildAppbar(tabIndex) as PreferredSizeWidget?,
       body: SafeArea(
         child: Column(
           children: [
@@ -61,7 +61,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildAppbar() {
+  Widget? _buildAppbar(int tabIndex) {
+    if (tabIndex == 1) {
+      return null;
+    }
     return CustomAppBar(
       leading: const AppLogo(),
       title: ('Hey ', 'Buddy'),
@@ -94,7 +97,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               _pageController.animateToPage(
                 index,
                 duration: Duration(milliseconds: (diff * 250).clamp(250, 600)),
-                curve: Curves.easeInBack,
+                curve: Curves.easeIn,
               );
             },
             child: Container(

@@ -1,4 +1,4 @@
-import 'package:hey_buddy/features/auth/domain/entity/security_entity.dart';
+import 'package:hey_buddy/features/profile/domain/entity/security_entity.dart';
 
 class Security extends SecurityEntity {
   Security({required super.token, required super.loginHistory});

@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hey_buddy/features/auth/data/models/analytics.dart';
-import 'package:hey_buddy/features/auth/data/models/security.dart';
-import 'package:hey_buddy/features/auth/data/models/settings.dart';
-import 'package:hey_buddy/features/auth/data/models/user.dart';
+import 'package:hey_buddy/features/profile/data/models/analytics.dart';
+import 'package:hey_buddy/features/profile/data/models/security.dart';
+import 'package:hey_buddy/features/profile/data/models/settings.dart';
+import 'package:hey_buddy/features/profile/data/models/user.dart';
 
 class AuthRemoteDataSource {
   final FirebaseAuth auth;

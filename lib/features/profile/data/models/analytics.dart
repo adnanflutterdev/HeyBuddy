@@ -1,4 +1,4 @@
-import 'package:hey_buddy/features/auth/domain/entity/analytics_entity.dart';
+import 'package:hey_buddy/features/profile/domain/entity/analytics_entity.dart';
 
 class Analytics extends AnalyticsEntity {
   Analytics({

@@ -11,7 +11,11 @@ class PrimaryButton extends StatelessWidget {
 
     this.icon,
     this.style,
+    this.width,
     this.iconSize,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.buildFull = false,
     this.isLoading = false,
     this.alignment = .start,
   });
@@ -19,42 +23,53 @@ class PrimaryButton extends StatelessWidget {
   final String label;
 
   final IconData? icon;
+  final double? width;
+  final bool buildFull;
   final bool isLoading;
   final double? iconSize;
   final TextStyle? style;
   final IconAlignment alignment;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      onPressed: isLoading ? null : onPressed,
-      label: StrokeText(
-        text: label,
-        style:
-            style ??
-            context.style.h1.copyWith(
-              color: context.colors.neonGreen,
-              fontFamily: 'Joti',
-            ),
-      ),
+    return SizedBox(
+      width: width ?? (buildFull ? double.infinity : null),
+      child: ElevatedButton.icon(
+        onPressed: isLoading ? null : onPressed,
+        label: StrokeText(
+          text: label,
+          style:
+              style ??
+              context.style.h1.copyWith(
+                color: foregroundColor ?? context.colors.neonGreen,
+                fontFamily: 'Joti',
+              ),
+        ),
 
-      icon: isLoading
-          ? SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(color: context.colors.neonGreen),
-            )
-          : (icon != null)
-          ? Icon(icon)
-          : null,
+        icon: isLoading
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  color: context.colors.neonGreen,
+                ),
+              )
+            : (icon != null)
+            ? Icon(icon)
+            : null,
 
-      style: ElevatedButton.styleFrom(
-        backgroundColor: context.colors.neonBlue,
-        shape: RoundedRectangleBorder(borderRadius: .circular(8)),
-        iconAlignment: alignment,
-        iconSize: iconSize,
-        iconColor: context.colors.neonGreen,
-        disabledBackgroundColor: context.colors.neonBlue,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor ?? context.colors.neonBlue,
+          shape: RoundedRectangleBorder(borderRadius: .circular(8)),
+          iconAlignment: alignment,
+          iconSize: iconSize,
+          iconColor: foregroundColor ?? context.colors.neonGreen,
+          disabledBackgroundColor: context.colors.neonBlue.withValues(
+            alpha: 0.5,
+          ),
+        ),
       ),
     );
   }

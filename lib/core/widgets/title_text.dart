@@ -3,15 +3,22 @@ import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 
 class TitleText extends StatelessWidget {
-  const TitleText({super.key, required this.text, this.fontSize});
+  const TitleText({
+    super.key,
+    required this.text,
+    this.fontSize,
+    this.overflow = .visible,
+  });
   final (String, String) text;
   final double? fontSize;
+  final TextOverflow overflow;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         RichText(
+          overflow: overflow,
           text: TextSpan(
             style: TextStyle(
               foreground: Paint()
@@ -32,6 +39,7 @@ class TitleText extends StatelessWidget {
           ),
         ),
         RichText(
+          overflow: overflow,
           text: TextSpan(
             children: [
               TextSpan(

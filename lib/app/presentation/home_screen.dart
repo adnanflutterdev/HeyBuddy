@@ -3,13 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/app/model/tab_model.dart';
 import 'package:hey_buddy/app/riverpod/tab_provider.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
+import 'package:hey_buddy/config/extensions/name_split_extention.dart';
 import 'package:hey_buddy/config/extensions/size_extention.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/widgets/app_logo.dart';
 import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
 import 'package:hey_buddy/features/chat/presentation/pages/chat_screen.dart';
 import 'package:hey_buddy/features/post/presentation/pages/post_screen.dart';
+import 'package:hey_buddy/features/profile/data/models/user.dart';
 import 'package:hey_buddy/features/profile/presentation/pages/profile_screen.dart';
+import 'package:hey_buddy/features/profile/presentation/riverpod/user_data_provider.dart';
 import 'package:hey_buddy/features/video/presentation/pages/video_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -62,14 +65,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget? _buildAppbar(int tabIndex) {
+    final userRef = ref.watch(userProvider);
+
+    UserModel? user = userRef.value as UserModel?;
+    (String, String) title = ('Hey ', 'Buddy');
+    if (tabIndex == 3) {
+      if (user != null) {
+        title = user.details.name.splitName;
+      }
+    }
     if (tabIndex == 1) {
       return null;
     }
     return CustomAppBar(
       leading: const AppLogo(),
-      title: ('Hey ', 'Buddy'),
+      title: title,
+      fontSize: (tabIndex == 3 && user != null) ? 20 : null,
       actions: [
-        IconButton(onPressed: () {}, icon: const Icon(Icons.add)),
+        if (tabIndex == 3)
+          IconButton(onPressed: () {}, icon: const Icon(Icons.edit))
+        else
+          IconButton(onPressed: () {}, icon: const Icon(Icons.add)),
         IconButton(onPressed: () {}, icon: const Icon(Icons.notifications)),
       ],
     );

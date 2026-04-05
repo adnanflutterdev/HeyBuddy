@@ -6,6 +6,18 @@ extension AccountTypeX on AccountType {
   }
 }
 
+extension GenderX on Gender {
+  static Gender fromFirebase(String gender) {
+    return Gender.values.firstWhere((type) => type.name == gender);
+  }
+}
+
+extension InterestX on Interest {
+  static Interest fromFirebase(String interest) {
+    return Interest.values.firstWhere((type) => type.name == interest);
+  }
+}
+
 class UserModel extends UserEntity {
   UserModel({
     required super.uid,
@@ -63,7 +75,9 @@ class Details extends DetailsEntity {
       name: details['name'] ?? '',
       email: details['email'] ?? '',
       dob: details['dob'],
-      gender: details['gender'],
+      gender: details['gender'] != null
+          ? GenderX.fromFirebase(details['gender'])
+          : null,
     );
   }
 
@@ -143,7 +157,9 @@ class Profile extends ProfileEnity {
       location: profile['location'],
       website: profile['website'],
       interests: profile['interests'] != null
-          ? List<String>.from(profile['interests'])
+          ? (profile['interests'] as List<dynamic>)
+                .map((interest) => InterestX.fromFirebase(interest))
+                .toList()
           : null,
     );
   }
@@ -155,7 +171,7 @@ class Profile extends ProfileEnity {
       "bio": bio,
       "location": location,
       "website": website,
-      "interests": interests,
+      "interests": interests?.map((interest) => interest.name).toList() ?? [],
     };
   }
 }

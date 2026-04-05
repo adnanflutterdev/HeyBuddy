@@ -2,6 +2,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum AccountType { public, private, friendsOnly }
 
+enum Gender { male, female, others }
+
+enum Interest {
+  tech,
+  creativity,
+  arts,
+  entertainment,
+  lifestyle,
+  sports,
+  gaming,
+  food,
+  business,
+  science,
+  travel,
+}
+
 abstract class UserEntity {
   final String uid;
   final ProfileEnity profile;
@@ -14,14 +30,13 @@ abstract class UserEntity {
     required this.account,
     required this.details,
   });
-
 }
 
 abstract class DetailsEntity {
   final String name;
   final String email;
   final Timestamp? dob;
-  final String? gender;
+  final Gender? gender;
   DetailsEntity({
     required this.name,
     required this.email,
@@ -51,7 +66,7 @@ abstract class ProfileEnity {
   final String? bio;
   final String? location;
   final String? website;
-  final List<String>? interests;
+  final List<Interest>? interests;
   ProfileEnity({
     this.profileImage,
     this.coverImage,

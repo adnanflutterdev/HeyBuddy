@@ -12,6 +12,7 @@ import 'package:hey_buddy/features/chat/presentation/pages/chat_screen.dart';
 import 'package:hey_buddy/features/post/presentation/pages/post_screen.dart';
 import 'package:hey_buddy/features/profile/data/models/user.dart';
 import 'package:hey_buddy/features/profile/presentation/pages/profile_screen.dart';
+import 'package:hey_buddy/features/profile/presentation/riverpod/toggle_edit_provider.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/user_data_provider.dart';
 import 'package:hey_buddy/features/video/presentation/pages/video_screen.dart';
 
@@ -66,6 +67,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget? _buildAppbar(int tabIndex) {
     final userRef = ref.watch(userProvider);
+    final canEdit = ref.watch(toggleEditProvider);
 
     UserModel? user = userRef.value as UserModel?;
     (String, String) title = ('Hey ', 'Buddy');
@@ -83,7 +85,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       fontSize: (tabIndex == 3 && user != null) ? 20 : null,
       actions: [
         if (tabIndex == 3)
-          IconButton(onPressed: () {}, icon: const Icon(Icons.edit))
+          IconButton(
+            onPressed: () {
+              ref.read(toggleEditProvider.notifier).toggleEdit();
+            },
+            icon: Icon(canEdit ? Icons.close : Icons.edit),
+          )
         else
           IconButton(onPressed: () {}, icon: const Icon(Icons.add)),
         IconButton(onPressed: () {}, icon: const Icon(Icons.notifications)),

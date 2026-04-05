@@ -77,8 +77,27 @@ class AppValidators {
 
     return null;
   }
-}
-// mohammadadnan8bb805 @ gmail . com
 
-// Patern grouping
-// (: __Group Patern Here__ )
+  static String? address(String? value) {
+    if (value != null && value.trim().length < 5) {
+      return 'Address must be at least 5 characters';
+    }
+
+    if (value != null && value.trim().length > 50) {
+      return 'Address must be less than 50 characters';
+    }
+
+    return null;
+  }
+  static String? bio(String? value) {
+    if (value != null && value.trim().length < 5) {
+      return 'Bio must be at least 5 characters';
+    }
+
+    if (value != null && value.trim().length > 200) {
+      return 'Bio must be less than 200 characters';
+    }
+
+    return null;
+  }
+}

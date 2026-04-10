@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
@@ -10,6 +10,7 @@ import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/app_validators.dart';
+import 'package:hey_buddy/core/utils/messenger.dart';
 import 'package:hey_buddy/core/widgets/app_chip.dart';
 import 'package:hey_buddy/core/widgets/app_logo.dart';
 import 'package:hey_buddy/core/widgets/app_text_field.dart';
@@ -19,6 +20,7 @@ import 'package:hey_buddy/features/auth/presentation/riverpod/auth_provider.dart
 import 'package:hey_buddy/features/profile/data/models/user.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/toggle_edit_provider.dart';
+import 'package:hey_buddy/features/profile/presentation/riverpod/update_user_data_provider.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/user_data_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
@@ -35,10 +37,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   late TextEditingController _nameController;
   late TextEditingController _dobController;
   late TextEditingController _locationController;
+  late TextEditingController _websiteController;
   late TextEditingController _bioController;
-  final ValueNotifier<List<Interest>> _interests = .new([]);
+
   final ValueNotifier<File?> _coverImage = .new(null);
   final ValueNotifier<File?> _profileImage = .new(null);
+  final ValueNotifier<List<Interest>> _interests = .new([]);
+
+  final _formKey = GlobalKey<FormState>();
 
   DateTime? _selectedDob;
   Gender? _selectedGender;
@@ -50,6 +56,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _dobController = .new();
     _locationController = .new();
     _bioController = .new();
+    _websiteController = .new();
   }
 
   @override
@@ -57,6 +64,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _nameController.dispose();
     _dobController.dispose();
     _locationController.dispose();
+    _websiteController.dispose();
     _bioController.dispose();
     _interests.dispose();
     _coverImage.dispose();
@@ -64,71 +72,119 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     super.dispose();
   }
 
+  void pickFromCamera() async {
+    final result = await ImagePicker().pickImage(source: .camera);
+    if (result != null) {
+      AppNavigator.pop(File(result.path));
+    } else {
+      AppNavigator.pop(null);
+    }
+  }
+
+  void pickFromGallery() async {
+    final result = await ImagePicker().pickImage(
+      source: .gallery,
+      requestFullMetadata: true,
+    );
+    if (result != null) {
+      AppNavigator.pop(File(result.path));
+    } else {
+      AppNavigator.pop(null);
+    }
+  }
+
   Future<File?> showSelectionImageSource() async {
     return await showModalBottomSheet<File?>(
       context: context,
       builder: (context) {
-        return Container(
-          color: context.colors.appbar,
-          padding: AppPadding.p16,
-          child: Row(
-            spacing: 15,
-            children: [
-              _buildImageSourceButton(
-                onPressed: () async {
-                  final result = await ImagePicker().pickImage(source: .camera);
-                  if (result != null) {
-                    AppNavigator.pop(File(result.path));
-                  } else {
-                    AppNavigator.pop(null);
-                  }
-                },
-                icon: Icons.camera_alt,
-                label: 'Camera',
-              ),
-              _buildImageSourceButton(
-                onPressed: () async {
-                  final result = await ImagePicker().pickImage(
-                    source: .gallery,
-                    requestFullMetadata: true,
-                  );
-                  if (result != null) {
-                    AppNavigator.pop(File(result.path));
-                  } else {
-                    AppNavigator.pop(null);
-                  }
-                },
-                icon: Icons.folder,
-                label: 'Gallery',
-              ),
-            ],
+        return SafeArea(
+          child: Container(
+            color: context.colors.appbar,
+            padding: AppPadding.p16,
+            child: Row(
+              spacing: 15,
+              children: [
+                _buildImageSourceButton(
+                  onPressed: pickFromCamera,
+                  icon: Icons.camera_alt,
+                  label: 'Camera',
+                ),
+                _buildImageSourceButton(
+                  onPressed: pickFromGallery,
+                  icon: Icons.folder,
+                  label: 'Gallery',
+                ),
+              ],
+            ),
           ),
         );
       },
     );
   }
 
+  void updateUserData() async {
+    if (_formKey.currentState!.validate()) {
+      //
+      _formKey.currentState?.save();
+
+      Details prevDetails = ref.read(userProvider).value!.details as Details;
+      Profile prevProfile = ref.read(userProvider).value!.profile as Profile;
+
+      Details details = Details(
+        name: _nameController.text.trim(),
+        email: prevDetails.email,
+        dob: _selectedDob != null
+            ? Timestamp.fromDate(_selectedDob!)
+            : prevDetails.dob,
+        gender: _selectedGender ?? prevDetails.gender,
+      );
+
+      Profile profile = Profile(
+        profileImage: prevProfile.profileImage,
+        coverImage: prevProfile.coverImage,
+        bio: _bioController.text.trim(),
+        location: _locationController.text.trim(),
+        website: _websiteController.text.trim(),
+        interests: _interests.value,
+      );
+
+      final result = await ref
+          .read(updateUserDataProvider.notifier)
+          .updateUserData(details, profile);
+
+      if (mounted) {
+        showMessenger(context, result: result);
+        ref.read(toggleEditProvider.notifier).toggleEdit();
+        final _ = ref.refresh(userProvider);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final userRef = ref.watch(userProvider);
     final editRef = ref.watch(toggleEditProvider);
+    final updateRef = ref.watch(updateUserDataProvider);
 
     return Scaffold(
       body: userRef.when(
         data: (user) {
-          return ListView(
-            padding: AppPadding.p12,
-            children: [
-              _buildProfile(user.profile, editRef),
-              AppSpacing.h16,
-              _buildUserDetails(user.details, editRef),
-              AppSpacing.h16,
-              _buildProfileDetails(user.profile, editRef),
-              AppSpacing.h16,
-              _buildAccountInfo(user.account),
-              AppSpacing.h16,
-              _buildLogoutButton(),
-            ],
+          return Form(
+            key: _formKey,
+            child: ListView(
+              padding: AppPadding.p12,
+              children: [
+                _buildProfile(user.profile, editRef),
+                AppSpacing.h16,
+                _buildUserDetails(user.details, editRef),
+                AppSpacing.h16,
+                _buildProfileDetails(user.profile, editRef),
+                AppSpacing.h16,
+                _buildAccountInfo(user.account),
+                AppSpacing.h16,
+                _buildLogoutButton(),
+              ],
+            ),
           );
         },
         error: (error, stackTrace) {
@@ -138,10 +194,28 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           return const Center(child: CircularProgressIndicator());
         },
       ),
-      floatingActionButton: editRef
-          ? PrimaryButton(onPressed: () {}, label: 'Save')
-          : null,
+      floatingActionButton: _buildSaveButton(editRef, updateRef),
     );
+  }
+
+  Widget? _buildSaveButton(bool canEdit, AsyncValue updateRef) {
+    return canEdit
+        ? updateRef.when(
+            data: (result) {
+              return PrimaryButton(onPressed: updateUserData, label: 'Save');
+            },
+            error: (_, _) {
+              return null;
+            },
+            loading: () {
+              return const PrimaryButton(
+                onPressed: null,
+                isLoading: true,
+                label: 'Save',
+              );
+            },
+          )
+        : null;
   }
 
   Widget _buildProfile(ProfileEnity profile, bool canEdit) {
@@ -340,14 +414,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   Expanded(
                     child: _buildInfoCol(
                       heading: 'DOB',
-                      text: dobString ?? 'N/A',
+                      text: dobString ?? '',
                       child: canEdit ? _dobField(dob) : null,
                     ),
                   ),
                   Expanded(
                     child: _buildInfoCol(
                       heading: 'Gender',
-                      text: details.gender?.name.capitalizeFirst ?? 'N/A',
+                      text: details.gender?.name.capitalizeFirst ?? '',
                       child: canEdit ? _buildGender(details.gender) : null,
                     ),
                   ),
@@ -423,6 +497,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget _buildProfileDetails(ProfileEnity profile, bool canEdit) {
     _locationController.text = profile.location ?? '';
     _bioController.text = profile.bio ?? '';
+    _interests.value = profile.interests ?? [];
     return Column(
       crossAxisAlignment: .start,
       children: [
@@ -445,18 +520,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             spacing: 12,
             crossAxisAlignment: .start,
             children: [
-              _buildInfoCol(
-                heading: 'Location',
-                text: profile.location ?? 'N/A',
-                child: canEdit ? _locationField() : null,
-              ),
-              // if (profile.interests == null || profile.interests!.isNotEmpty)
-              //   _buildInfoCol(heading: 'Interests', text: 'N/A')
-              // else
               _buildInterests(profile.interests ?? [], canEdit),
               _buildInfoCol(
+                heading: 'Location',
+                text: profile.location ?? '',
+                child: canEdit ? _locationField() : null,
+              ),
+              _buildInfoCol(
+                heading: 'Website',
+                text: profile.website ?? '',
+                child: canEdit ? _websiteField() : null,
+              ),
+              _buildInfoCol(
                 heading: 'Bio',
-                text: profile.bio ?? 'N/A',
+                text: profile.bio ?? '',
                 child: canEdit ? _bioField() : null,
               ),
             ],
@@ -470,6 +547,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return AppTextField(
       controller: _locationController,
       validator: AppValidators.address,
+    );
+  }
+
+  Widget _websiteField() {
+    return AppTextField(
+      controller: _websiteController,
+      validator: AppValidators.url,
     );
   }
 
@@ -518,13 +602,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             _interests.value = [...newInterests];
                           }
                         : null,
-                    icon: canEdit
-                        ? contains
-                              ? Icons.check
-                              : Icons.add
-                        : null,
+                    icon: canEdit ? (contains ? Icons.check : Icons.add) : null,
                     radius: contains ? 15 : null,
-                    foregroundColor: contains ? context.colors.neonGreen : null,
+                    foregroundColor: (contains && canEdit)
+                        ? context.colors.neonGreen
+                        : null,
                   );
                 }).toList(),
               );
@@ -596,7 +678,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           text: heading,
           style: context.style.b1.copyWith(color: context.colors.neonGreen),
         ),
-        child ?? Text(text, style: context.style.h3),
+        child ?? Text(text.isEmpty ? 'N/A' : text, style: context.style.h3),
       ],
     );
   }

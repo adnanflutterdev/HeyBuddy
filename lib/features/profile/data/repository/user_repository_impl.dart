@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/features/profile/data/data_sources/user_remote_data_source.dart';
 import 'package:hey_buddy/features/profile/data/models/user.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
@@ -14,5 +16,23 @@ class UserRepositoryImpl extends UserRepository {
     UserModel user = UserModel.fromFirebase(doc ?? {});
 
     return user;
+  }
+
+  @override
+  Future<Result> updateUserData(
+    DetailsEntity details,
+    ProfileEnity profile,
+  ) async {
+    try {
+      await remote.updateUserData(details, profile);
+      return Result(success: true, message: 'Changes saved successfully');
+    } on FirebaseException catch (e) {
+      return Result(
+        success: false,
+        message: e.message ?? 'Failed to update changes',
+      );
+    } catch (e) {
+      return Result(success: false, message: 'Something went wrong!!!');
+    }
   }
 }

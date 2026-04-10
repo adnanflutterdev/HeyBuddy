@@ -1,7 +1,7 @@
-import 'package:hey_buddy/features/auth/domain/entity/auth_response_entity.dart';
+import 'package:hey_buddy/core/model/result.dart';
 
 abstract class AuthRepository {
-  Future<AuthResponseEntity> login(String email, String password);
-  Future<AuthResponseEntity> signup(String name, String email, String password);
+  Future<Result> login(String email, String password);
+  Future<Result> signup(String name, String email, String password);
   Future<void> logout();
 }

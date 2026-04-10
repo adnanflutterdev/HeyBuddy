@@ -82,7 +82,7 @@ class Details extends DetailsEntity {
   }
 
   Map<String, dynamic> toFirebase() {
-    return {"name": name, "email": email, "dob": dob, "gender": gender};
+    return {"name": name, "email": email, "dob": dob, "gender": gender?.name};
   }
 }
 

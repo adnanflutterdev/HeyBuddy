@@ -45,7 +45,7 @@ class AppChip extends StatelessWidget {
                   style: context.style.bs1.copyWith(color: foregroundColor),
                 ),
               ),
-              Icon(icon, size: 18, color: foregroundColor),
+              if (icon != null) Icon(icon, size: 18, color: foregroundColor),
             ],
           ),
         ),

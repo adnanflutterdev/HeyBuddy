@@ -72,6 +72,6 @@ class AppLightColors {
   static const Color success = Color(0xff16A34A);
   static const Color onSuccess = Color(0xffDCFCE7);
 
-  static const Color neutral = Color(0xff6B7280);
-  static const Color onNeutral = Color(0xffF3F4F6);
+  static const Color neutral = Color(0xffE5E7EB);
+  static const Color onNeutral = Color(0xff374151);
 }

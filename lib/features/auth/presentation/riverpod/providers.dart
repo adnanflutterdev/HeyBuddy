@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hey_buddy/core/utils/riverpod/firebase_provider.dart';
+import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/features/auth/domain/usecases/login_usecase.dart';
 import 'package:hey_buddy/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:hey_buddy/features/auth/domain/usecases/signup_usecase.dart';

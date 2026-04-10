@@ -79,23 +79,45 @@ class AppValidators {
   }
 
   static String? address(String? value) {
-    if (value != null && value.trim().length < 5) {
+    if (value == null || value.trim().isEmpty) {
+      return null;
+    }
+
+    if (value.trim().length < 5) {
       return 'Address must be at least 5 characters';
     }
 
-    if (value != null && value.trim().length > 50) {
+    if (value.trim().length > 50) {
       return 'Address must be less than 50 characters';
     }
 
     return null;
   }
+
   static String? bio(String? value) {
-    if (value != null && value.trim().length < 5) {
+    if (value == null || value.trim().isEmpty) {
+      return null;
+    }
+    if (value.trim().length < 5) {
       return 'Bio must be at least 5 characters';
     }
 
-    if (value != null && value.trim().length > 200) {
+    if (value.trim().length > 200) {
       return 'Bio must be less than 200 characters';
+    }
+
+    return null;
+  }
+
+  static String? url(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return null;
+    }
+    final regExp = RegExp(
+      r'^(https?:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}([\/^\s]*)?$',
+    );
+    if (!regExp.hasMatch(value)) {
+      return 'Enter a valid url';
     }
 
     return null;

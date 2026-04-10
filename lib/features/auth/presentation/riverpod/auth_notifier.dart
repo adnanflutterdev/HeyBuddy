@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hey_buddy/features/auth/domain/entity/auth_response_entity.dart';
+import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/features/auth/domain/usecases/login_usecase.dart';
 import 'package:hey_buddy/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:hey_buddy/features/auth/domain/usecases/signup_usecase.dart';
 
-class AuthNotifier extends StateNotifier<AsyncValue<AuthResponseEntity?>> {
+class AuthNotifier extends StateNotifier<AsyncValue<Result?>> {
   final LoginUsecase _loginUsecase;
   final SignupUsecase _signupUsecase;
   final LogoutUsecase _logoutUsecase;

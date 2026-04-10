@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:hey_buddy/features/auth/domain/entity/auth_response_entity.dart';
+import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/features/auth/domain/repository/auth_repository.dart';
 import 'package:hey_buddy/features/auth/data/data_sources/auth_remote_data_source.dart';
 
@@ -9,41 +9,35 @@ class AuthRepositoryImpl extends AuthRepository {
   AuthRepositoryImpl(this.remote);
 
   @override
-  Future<AuthResponseEntity> login(String email, String password) async {
+  Future<Result> login(String email, String password) async {
     try {
       final response = await remote.login(email, password);
       if (response.user == null) {
-        return AuthResponseEntity.failure('User is null');
+        return Result.failure('User is null');
       } else {
-        return AuthResponseEntity.success('Login success');
+        return Result.success('Login success');
       }
     } on FirebaseAuthException catch (e) {
-      return AuthResponseEntity.failure(e.message ?? 'Falied to login');
+      return Result.failure(e.message ?? 'Falied to login');
     } catch (e) {
-      return AuthResponseEntity.failure('Something went wrong');
+      return Result.failure('Something went wrong');
     }
   }
 
   @override
-  Future<AuthResponseEntity> signup(
-    String name,
-    String email,
-    String password,
-  ) async {
+  Future<Result> signup(String name, String email, String password) async {
     try {
       final response = await remote.signup(name, email, password);
       if (response.user == null) {
-        return AuthResponseEntity.failure('User is null');
+        return Result.failure('User is null');
       } else {
         await remote.saveUser(response.user!.uid, name, email);
-        return AuthResponseEntity.success('Signup success');
+        return Result.success('Signup success');
       }
     } on FirebaseAuthException catch (e) {
-      return AuthResponseEntity.failure(
-        e.message ?? 'Falied to create account',
-      );
+      return Result.failure(e.message ?? 'Falied to create account');
     } catch (e) {
-      return AuthResponseEntity.failure('Something went wrong');
+      return Result.failure('Something went wrong');
     }
   }
 

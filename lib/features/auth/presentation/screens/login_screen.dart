@@ -4,6 +4,8 @@ import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_validators.dart';
+import 'package:hey_buddy/core/model/result.dart';
+import 'package:hey_buddy/core/utils/messenger.dart';
 import 'package:hey_buddy/core/widgets/app_logo.dart';
 import 'package:hey_buddy/core/widgets/app_text_field.dart';
 import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
@@ -233,18 +235,20 @@ class _LoginScreenState extends State<LoginScreen>
       builder: (context, ref, child) {
         ref.listen(authProvider, (previous, next) {
           next.when(
-            data: (response) {
-              if (response == null) return;
-              if (!response.success) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(response.message)));
+            data: (result) {
+              if (result == null) return;
+              if (!result.success) {
+                showMessenger(context, result: result);
               }
             },
             error: (error, stackTrace) {
-              ScaffoldMessenger.of(
+              showMessenger(
                 context,
-              ).showSnackBar(SnackBar(content: Text(error.toString())));
+                result: Result(
+                  success: false,
+                  message: 'Something went wrong!!!',
+                ),
+              );
             },
             loading: () {},
           );

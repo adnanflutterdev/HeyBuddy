@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hey_buddy/core/utils/riverpod/firebase_provider.dart';
+import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
+import 'package:hey_buddy/features/profile/domain/usecases/update_user_data_usecase.dart';
 import 'package:hey_buddy/features/profile/domain/usecases/user_data_usecase.dart';
 import 'package:hey_buddy/features/profile/data/repository/user_repository_impl.dart';
 import 'package:hey_buddy/features/profile/data/data_sources/user_remote_data_source.dart';
@@ -19,4 +20,9 @@ final userRepositoryProvider = Provider((ref) {
 final userDataUsecaseProvider = Provider((ref) {
   final userRepository = ref.read(userRepositoryProvider);
   return UserDataUsecase(userRepository);
+});
+
+final updateUserDataUsecaseProvider = Provider((ref) {
+  final userRepository = ref.read(userRepositoryProvider);
+  return UpdateUserDataUsecase(userRepository);
 });

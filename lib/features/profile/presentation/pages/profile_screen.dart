@@ -10,6 +10,7 @@ import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/app_validators.dart';
+import 'package:hey_buddy/core/utils/file_uploader.dart';
 import 'package:hey_buddy/core/utils/messenger.dart';
 import 'package:hey_buddy/core/widgets/app_chip.dart';
 import 'package:hey_buddy/core/widgets/app_logo.dart';
@@ -123,6 +124,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   void updateUserData() async {
+    // await FileUploader.uploadFiles([_coverImage.value!], .image, ref);
     if (_formKey.currentState!.validate()) {
       //
       _formKey.currentState?.save();
@@ -228,7 +230,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ValueListenableBuilder(
             valueListenable: _coverImage,
             builder: (context, coverImage, child) {
-              if (coverImage != null) {
+              if (canEdit && coverImage != null) {
                 return _buildCoverImage(
                   image: DecorationImage(
                     image: FileImage(coverImage),
@@ -258,11 +260,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           if (canEdit)
             Positioned(
               right: 0,
-              child: _buildIconButton(
-                onPressed: () async {
-                  _coverImage.value = await showSelectionImageSource();
+              child: ValueListenableBuilder(
+                valueListenable: _coverImage,
+                builder: (context, coverImage, child) {
+                  return _buildIconButton(
+                    onPressed: () async {
+                      _coverImage.value = await showSelectionImageSource();
+                    },
+                    haveImage: coverImage != null || profile.coverImage != null,
+                  );
                 },
-                image: profile.coverImage,
               ),
             ),
 
@@ -271,53 +278,58 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             left: 0,
             right: 0,
             bottom: 0,
-            child: SizedBox(
-              width: 120,
-              height: 120,
-              child: Stack(
-                alignment: .center,
-                children: [
-                  ValueListenableBuilder(
-                    valueListenable: _profileImage,
-                    builder: (context, profileImage, child) {
-                      if (profileImage != null) {
-                        return _buildProfileImage(
+            child: ValueListenableBuilder(
+              valueListenable: _profileImage,
+              builder: (context, profileImage, child) {
+                return SizedBox(
+                  width: 120,
+                  height: 120,
+                  child: Stack(
+                    alignment: .center,
+                    children: [
+                      if (canEdit && profileImage != null)
+                        _buildProfileImage(
                           DecorationImage(
                             image: FileImage(profileImage),
                             fit: .cover,
                           ),
-                        );
-                      }
-                      return CachedNetworkImage(
-                        imageUrl: profile.profileImage ?? '',
-                        placeholder: (context, url) {
-                          return const AppLogo(size: 120);
-                        },
-                        imageBuilder: (context, imageProvider) {
-                          return _buildProfileImage(
-                            DecorationImage(image: imageProvider, fit: .cover),
-                          );
-                        },
-                        errorWidget: (context, url, error) {
-                          return const AppLogo(size: 120);
-                        },
-                      );
-                    },
+                        )
+                      else
+                        CachedNetworkImage(
+                          imageUrl: profile.profileImage ?? '',
+                          placeholder: (context, url) {
+                            return const AppLogo(size: 120);
+                          },
+                          imageBuilder: (context, imageProvider) {
+                            return _buildProfileImage(
+                              DecorationImage(
+                                image: imageProvider,
+                                fit: .cover,
+                              ),
+                            );
+                          },
+                          errorWidget: (context, url, error) {
+                            return const AppLogo(size: 120);
+                          },
+                        ),
+                      if (canEdit)
+                        Positioned(
+                          left: (context.width / 2),
+                          bottom: 0,
+                          child: _buildIconButton(
+                            onPressed: () async {
+                              _profileImage.value =
+                                  await showSelectionImageSource();
+                            },
+                            haveImage:
+                                profileImage != null ||
+                                profile.profileImage != null,
+                          ),
+                        ),
+                    ],
                   ),
-                  if (canEdit)
-                    Positioned(
-                      left: (context.width / 2),
-                      bottom: 0,
-                      child: _buildIconButton(
-                        onPressed: () async {
-                          _profileImage.value =
-                              await showSelectionImageSource();
-                        },
-                        image: profile.profileImage,
-                      ),
-                    ),
-                ],
-              ),
+                );
+              },
             ),
           ),
         ],
@@ -327,7 +339,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Widget _buildIconButton({
     required Function()? onPressed,
-    required String? image,
+    required bool haveImage,
   }) {
     return Material(
       color: context.colors.bg,
@@ -339,7 +351,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         child: Padding(
           padding: AppPadding.p8,
           child: Icon(
-            image == null ? Icons.add_a_photo : Icons.repeat_outlined,
+            haveImage ? Icons.repeat_outlined : Icons.add_a_photo,
             size: 18,
           ),
         ),
@@ -497,7 +509,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget _buildProfileDetails(ProfileEnity profile, bool canEdit) {
     _locationController.text = profile.location ?? '';
     _bioController.text = profile.bio ?? '';
-    _interests.value = profile.interests ?? [];
+    _interests.value = [...?profile.interests];
     return Column(
       crossAxisAlignment: .start,
       children: [

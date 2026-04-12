@@ -13,6 +13,7 @@ class PrimaryButton extends StatelessWidget {
     this.style,
     this.width,
     this.iconSize,
+    this.progress,
     this.backgroundColor,
     this.foregroundColor,
     this.buildFull = false,
@@ -26,6 +27,7 @@ class PrimaryButton extends StatelessWidget {
   final double? width;
   final bool buildFull;
   final bool isLoading;
+  final double? progress;
   final double? iconSize;
   final TextStyle? style;
   final IconAlignment alignment;
@@ -39,7 +41,9 @@ class PrimaryButton extends StatelessWidget {
       child: ElevatedButton.icon(
         onPressed: isLoading ? null : onPressed,
         label: StrokeText(
-          text: label,
+          text: (isLoading && progress != null && progress! < 100)
+              ? '${progress!.toStringAsFixed(2)} %'
+              : label,
           style:
               style ??
               context.style.h1.copyWith(
@@ -53,6 +57,9 @@ class PrimaryButton extends StatelessWidget {
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(
+                  value: (progress != null && progress! > 0)
+                      ? (progress! / 100)
+                      : null,
                   color: context.colors.neonGreen,
                 ),
               )

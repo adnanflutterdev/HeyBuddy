@@ -25,14 +25,11 @@ class UserRepositoryImpl extends UserRepository {
   ) async {
     try {
       await remote.updateUserData(details, profile);
-      return Result(success: true, message: 'Changes saved successfully');
+      return Result.success('Changes saved successfully');
     } on FirebaseException catch (e) {
-      return Result(
-        success: false,
-        message: e.message ?? 'Failed to update changes',
-      );
+      return Result.failure(e.message ?? 'Failed to update changes');
     } catch (e) {
-      return Result(success: false, message: 'Something went wrong!!!');
+      return Result.failure('Something went wrong!!!');
     }
   }
 }

@@ -10,6 +10,9 @@ import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/app_validators.dart';
+import 'package:hey_buddy/core/model/result.dart';
+import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
+import 'package:hey_buddy/core/riverpod/upload_progress_provider.dart';
 import 'package:hey_buddy/core/utils/file_uploader.dart';
 import 'package:hey_buddy/core/utils/messenger.dart';
 import 'package:hey_buddy/core/widgets/app_chip.dart';
@@ -124,13 +127,41 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   void updateUserData() async {
-    // await FileUploader.uploadFiles([_coverImage.value!], .image, ref);
     if (_formKey.currentState!.validate()) {
       //
       _formKey.currentState?.save();
 
       Details prevDetails = ref.read(userProvider).value!.details as Details;
       Profile prevProfile = ref.read(userProvider).value!.profile as Profile;
+
+      String? coverImage = prevProfile.coverImage;
+      String? profileImage = prevProfile.profileImage;
+
+      if (_coverImage.value != null || _profileImage.value != null) {
+        List<File> files = [?_coverImage.value, ?_profileImage.value];
+        List<String> names = [
+          if (_coverImage.value != null) 'coverImage/${ref.read(uidProvider)}',
+          if (_profileImage.value != null)
+            'profileImage/${ref.read(uidProvider)}',
+        ];
+
+        List<String>? urls = await FileUploader.uploadFiles(files, names, ref);
+        if (urls == null || urls.isEmpty) {
+          if (mounted) {
+            showMessenger(
+              context,
+              result: Result.failure('Failed to upload image'),
+            );
+          }
+        } else {
+          if (_coverImage.value != null) {
+            coverImage = urls[0];
+          }
+          if (_profileImage.value != null) {
+            profileImage = urls[_coverImage.value != null ? 1 : 0];
+          }
+        }
+      }
 
       Details details = Details(
         name: _nameController.text.trim(),
@@ -142,12 +173,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       );
 
       Profile profile = Profile(
-        profileImage: prevProfile.profileImage,
-        coverImage: prevProfile.coverImage,
+        coverImage: coverImage,
+        profileImage: profileImage,
+        interests: _interests.value,
         bio: _bioController.text.trim(),
         location: _locationController.text.trim(),
         website: _websiteController.text.trim(),
-        interests: _interests.value,
       );
 
       final result = await ref
@@ -157,6 +188,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       if (mounted) {
         showMessenger(context, result: result);
         ref.read(toggleEditProvider.notifier).toggleEdit();
+        ref.read(uploadProgressProvider.notifier).updateProgress(0);
         final _ = ref.refresh(userProvider);
       }
     }
@@ -166,7 +198,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     final userRef = ref.watch(userProvider);
     final editRef = ref.watch(toggleEditProvider);
-    final updateRef = ref.watch(updateUserDataProvider);
 
     return Scaffold(
       body: userRef.when(
@@ -196,25 +227,27 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           return const Center(child: CircularProgressIndicator());
         },
       ),
-      floatingActionButton: _buildSaveButton(editRef, updateRef),
+      floatingActionButton: _buildSaveButton(editRef),
     );
   }
 
-  Widget? _buildSaveButton(bool canEdit, AsyncValue updateRef) {
+  Widget? _buildSaveButton(bool canEdit) {
     return canEdit
-        ? updateRef.when(
-            data: (result) {
-              return PrimaryButton(onPressed: updateUserData, label: 'Save');
-            },
-            error: (_, _) {
-              return null;
-            },
-            loading: () {
-              return const PrimaryButton(
-                onPressed: null,
-                isLoading: true,
-                label: 'Save',
-              );
+        ? Consumer(
+            builder: (context, ref, child) {
+              final updateRef = ref.watch(updateUserDataProvider);
+              final progress = ref.watch(uploadProgressProvider);
+
+              if (updateRef.isLoading || progress > 0) {
+                return PrimaryButton(
+                  onPressed: null,
+                  isLoading: true,
+                  progress: progress,
+                  label: 'Saving...',
+                );
+              } else {
+                return PrimaryButton(onPressed: updateUserData, label: 'Save');
+              }
             },
           )
         : null;

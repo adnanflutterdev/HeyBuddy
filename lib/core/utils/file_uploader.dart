@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:cloudinary_api/uploader/cloudinary_uploader.dart';
 // ignore: implementation_imports
@@ -8,8 +9,6 @@ import 'package:hey_buddy/core/model/upload_progress.dart';
 import 'package:hey_buddy/core/riverpod/upload_progress_provider.dart';
 import 'package:hey_buddy/keys.dart';
 
-enum FileType { image, video }
-
 class FileUploader {
   static final cloudinary = Cloudinary.fromStringUrl(
     'cloudinary://$cloudinaryApiKey:$cloudinaryApiSecret@$cloudinaryCloudName',
@@ -19,54 +18,64 @@ class FileUploader {
     cloudinary.config.urlConfig.secure = true;
   }
 
-  static Future<void> uploadFiles(
+  static Future<List<String>?> uploadFiles(
     List<File> files,
-    FileType type,
+    List<String> names,
     WidgetRef ref,
   ) async {
-    final uploadNotifier = ref.read(uploadProgressProvider.notifier);
-    Map<int, UploadProgress> uploadProgress = {};
-    final response = await Future.wait(
-      files.asMap().entries.map((entry) async {
-        int index = entry.key;
-        File file = entry.value;
-        return cloudinary.uploader().upload(
-          file,
-          params: UploadParams(
-            publicId: '${type.name}/${file.path}',
-            uniqueFilename: false,
-            overwrite: true,
-            useFilename: true,
-          ),
-          completion: (response) {
-            print(response.rawResponse);
-          },
-          progressCallback: (bytesUploaded, totalBytes) {
-            uploadProgress[index] = UploadProgress(
-              total: totalBytes,
-              uploaded: bytesUploaded,
-            );
-            int totalUploaded = uploadProgress.values.fold(
-              0,
-              (previousValue, element) => previousValue + element.uploaded,
-            );
-            int totalSize = uploadProgress.values.fold(
-              0,
-              (previousValue, element) => previousValue + element.total,
-            );
-            double progress = totalSize == 0
-                ? 0
-                : (totalUploaded / totalSize) * 100;
-            print(progress);
-            uploadNotifier.updateProgress(progress);
-          },
-        );
-      }),
-    );
+    try {
+      final uploadNotifier = ref.read(uploadProgressProvider.notifier);
+      Map<int, UploadProgress> uploadProgress = {};
+      final response = await Future.wait(
+        files.asMap().entries.map((entry) async {
+          int index = entry.key;
+          File file = entry.value;
+          return cloudinary.uploader().upload(
+            file,
+            params: UploadParams(
+              publicId: names[index].split('/').last,
+              uniqueFilename: false,
+              overwrite: true,
+              folder: names[index].split('/').first,
+              useFilename: true,
+            ),
+            progressCallback: (bytesUploaded, totalBytes) {
+              uploadProgress[index] = UploadProgress(
+                total: totalBytes,
+                uploaded: bytesUploaded,
+              );
+              int totalUploaded = uploadProgress.values.fold(
+                0,
+                (previousValue, element) => previousValue + element.uploaded,
+              );
+              int totalSize = uploadProgress.values.fold(
+                0,
+                (previousValue, element) => previousValue + element.total,
+              );
+              double progress = totalSize == 0
+                  ? 0
+                  : (totalUploaded / totalSize) * 100;
+              uploadNotifier.updateProgress(progress);
+            },
+          );
+        }),
+      );
 
-    for (final x in response) {
-      print(x?.rawResponse);
-      print(x?.responseCode);
+      List<String> urls = [];
+
+      for (final r in response) {
+        if (r != null && r.rawResponse != null) {
+          urls.add(jsonDecode(r.rawResponse!)['secure_url']);
+        }
+      }
+      return urls;
+    } catch (err) {
+      return null;
     }
   }
 }
+
+/*
+
+secure_url : https://res.cloudinary.com/hey-buddy/image/upload/v1775986197/coverImage/CnQd4Y8gfsZyqbSHNsbX3HBcU0d2.jpg
+*/

@@ -9,6 +9,7 @@ void showMessenger(
   BuildContext context, {
   required Result result,
   bool showNeutral = false,
+  double extraBottomMargin = 0,
 }) {
   GetColor colors = context.colors;
   Color foregroundColor = colors.onNeutral;
@@ -23,7 +24,7 @@ void showMessenger(
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       behavior: .floating,
-      margin: AppPadding.symmetric(25, 50),
+      margin: AppPadding.symmetric(25, 10 + extraBottomMargin),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(

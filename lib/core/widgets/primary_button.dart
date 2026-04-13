@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
+import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/widgets/stroke_text.dart';
 
 class PrimaryButton extends StatelessWidget {
@@ -12,6 +13,7 @@ class PrimaryButton extends StatelessWidget {
     this.icon,
     this.style,
     this.width,
+    this.height,
     this.iconSize,
     this.progress,
     this.backgroundColor,
@@ -25,6 +27,7 @@ class PrimaryButton extends StatelessWidget {
 
   final IconData? icon;
   final double? width;
+  final double? height;
   final bool buildFull;
   final bool isLoading;
   final double? progress;
@@ -38,6 +41,7 @@ class PrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: width ?? (buildFull ? double.infinity : null),
+      height: height,
       child: ElevatedButton.icon(
         onPressed: isLoading ? null : onPressed,
         label: StrokeText(
@@ -70,6 +74,7 @@ class PrimaryButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor ?? context.colors.neonBlue,
           shape: RoundedRectangleBorder(borderRadius: .circular(8)),
+          padding: AppPadding.symmetric(12, 6),
           iconAlignment: alignment,
           iconSize: iconSize,
           iconColor: foregroundColor ?? context.colors.neonGreen,

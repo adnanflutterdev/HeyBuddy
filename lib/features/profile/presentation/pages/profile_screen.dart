@@ -14,10 +14,12 @@ import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/riverpod/upload_progress_provider.dart';
 import 'package:hey_buddy/core/utils/file_uploader.dart';
+import 'package:hey_buddy/core/widgets/labeled_icon_button.dart';
 import 'package:hey_buddy/core/utils/messenger.dart';
 import 'package:hey_buddy/core/widgets/app_chip.dart';
 import 'package:hey_buddy/core/widgets/app_logo.dart';
 import 'package:hey_buddy/core/widgets/app_text_field.dart';
+import 'package:hey_buddy/core/widgets/material_icon_button.dart';
 import 'package:hey_buddy/core/widgets/primary_button.dart';
 import 'package:hey_buddy/core/widgets/stroke_text.dart';
 import 'package:hey_buddy/features/auth/presentation/riverpod/auth_provider.dart';
@@ -108,12 +110,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             child: Row(
               spacing: 15,
               children: [
-                _buildImageSourceButton(
+                LabeledIconButton(
                   onPressed: pickFromCamera,
                   icon: Icons.camera_alt,
                   label: 'Camera',
                 ),
-                _buildImageSourceButton(
+                LabeledIconButton(
                   onPressed: pickFromGallery,
                   icon: Icons.folder,
                   label: 'Gallery',
@@ -296,11 +298,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               child: ValueListenableBuilder(
                 valueListenable: _coverImage,
                 builder: (context, coverImage, child) {
-                  return _buildIconButton(
+                  return MaterialIconButton(
                     onPressed: () async {
                       _coverImage.value = await showSelectionImageSource();
                     },
-                    haveImage: coverImage != null || profile.coverImage != null,
+                    icon: (coverImage != null || profile.coverImage != null)
+                        ? Icons.repeat_outlined
+                        : Icons.add_a_photo,
                   );
                 },
               ),
@@ -349,14 +353,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         Positioned(
                           left: (context.width / 2),
                           bottom: 0,
-                          child: _buildIconButton(
+                          child: MaterialIconButton(
                             onPressed: () async {
                               _profileImage.value =
                                   await showSelectionImageSource();
                             },
-                            haveImage:
-                                profileImage != null ||
-                                profile.profileImage != null,
+                            icon:
+                                (profileImage != null ||
+                                    profile.profileImage != null)
+                                ? Icons.repeat_outlined
+                                : Icons.add_a_photo,
                           ),
                         ),
                     ],
@@ -366,28 +372,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildIconButton({
-    required Function()? onPressed,
-    required bool haveImage,
-  }) {
-    return Material(
-      color: context.colors.bg,
-      shape: CircleBorder(side: BorderSide(color: context.colors.border)),
-      child: InkWell(
-        onTap: onPressed,
-        customBorder: const CircleBorder(),
-        splashColor: context.colors.disabledText,
-        child: Padding(
-          padding: AppPadding.p8,
-          child: Icon(
-            haveImage ? Icons.repeat_outlined : Icons.add_a_photo,
-            size: 18,
-          ),
-        ),
       ),
     );
   }
@@ -725,28 +709,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
         child ?? Text(text.isEmpty ? 'N/A' : text, style: context.style.h3),
       ],
-    );
-  }
-
-  Widget _buildImageSourceButton({
-    required Function() onPressed,
-    required IconData icon,
-    required String label,
-  }) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Column(
-        mainAxisSize: .min,
-        spacing: 4,
-        children: [
-          Container(
-            decoration: BoxDecoration(shape: .circle, color: context.colors.bg),
-            padding: AppPadding.p8,
-            child: Icon(icon, size: 30),
-          ),
-          Text(label, style: context.style.h3),
-        ],
-      ),
     );
   }
 

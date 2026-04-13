@@ -1,13 +1,14 @@
-import 'dart:convert';
+
 import 'dart:io';
-import 'package:cloudinary_api/uploader/cloudinary_uploader.dart';
-// ignore: implementation_imports
-import 'package:cloudinary_api/src/request/model/uploader_params.dart';
+import 'dart:convert';
+import 'package:hey_buddy/keys.dart';
+// ignore_for_file: implementation_imports
 import 'package:cloudinary_url_gen/cloudinary.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/core/model/upload_progress.dart';
+import 'package:cloudinary_api/uploader/cloudinary_uploader.dart';
+import 'package:cloudinary_api/src/request/model/uploader_params.dart';
 import 'package:hey_buddy/core/riverpod/upload_progress_provider.dart';
-import 'package:hey_buddy/keys.dart';
 
 class FileUploader {
   static final cloudinary = Cloudinary.fromStringUrl(
@@ -74,8 +75,3 @@ class FileUploader {
     }
   }
 }
-
-/*
-
-secure_url : https://res.cloudinary.com/hey-buddy/image/upload/v1775986197/coverImage/CnQd4Y8gfsZyqbSHNsbX3HBcU0d2.jpg
-*/

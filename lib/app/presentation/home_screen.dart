@@ -6,15 +6,20 @@ import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/name_split_extention.dart';
 import 'package:hey_buddy/config/extensions/size_extention.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
+import 'package:hey_buddy/core/const/app_navigator.dart';
+import 'package:hey_buddy/core/const/app_padding.dart';
+import 'package:hey_buddy/core/widgets/labeled_icon_button.dart';
 import 'package:hey_buddy/core/widgets/app_logo.dart';
 import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
 import 'package:hey_buddy/features/chat/presentation/pages/chat_screen.dart';
 import 'package:hey_buddy/features/post/presentation/pages/post_screen.dart';
+import 'package:hey_buddy/features/post/presentation/pages/post_upload_screeen.dart';
 import 'package:hey_buddy/features/profile/data/models/user.dart';
 import 'package:hey_buddy/features/profile/presentation/pages/profile_screen.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/toggle_edit_provider.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/user_data_provider.dart';
 import 'package:hey_buddy/features/video/presentation/pages/video_screen.dart';
+import 'package:hey_buddy/features/video/presentation/pages/video_upload_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -36,6 +41,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  void createNew() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Container(
+            color: context.colors.appbar,
+            padding: AppPadding.p16,
+            child: Row(
+              spacing: 15,
+              children: [
+                LabeledIconButton(
+                  onPressed: () {
+                    AppNavigator.pop();
+                    AppNavigator.push(const PostUploadScreeen());
+                  },
+                  icon: Icons.photo,
+                  label: 'Upload Post',
+                ),
+                LabeledIconButton(
+                  onPressed: () {
+                    AppNavigator.pop();
+                    AppNavigator.push(const VideoUploadScreen());
+                  },
+                  icon: Icons.movie_sharp,
+                  label: 'Upload Video',
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -92,7 +132,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             icon: Icon(canEdit ? Icons.close : Icons.edit),
           )
         else
-          IconButton(onPressed: () {}, icon: const Icon(Icons.add)),
+          IconButton(onPressed: createNew, icon: const Icon(Icons.add)),
         IconButton(onPressed: () {}, icon: const Icon(Icons.notifications)),
       ],
     );

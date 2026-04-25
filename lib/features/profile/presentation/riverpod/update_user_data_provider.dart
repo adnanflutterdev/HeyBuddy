@@ -20,7 +20,7 @@ class UpdateUserDataNotifier extends StateNotifier<AsyncValue> {
       return result;
     } catch (e) {
       state = const AsyncData(null);
-      return Result.failure(e.toString());
+      return Result.failure('Something went wrong');
     }
   }
 }

@@ -34,30 +34,24 @@ class AuthRemoteDataSource {
   }
 
   Future<void> saveUser(String uid, String name, String email) async {
-    UserModel userDto = UserModel.setNewUser(
-      uid: uid,
-      name: name,
-      email: email,
-    );
-
-    SettingsModel settings = SettingsModel.setNewUser();
-    Security security = Security.setNewUser();
-    Analytics analytics = Analytics.setNewUser();
-
     try {
-      await firestore.collection('user').doc(uid).set(userDto.toFirebase());
-      await firestore
-          .collection('settings')
-          .doc(uid)
-          .set(settings.toFirebase());
-      await firestore
-          .collection('security')
-          .doc(uid)
-          .set(security.toFirebase());
-      await firestore
-          .collection('analytics')
-          .doc(uid)
-          .set(analytics.toFirebase());
+      UserModel userDto = UserModel.setNewUser(
+        uid: uid,
+        name: name,
+        email: email,
+      );
+
+      SettingsModel settings = SettingsModel.setNewUser();
+      Security security = Security.setNewUser();
+      Analytics analytics = Analytics.setNewUser();
+
+      DocumentReference ref = firestore.collection('user').doc(uid);
+      await ref.set(userDto.toFirebase());
+
+      CollectionReference metaData = ref.collection('config');
+      await metaData.doc('settings').set(settings.toFirebase());
+      await metaData.doc('security').set(security.toFirebase());
+      await metaData.doc('analytics').set(analytics.toFirebase());
     } catch (_) {}
   }
 }

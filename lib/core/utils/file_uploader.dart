@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'dart:convert';
 import 'package:hey_buddy/keys.dart';
@@ -34,7 +33,7 @@ class FileUploader {
           return cloudinary.uploader().upload(
             file,
             params: UploadParams(
-              publicId: names[index].split('/').last,
+              publicId: names[index].split('/').sublist(1).toString(),
               uniqueFilename: false,
               overwrite: true,
               folder: names[index].split('/').first,

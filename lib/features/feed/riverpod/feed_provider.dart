@@ -29,3 +29,16 @@ final createPostProvider = StateNotifierProvider((ref) {
   );
   return UploadFeedItemNotifier(createPostUsecase);
 });
+
+final allPostIdsProvider = FutureProvider((ref) async {
+  final allPostIdsUsecase = ref.read(allPostIdsUsecaseProvider);
+  return await allPostIdsUsecase();
+});
+
+final postDataProvider = FutureProvider.family<FeedItemEntity?, String>((
+  ref,
+  postId,
+) async {
+  final getPostData = ref.read(getPostDataUsecaseProvider);
+  return await getPostData(postId);
+});

@@ -251,8 +251,8 @@ class Shared extends SharedEntity {
 
   factory Shared.fromJson(Map<String, dynamic> shared) {
     return Shared(
-      originalFeedItemRef: shared['originalFeedItemRef'] as DocumentReference,
-      sharedByRef: shared['sharedByRef'] as DocumentReference,
+      originalFeedItemRef: shared['originalFeedItemRef'] as DocumentReference?,
+      sharedByRef: shared['sharedByRef'] as DocumentReference?,
       sharedText: shared['sharedText'],
       sharedAt: shared['sharedAt'] as Timestamp?,
     );

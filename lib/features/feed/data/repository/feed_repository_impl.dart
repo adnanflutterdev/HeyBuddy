@@ -18,4 +18,22 @@ class FeedRepositoryImpl extends FeedRepository {
       return Result.failure('Failed to create post');
     }
   }
+
+  @override
+  Future<List<String>> getAllPostIds() async {
+    try {
+      return await remote.getAllPostIds();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Future<FeedItemEntity?> getPostData(String id) async {
+    try {
+      return await remote.getPostData(id);
+    } catch (_) {
+      return null;
+    }
+  }
 }

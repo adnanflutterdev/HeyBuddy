@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_colors.dart';
 import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/features/auth/presentation/screens/auth_state_screen.dart';
+import 'package:hey_buddy/features/feed/riverpod/feed_provider.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _SplashScreenState extends ConsumerState<SplashScreen>
     with TickerProviderStateMixin {
   late Animation<double> _scaleAnimation;
   late AnimationController _scaleController;
@@ -24,6 +26,7 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     initScaleAnimation();
     initGradientStopAnimation();
+    initPostFeed();
   }
 
   void initScaleAnimation() {
@@ -58,6 +61,10 @@ class _SplashScreenState extends State<SplashScreen>
     _gradientStopController.addStatusListener(animationListener);
 
     _gradientStopController.repeat();
+  }
+
+  void initPostFeed() async {
+    ref.read(allPostIdsProvider);
   }
 
   @override

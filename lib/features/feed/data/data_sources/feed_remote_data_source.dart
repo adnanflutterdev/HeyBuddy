@@ -13,4 +13,17 @@ class FeedRemoteDataSource {
         .doc(feedItem.id)
         .set((feedItem as FeedItem).toJson());
   }
+
+  Future<List<String>> getAllPostIds() async {
+    final querySnapshot = await firestore.collection('post').get();
+    return querySnapshot.docs.map((e) => e.id).toList();
+  }
+
+  Future<FeedItemEntity> getPostData(String id) async {
+    return await firestore
+        .collection('post')
+        .doc(id)
+        .get()
+        .then((data) => FeedItem.fromJson(data.data() ?? {}));
+  }
 }

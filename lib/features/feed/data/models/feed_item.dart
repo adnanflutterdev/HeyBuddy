@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hey_buddy/core/model/image_upload_data.dart';
 import 'package:hey_buddy/features/feed/domain/entity/feed_item_entity.dart';
 
 extension VisibilityX on Visibility {
@@ -140,16 +141,16 @@ class Content extends ContentEntity {
 }
 
 class Media extends MediaEntity {
-  Media({required super.url, required super.type});
+  Media({required super.data, required super.type});
   factory Media.fromJson(Map<String, dynamic> media) {
     return Media(
-      url: media['url'],
       type: MediaTypeX.fromFirebase(media['type']),
+      data: ImageUploadData.fromFirebase(media['data']),
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'url': url, 'type': type.name};
+    return {'data': data.toFirebase(), 'type': type.name};
   }
 }
 
@@ -164,10 +165,7 @@ class Timestamps extends TimestampsEntity {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
-    };
+    return {'createdAt': createdAt, 'updatedAt': updatedAt};
   }
 }
 

@@ -8,6 +8,7 @@ import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/get_color.dart';
+import 'package:hey_buddy/core/model/image_upload_data.dart';
 import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/riverpod/upload_progress_provider.dart';
@@ -140,7 +141,7 @@ class _PostUploadScreeenState extends State<PostUploadScreeen> {
         }
         return;
       }
-      List<String>? images;
+      List<ImageUploadData>? images;
       if (_images.isNotEmpty) {
         String uid = ref.read(uidProvider);
         List<String> names = _images
@@ -149,7 +150,7 @@ class _PostUploadScreeenState extends State<PostUploadScreeen> {
                   'post/$uid/$postId/${XFile(file.path).name.split('.').first}',
             )
             .toList();
-        List<String>? uploadedImages = await FileUploader.uploadFiles(
+        List<ImageUploadData>? uploadedImages = await FileUploader.uploadFiles(
           _images,
           names,
           ref,
@@ -167,7 +168,7 @@ class _PostUploadScreeenState extends State<PostUploadScreeen> {
         }
       }
       List<Media>? media = images
-          ?.map((str) => Media(url: str, type: .image))
+          ?.map((imageData) => Media(data: imageData, type: .image))
           .toList();
       Content content = Content(
         text: text,

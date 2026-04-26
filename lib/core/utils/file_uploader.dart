@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:hey_buddy/core/model/image_upload_data.dart';
 import 'package:hey_buddy/keys.dart';
 // ignore_for_file: implementation_imports
 import 'package:cloudinary_url_gen/cloudinary.dart';
@@ -18,7 +19,7 @@ class FileUploader {
     cloudinary.config.urlConfig.secure = true;
   }
 
-  static Future<List<String>?> uploadFiles(
+  static Future<List<ImageUploadData>?> uploadFiles(
     List<File> files,
     List<String> names,
     WidgetRef ref,
@@ -61,11 +62,19 @@ class FileUploader {
         }),
       );
 
-      List<String> urls = [];
+      List<ImageUploadData> urls = [];
 
       for (final r in response) {
         if (r != null && r.rawResponse != null) {
-          urls.add(jsonDecode(r.rawResponse!)['secure_url']);
+          final uploadData = jsonDecode(r.rawResponse!);
+          urls.add(
+            ImageUploadData(
+              url: uploadData['secure_url'],
+              width: uploadData['width'],
+              height: uploadData['height'],
+              aspectRatio: uploadData['width'] / uploadData['height'],
+            ),
+          );
         }
       }
       return urls;

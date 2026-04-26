@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hey_buddy/core/model/image_upload_data.dart';
 
 enum Visibility { public, private, friendsOnly }
 
@@ -57,18 +58,15 @@ abstract class ContentEntity {
 }
 
 abstract class MediaEntity {
-  final String url;
   final MediaType type;
-  MediaEntity({required this.url, required this.type});
+  final ImageUploadData data;
+  MediaEntity({required this.data, required this.type});
 }
 
 abstract class TimestampsEntity {
   final Timestamp createdAt;
   final Timestamp? updatedAt;
-  TimestampsEntity({
-    required this.createdAt,
-    this.updatedAt,
-  });
+  TimestampsEntity({required this.createdAt, this.updatedAt});
 }
 
 abstract class StatusEntity {

@@ -10,6 +10,7 @@ import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/app_validators.dart';
+import 'package:hey_buddy/core/model/image_upload_data.dart';
 import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/riverpod/upload_progress_provider.dart';
@@ -147,7 +148,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             'profileImage/${ref.read(uidProvider)}',
         ];
 
-        List<String>? urls = await FileUploader.uploadFiles(files, names, ref);
+        List<ImageUploadData>? urls = await FileUploader.uploadFiles(
+          files,
+          names,
+          ref,
+        );
         if (urls == null || urls.isEmpty) {
           if (mounted) {
             showMessenger(
@@ -157,10 +162,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           }
         } else {
           if (_coverImage.value != null) {
-            coverImage = urls[0];
+            coverImage = urls[0].url;
           }
           if (_profileImage.value != null) {
-            profileImage = urls[_coverImage.value != null ? 1 : 0];
+            profileImage = urls[_coverImage.value != null ? 1 : 0].url;
           }
         }
       }

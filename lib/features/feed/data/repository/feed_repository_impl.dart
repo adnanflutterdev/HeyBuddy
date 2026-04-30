@@ -36,4 +36,9 @@ class FeedRepositoryImpl extends FeedRepository {
       return null;
     }
   }
+
+  @override
+  Stream<List<String>> getLikeStream(String id) {
+    return remote.getLikeStream(id);
+  }
 }

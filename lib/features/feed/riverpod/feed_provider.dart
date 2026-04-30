@@ -42,3 +42,8 @@ final postDataProvider = FutureProvider.family<FeedItemEntity?, String>((
   final getPostData = ref.read(getPostDataUsecaseProvider);
   return await getPostData(postId);
 });
+
+final postLikeStream = StreamProvider.family<List<String>, String>((ref, id) {
+  final postLikeStreamUsecase = ref.read(postLikeStreamUsecaseProvider);
+  return postLikeStreamUsecase(id);
+});

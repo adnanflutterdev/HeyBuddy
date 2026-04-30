@@ -15,7 +15,10 @@ class FeedRemoteDataSource {
   }
 
   Stream<List<String>> getAllPostIds() {
-    final stream = firestore.collection('post').snapshots();
+    final stream = firestore
+        .collection('post')
+        .orderBy('timestamps.createdAt', descending: true)
+        .snapshots();
     return stream.map(
       (snapshots) => snapshots.docs.map((doc) => doc.id).toList(),
     );
@@ -27,5 +30,16 @@ class FeedRemoteDataSource {
         .doc(id)
         .get()
         .then((data) => FeedItem.fromJson(data.data() ?? {}));
+  }
+
+  Stream<List<String>> getLikeStream(String id) {
+    final stream = firestore
+        .collection('post')
+        .doc(id)
+        .collection('likes')
+        .snapshots();
+    return stream.map(
+      (data) => data.docs.map((allDocs) => allDocs.id).toList(),
+    );
   }
 }

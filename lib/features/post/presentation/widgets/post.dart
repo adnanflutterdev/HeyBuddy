@@ -39,7 +39,7 @@ class Post extends StatelessWidget {
         children: [
           _buildPostHeader(context),
           _buildContent(context),
-          const PostActions(),
+          PostActions(id: post.id,),
         ],
       ),
     );

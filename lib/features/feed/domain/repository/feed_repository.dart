@@ -5,4 +5,5 @@ abstract class FeedRepository {
   Future<Result> uploadFeedItem(FeedItemEntity feedItem);
   Stream<List<String>> getAllPostIds();
   Future<FeedItemEntity?> getPostData(String id);
+  Stream<List<String>> getLikeStream(String id);
 }

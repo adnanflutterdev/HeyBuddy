@@ -19,11 +19,12 @@ class FileUploader {
     cloudinary.config.urlConfig.secure = true;
   }
 
-  static Future<List<ImageUploadData>?> uploadFiles(
-    List<File> files,
-    List<String> names,
-    WidgetRef ref,
-  ) async {
+  static Future<List<ImageUploadData>?> uploadFiles({
+    required WidgetRef ref,
+    required dynamic folder,
+    required List<File> files,
+    required List<String> names,
+  }) async {
     try {
       final uploadNotifier = ref.read(uploadProgressProvider.notifier);
       Map<int, UploadProgress> uploadProgress = {};
@@ -34,10 +35,10 @@ class FileUploader {
           return cloudinary.uploader().upload(
             file,
             params: UploadParams(
-              publicId: names[index].split('/').sublist(1).toString(),
+              publicId: names[index],
               uniqueFilename: false,
               overwrite: true,
-              folder: names[index].split('/').first,
+              folder: (folder is String) ? folder : folder[index],
               useFilename: true,
             ),
             progressCallback: (bytesUploaded, totalBytes) {
@@ -72,7 +73,9 @@ class FileUploader {
               url: uploadData['secure_url'],
               width: uploadData['width'],
               height: uploadData['height'],
-              aspectRatio: uploadData['width'] / uploadData['height'],
+              aspectRatio:
+                  ((uploadData['width'] / uploadData['height']) as double)
+                      .clamp(0.5, 1.8),
             ),
           );
         }

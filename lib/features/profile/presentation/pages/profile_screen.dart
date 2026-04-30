@@ -142,16 +142,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
       if (_coverImage.value != null || _profileImage.value != null) {
         List<File> files = [?_coverImage.value, ?_profileImage.value];
-        List<String> names = [
-          if (_coverImage.value != null) 'coverImage/${ref.read(uidProvider)}',
-          if (_profileImage.value != null)
-            'profileImage/${ref.read(uidProvider)}',
+        List<String> folder = [
+          if (_coverImage.value != null) 'coverImage',
+          if (_profileImage.value != null) 'profileImage',
         ];
+        List<String> names = [ref.read(uidProvider), ref.read(uidProvider)];
 
         List<ImageUploadData>? urls = await FileUploader.uploadFiles(
-          files,
-          names,
-          ref,
+          ref: ref,
+          files: files,
+          names: names,
+          folder: folder,
         );
         if (urls == null || urls.isEmpty) {
           if (mounted) {

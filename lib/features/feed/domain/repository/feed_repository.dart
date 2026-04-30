@@ -3,6 +3,6 @@ import 'package:hey_buddy/features/feed/domain/entity/feed_item_entity.dart';
 
 abstract class FeedRepository {
   Future<Result> uploadFeedItem(FeedItemEntity feedItem);
-  Future<List<String>> getAllPostIds();
+  Stream<List<String>> getAllPostIds();
   Future<FeedItemEntity?> getPostData(String id);
 }

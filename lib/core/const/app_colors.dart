@@ -9,14 +9,14 @@ class AppDarkColors {
 
   // Backgrounds
   static const Color bg = Color(0xff1F2937);
-  static const Color card = Color(0xff6B7280);
+  static const Color card = Color(0xff374151);
   static const Color appbar = Color(0xff374151);
   static const Color container = Color(0xff4B5563);
 
   // Structural Colors
-  static const Color divider = Color(0xff2C2C2C);
+  static const Color divider = Color(0xff1F2937);
   static const Color border = Color(0xff3F3F3F);
-  static const Color shadow = Color(0x66000000);
+  static const Color shadow = Color(0x20808080);
 
   static const Color disabledBg = Color(0xff2A2A2A);
   static const Color overlay = Color(0x99000000); // For dialogs
@@ -52,9 +52,9 @@ class AppLightColors {
   static const Color card = Color(0xffFFFFFF);
 
   // Structural Colors
-  static const Color divider = Color(0xffE5E7EB);
+  static const Color divider = Color(0xff6B7280);
   static const Color border = Color(0xffD1D5DB);
-  static const Color shadow = Color(0x33000000);
+  static const Color shadow = Color(0xff6B7280);
 
   static const Color disabledBg = Color(0xffE5E7EB);
   static const Color overlay = Color(0x66000000);

@@ -144,16 +144,12 @@ class _PostUploadScreeenState extends State<PostUploadScreeen> {
       List<ImageUploadData>? images;
       if (_images.isNotEmpty) {
         String uid = ref.read(uidProvider);
-        List<String> names = _images
-            .map(
-              (file) =>
-                  'post/$uid/$postId/${XFile(file.path).name.split('.').first}',
-            )
-            .toList();
+        List<String> names = _images.map((file) => const Uuid().v4()).toList();
         List<ImageUploadData>? uploadedImages = await FileUploader.uploadFiles(
-          _images,
-          names,
-          ref,
+          ref: ref,
+          files: _images,
+          names: names,
+          folder: 'post/$uid/$postId',
         );
         if (uploadedImages == null) {
           if (mounted) {

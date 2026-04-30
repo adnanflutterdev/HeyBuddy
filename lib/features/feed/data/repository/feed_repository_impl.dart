@@ -20,11 +20,11 @@ class FeedRepositoryImpl extends FeedRepository {
   }
 
   @override
-  Future<List<String>> getAllPostIds() async {
+  Stream<List<String>> getAllPostIds() {
     try {
-      return await remote.getAllPostIds();
+      return remote.getAllPostIds();
     } catch (_) {
-      return [];
+      return Stream.value([]);
     }
   }
 

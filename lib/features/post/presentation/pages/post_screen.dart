@@ -13,15 +13,21 @@ class PostScreen extends ConsumerWidget {
     final postIdsRef = ref.watch(allPostIdsProvider);
     return postIdsRef.when(
       data: (postIds) {
-        return ListView.separated(
-          padding: AppPadding.p16,
-          itemCount: postIds.length,
-          itemBuilder: (context, index) {
-            return _buildPost(ref, postIds[index]);
+        return RefreshIndicator(
+          onRefresh: () async {
+            final _ = ref.refresh(allPostIdsProvider);
           },
-          separatorBuilder: (context, index) {
-            return AppSpacing.h16;
-          },
+          child: ListView.separated(
+            cacheExtent: 2000,
+            padding: AppPadding.p8,
+            itemCount: postIds.length,
+            itemBuilder: (context, index) {
+              return _buildPost(ref, postIds[index]);
+            },
+            separatorBuilder: (context, index) {
+              return AppSpacing.h16;
+            },
+          ),
         );
       },
       error: (_, _) {

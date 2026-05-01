@@ -41,4 +41,13 @@ class FeedRepositoryImpl extends FeedRepository {
   Stream<List<String>> getLikeStream(String id) {
     return remote.getLikeStream(id);
   }
+
+  @override
+  Future<void> togglePostLike({
+    required String id,
+    required String uid,
+    required bool isLiked,
+  }) async{
+    await remote.togglePostLike(id: id, uid: uid, isLiked: isLiked);
+  }
 }

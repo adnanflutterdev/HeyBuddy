@@ -42,4 +42,26 @@ class FeedRemoteDataSource {
       (data) => data.docs.map((allDocs) => allDocs.id).toList(),
     );
   }
+
+  Future<void> togglePostLike({
+    required String id,
+    required String uid,
+    required bool isLiked,
+  }) async {
+    if (isLiked) {
+      await firestore
+          .collection('post')
+          .doc(id)
+          .collection('likes')
+          .doc(uid)
+          .delete();
+    } else {
+      await firestore
+          .collection('post')
+          .doc(id)
+          .collection('likes')
+          .doc(uid)
+          .set({});
+    }
+  }
 }

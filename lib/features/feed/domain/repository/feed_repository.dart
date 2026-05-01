@@ -6,4 +6,9 @@ abstract class FeedRepository {
   Stream<List<String>> getAllPostIds();
   Future<FeedItemEntity?> getPostData(String id);
   Stream<List<String>> getLikeStream(String id);
+  Future<void> togglePostLike({
+    required String id,
+    required String uid,
+    required bool isLiked,
+  });
 }

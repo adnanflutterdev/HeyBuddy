@@ -218,7 +218,14 @@ class _PostUploadScreeenState extends State<PostUploadScreeen> {
             spacing: 10,
             children: [
               if (_images.isEmpty)
-                const Expanded(child: Center(child: Text('No Images Yet')))
+                const Expanded(
+                  child: Center(
+                    child: Text(
+                      'No Images Yet\nUse images of same aspect ratio for better end result',
+                      textAlign: .center,
+                    ),
+                  ),
+                )
               else
                 Expanded(
                   child: Stack(

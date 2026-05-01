@@ -5,6 +5,7 @@ import 'package:hey_buddy/features/feed/data/repository/feed_repository_impl.dar
 import 'package:hey_buddy/features/feed/domain/usecases/all_post_ids_usecase.dart';
 import 'package:hey_buddy/features/feed/domain/usecases/get_post_data_usecase.dart';
 import 'package:hey_buddy/features/feed/domain/usecases/post_like_stream_usecase.dart';
+import 'package:hey_buddy/features/feed/domain/usecases/toggle_post_like_usecase.dart';
 import 'package:hey_buddy/features/feed/domain/usecases/upload_feed_item_usecase.dart';
 
 final postRemoteDataSourceProvider = Provider((ref) {
@@ -34,4 +35,8 @@ final getPostDataUsecaseProvider = Provider((ref) {
 final postLikeStreamUsecaseProvider = Provider((ref) {
   final postRepository = ref.read(postRepositoryProvider);
   return PostLikeStreamUsecase(postRepository);
+});
+final togglePostLikeUsecaseProvider = Provider((ref) {
+  final postRepository = ref.read(postRepositoryProvider);
+  return TogglePostLikeUsecase(postRepository);
 });

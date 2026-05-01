@@ -5,6 +5,7 @@ import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/features/feed/riverpod/feed_provider.dart';
+import 'package:hey_buddy/features/feed/riverpod/post_actions_provider.dart';
 
 class PostActions extends StatelessWidget {
   const PostActions({super.key, required this.id});
@@ -31,23 +32,13 @@ class PostActions extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          if (isLiked) {
-                            ref
-                                .read(firebaseFirestoreProvider)
-                                .collection('post')
-                                .doc(id)
-                                .collection('likes')
-                                .doc(uid)
-                                .delete();
-                          } else {
-                            ref
-                                .read(firebaseFirestoreProvider)
-                                .collection('post')
-                                .doc(id)
-                                .collection('likes')
-                                .doc(uid)
-                                .set({});
-                          }
+                          ref
+                              .read(postActionProvider.notifier)
+                              .togglePostLikeUsecase(
+                                id: id,
+                                uid: uid,
+                                isLiked: isLiked,
+                              );
                         },
                         child: Icon(
                           isLiked ? Icons.favorite : Icons.favorite_outline,
@@ -59,8 +50,6 @@ class PostActions extends StatelessWidget {
                   );
                 },
                 error: (error, stackTrace) {
-                  print(error);
-                  print(stackTrace);
                   return Row(
                     mainAxisSize: .min,
                     spacing: 8,

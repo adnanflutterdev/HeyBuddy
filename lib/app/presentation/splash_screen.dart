@@ -64,7 +64,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   void initPostFeed() async {
-    ref.read(allPostIdsProvider);
+    ref.read(postsProvider);
   }
 
   @override

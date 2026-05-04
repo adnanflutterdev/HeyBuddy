@@ -20,9 +20,9 @@ class FeedRepositoryImpl extends FeedRepository {
   }
 
   @override
-  Stream<List<String>> getAllPostIds() {
+  Stream<List<FeedItemEntity>> getAllPosts() {
     try {
-      return remote.getAllPostIds();
+      return remote.getAllPosts();
     } catch (_) {
       return Stream.value([]);
     }

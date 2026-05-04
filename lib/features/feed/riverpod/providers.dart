@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/features/feed/data/data_sources/feed_remote_data_source.dart';
 import 'package:hey_buddy/features/feed/data/repository/feed_repository_impl.dart';
-import 'package:hey_buddy/features/feed/domain/usecases/all_post_ids_usecase.dart';
+import 'package:hey_buddy/features/feed/domain/usecases/posts_usecase.dart';
 import 'package:hey_buddy/features/feed/domain/usecases/get_post_data_usecase.dart';
 import 'package:hey_buddy/features/feed/domain/usecases/post_like_stream_usecase.dart';
 import 'package:hey_buddy/features/feed/domain/usecases/toggle_post_like_usecase.dart';
@@ -23,9 +23,9 @@ final uploadFeedItemUsecaseProvider = Provider((ref) {
   return UploadFeedItemUsecase(postRepository);
 });
 
-final allPostIdsUsecaseProvider = Provider((ref) {
+final postsUsecaseProvider = Provider((ref) {
   final postRepository = ref.read(postRepositoryProvider);
-  return AllPostIdsUsecase(postRepository);
+  return PostsUsecase(postRepository);
 });
 final getPostDataUsecaseProvider = Provider((ref) {
   final postRepository = ref.read(postRepositoryProvider);

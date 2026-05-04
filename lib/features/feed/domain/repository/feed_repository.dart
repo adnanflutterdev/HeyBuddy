@@ -3,7 +3,7 @@ import 'package:hey_buddy/features/feed/domain/entity/feed_item_entity.dart';
 
 abstract class FeedRepository {
   Future<Result> uploadFeedItem(FeedItemEntity feedItem);
-  Stream<List<String>> getAllPostIds();
+  Stream<List<FeedItemEntity>> getAllPosts();
   Future<FeedItemEntity?> getPostData(String id);
   Stream<List<String>> getLikeStream(String id);
   Future<void> togglePostLike({

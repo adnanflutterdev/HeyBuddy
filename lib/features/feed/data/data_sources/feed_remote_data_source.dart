@@ -14,13 +14,14 @@ class FeedRemoteDataSource {
         .set((feedItem as FeedItem).toJson());
   }
 
-  Stream<List<String>> getAllPostIds() {
+  Stream<List<FeedItemEntity>> getAllPosts() {
     final stream = firestore
         .collection('post')
         .orderBy('timestamps.createdAt', descending: true)
         .snapshots();
     return stream.map(
-      (snapshots) => snapshots.docs.map((doc) => doc.id).toList(),
+      (snapshots) =>
+          snapshots.docs.map((doc) => FeedItem.fromJson(doc.data())).toList(),
     );
   }
 

@@ -10,24 +10,19 @@ class PostScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final postIdsRef = ref.watch(allPostIdsProvider);
+    final postIdsRef = ref.watch(postsProvider);
     return postIdsRef.when(
-      data: (postIds) {
-        return RefreshIndicator(
-          onRefresh: () async {
-            final _ = ref.refresh(allPostIdsProvider);
+      data: (posts) {
+        return ListView.separated(
+          cacheExtent: 2000,
+          padding: AppPadding.p8,
+          itemCount: posts.length,
+          itemBuilder: (context, index) {
+            return Post(post: posts[index]);
           },
-          child: ListView.separated(
-            cacheExtent: 2000,
-            padding: AppPadding.p8,
-            itemCount: postIds.length,
-            itemBuilder: (context, index) {
-              return _buildPost(ref, postIds[index]);
-            },
-            separatorBuilder: (context, index) {
-              return AppSpacing.h16;
-            },
-          ),
+          separatorBuilder: (context, index) {
+            return AppSpacing.h16;
+          },
         );
       },
       error: (_, _) {
@@ -35,25 +30,6 @@ class PostScreen extends ConsumerWidget {
       },
       loading: () {
         return const Center(child: CircularProgressIndicator());
-      },
-    );
-  }
-
-  Widget _buildPost(WidgetRef ref, String postId) {
-    final postRef = ref.watch(postDataProvider(postId));
-    return postRef.when(
-      data: (post) {
-        if (post == null) {
-          return const SizedBox.shrink();
-        } else {
-          return Post(post: post);
-        }
-      },
-      error: (error, stackTrace) {
-        return const SizedBox.shrink();
-      },
-      loading: () {
-        return const SizedBox.shrink();
       },
     );
   }

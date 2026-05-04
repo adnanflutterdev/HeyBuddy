@@ -30,9 +30,9 @@ final createPostProvider = StateNotifierProvider((ref) {
   return UploadFeedItemNotifier(createPostUsecase);
 });
 
-final allPostIdsProvider = StreamProvider((ref) {
-  final allPostIdsUsecase = ref.read(allPostIdsUsecaseProvider);
-  return allPostIdsUsecase();
+final postsProvider = StreamProvider((ref) {
+  final postsUsecase = ref.read(postsUsecaseProvider);
+  return postsUsecase();
 });
 
 final postDataProvider = FutureProvider.family<FeedItemEntity?, String>((

@@ -6,6 +6,7 @@ import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/features/feed/riverpod/feed_provider.dart';
 import 'package:hey_buddy/features/feed/riverpod/post_actions_provider.dart';
+import 'package:hey_buddy/features/post/presentation/widgets/post_comments.dart';
 
 class PostActions extends StatelessWidget {
   const PostActions({super.key, required this.id});
@@ -72,13 +73,25 @@ class PostActions extends StatelessWidget {
               );
             },
           ),
-          Row(
-            mainAxisSize: .min,
-            spacing: 8,
-            children: [
-              const Icon(Icons.comment),
-              Text('0', style: context.style.b2),
-            ],
+          GestureDetector(
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                enableDrag: false,
+                isScrollControlled: true,
+                builder: (context) {
+                  return PostComments(id: id);
+                },
+              );
+            },
+            child: Row(
+              mainAxisSize: .min,
+              spacing: 8,
+              children: [
+                const Icon(Icons.comment),
+                Text('0', style: context.style.b2),
+              ],
+            ),
           ),
           Row(
             mainAxisSize: .min,

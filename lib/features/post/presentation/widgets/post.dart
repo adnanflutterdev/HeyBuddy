@@ -33,13 +33,12 @@ class Post extends StatelessWidget {
         ],
       ),
       clipBehavior: .antiAliasWithSaveLayer,
-      // padding: AppPadding.p12,
       child: Column(
         crossAxisAlignment: .start,
         children: [
           _buildPostHeader(context),
           _buildContent(context),
-          PostActions(id: post.id,),
+          PostActions(id: post.id),
         ],
       ),
     );

@@ -158,6 +158,7 @@ class _PostUploadScreeenState extends State<PostUploadScreeen> {
               result: Result.failure('Failed to upload images'),
             );
           }
+          ref.read(uploadProgressProvider.notifier).updateProgress(0);
           return;
         } else {
           images = uploadedImages;

@@ -30,6 +30,7 @@ import 'package:hey_buddy/features/profile/presentation/riverpod/toggle_edit_pro
 import 'package:hey_buddy/features/profile/presentation/riverpod/update_user_data_provider.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/user_data_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -82,9 +83,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   void pickFromCamera() async {
     final result = await ImagePicker().pickImage(source: .camera);
     if (result != null) {
-      AppNavigator.pop(File(result.path));
-    } else {
-      AppNavigator.pop(null);
+      final croppedImage = await ImageCropper.platform.cropImage(
+        sourcePath: result.path,
+      );
+      if (croppedImage != null) {
+        AppNavigator.pop(File(croppedImage.path));
+      }
     }
   }
 
@@ -94,9 +98,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       requestFullMetadata: true,
     );
     if (result != null) {
-      AppNavigator.pop(File(result.path));
-    } else {
-      AppNavigator.pop(null);
+      final croppedImage = await ImageCropper.platform.cropImage(
+        sourcePath: result.path,
+      );
+      if (croppedImage != null) {
+        AppNavigator.pop(File(croppedImage.path));
+      }
     }
   }
 
@@ -306,7 +313,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 builder: (context, coverImage, child) {
                   return MaterialIconButton(
                     onPressed: () async {
-                      _coverImage.value = await showSelectionImageSource();
+                      final newImage = await showSelectionImageSource();
+                      if (newImage != null) {
+                        _coverImage.value = newImage;
+                      }
                     },
                     icon: (coverImage != null || profile.coverImage != null)
                         ? Icons.repeat_outlined
@@ -361,8 +371,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           bottom: 0,
                           child: MaterialIconButton(
                             onPressed: () async {
-                              _profileImage.value =
-                                  await showSelectionImageSource();
+                              final newImage = await showSelectionImageSource();
+                              if (newImage != null) {
+                                _profileImage.value = newImage;
+                              }
                             },
                             icon:
                                 (profileImage != null ||
@@ -732,7 +744,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             iconSize: 27,
             alignment: .end,
             backgroundColor: context.colors.error,
-            foregroundColor: context.colors.primaryText,
+            foregroundColor: context.colors.onError,
           ),
         );
       },

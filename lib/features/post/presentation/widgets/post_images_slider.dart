@@ -5,7 +5,7 @@ import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/features/feed/domain/entity/feed_item_entity.dart';
-import 'package:hey_buddy/features/post/presentation/pages/image_viewer.dart';
+import 'package:hey_buddy/core/widgets/image_viewer.dart';
 
 class PostImagesSlider extends StatefulWidget {
   const PostImagesSlider({super.key, required this.media});

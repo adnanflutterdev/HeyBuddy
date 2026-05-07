@@ -81,7 +81,7 @@ class FileUploader {
         }
       }
       return urls;
-    } catch (err) {
+    } catch (_) {
       return null;
     }
   }

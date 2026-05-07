@@ -22,7 +22,7 @@ class _ImageViewerState extends State<ImageViewer> {
   late int _pageIndex = widget.pageIndex;
   late final List<MediaEntity> _images = widget.images;
   final double _thumbnailSize = 50;
-  final PageController _pageController = .new();
+  late final PageController _pageController = .new(initialPage:widget.pageIndex);
   final ScrollController _scrollController = .new();
 
   @override

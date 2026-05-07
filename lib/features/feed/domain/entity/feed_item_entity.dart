@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hey_buddy/core/model/image_upload_data.dart';
+import 'package:hey_buddy/core/model/media_upload_data.dart';
+import 'package:hey_buddy/features/feed/domain/entity/timestamps_entity.dart';
 
 enum Visibility { public, private, friendsOnly }
 
@@ -11,7 +12,7 @@ enum MediaType { image, video }
 
 abstract class FeedItemEntity {
   final String id;
-  final FeedItemUserEntity user;
+  final String userId;
   final ContentEntity content;
   final TimestampsEntity timestamps;
   final StatusEntity status;
@@ -20,26 +21,13 @@ abstract class FeedItemEntity {
   final SharedEntity shared;
   FeedItemEntity({
     required this.id,
-    required this.user,
+    required this.userId,
     required this.content,
     required this.timestamps,
     required this.status,
     required this.location,
     required this.moderation,
     required this.shared,
-  });
-}
-
-abstract class FeedItemUserEntity {
-  final DocumentReference ref;
-  final String id;
-  final String name;
-  final String? profileImage;
-  FeedItemUserEntity({
-    required this.ref,
-    required this.id,
-    required this.name,
-    this.profileImage,
   });
 }
 
@@ -59,14 +47,8 @@ abstract class ContentEntity {
 
 abstract class MediaEntity {
   final MediaType type;
-  final ImageUploadData data;
+  final MediaUploadData data;
   MediaEntity({required this.data, required this.type});
-}
-
-abstract class TimestampsEntity {
-  final Timestamp createdAt;
-  final Timestamp? updatedAt;
-  TimestampsEntity({required this.createdAt, this.updatedAt});
 }
 
 abstract class StatusEntity {

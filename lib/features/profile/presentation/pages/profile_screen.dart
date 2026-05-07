@@ -10,7 +10,7 @@ import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/app_validators.dart';
-import 'package:hey_buddy/core/model/image_upload_data.dart';
+import 'package:hey_buddy/core/model/media_upload_data.dart';
 import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/riverpod/upload_progress_provider.dart';
@@ -27,8 +27,8 @@ import 'package:hey_buddy/features/auth/presentation/riverpod/auth_provider.dart
 import 'package:hey_buddy/features/profile/data/models/user.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/toggle_edit_provider.dart';
-import 'package:hey_buddy/features/profile/presentation/riverpod/update_user_data_provider.dart';
-import 'package:hey_buddy/features/profile/presentation/riverpod/user_data_provider.dart';
+import 'package:hey_buddy/features/profile/presentation/riverpod/update_my_data_provider.dart';
+import 'package:hey_buddy/features/profile/presentation/riverpod/my_data_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:intl/intl.dart';
@@ -141,8 +141,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       //
       _formKey.currentState?.save();
 
-      Details prevDetails = ref.read(userProvider).value!.details as Details;
-      Profile prevProfile = ref.read(userProvider).value!.profile as Profile;
+      Details prevDetails = ref.read(myDataProvider).value!.details as Details;
+      Profile prevProfile = ref.read(myDataProvider).value!.profile as Profile;
 
       String? coverImage = prevProfile.coverImage;
       String? profileImage = prevProfile.profileImage;
@@ -155,7 +155,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ];
         List<String> names = [ref.read(uidProvider), ref.read(uidProvider)];
 
-        List<ImageUploadData>? urls = await FileUploader.uploadFiles(
+        List<MediaUploadData>? urls = await FileUploader.uploadFiles(
           ref: ref,
           files: files,
           names: names,
@@ -197,38 +197,38 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       );
 
       final result = await ref
-          .read(updateUserDataProvider.notifier)
-          .updateUserData(details, profile);
+          .read(updateMyDataProvider.notifier)
+          .updateMyData(details, profile);
 
       if (mounted) {
         showMessenger(context, result: result);
         ref.read(toggleEditProvider.notifier).toggleEdit();
         ref.read(uploadProgressProvider.notifier).updateProgress(0);
-        final _ = ref.refresh(userProvider);
+        final _ = ref.refresh(myDataProvider);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final userRef = ref.watch(userProvider);
+    final myDataRef = ref.watch(myDataProvider);
     final editRef = ref.watch(toggleEditProvider);
 
     return Scaffold(
-      body: userRef.when(
-        data: (user) {
+      body: myDataRef.when(
+        data: (myData) {
           return Form(
             key: _formKey,
             child: ListView(
               padding: AppPadding.p12,
               children: [
-                _buildProfile(user.profile, editRef),
+                _buildProfile(myData.profile, editRef),
                 AppSpacing.h16,
-                _buildUserDetails(user.details, editRef),
+                _buildUserDetails(myData.details, editRef),
                 AppSpacing.h16,
-                _buildProfileDetails(user.profile, editRef),
+                _buildProfileDetails(myData.profile, editRef),
                 AppSpacing.h16,
-                _buildAccountInfo(user.account),
+                _buildAccountInfo(myData.account),
                 AppSpacing.h16,
                 _buildLogoutButton(),
               ],
@@ -250,7 +250,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return canEdit
         ? Consumer(
             builder: (context, ref, child) {
-              final updateRef = ref.watch(updateUserDataProvider);
+              final updateRef = ref.watch(updateMyDataProvider);
               final progress = ref.watch(uploadProgressProvider);
 
               if (updateRef.isLoading || progress > 0) {

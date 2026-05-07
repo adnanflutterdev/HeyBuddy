@@ -1,28 +1,28 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
-import 'package:hey_buddy/features/profile/domain/usecases/update_user_data_usecase.dart';
-import 'package:hey_buddy/features/profile/domain/usecases/user_data_usecase.dart';
-import 'package:hey_buddy/features/profile/data/repository/user_repository_impl.dart';
-import 'package:hey_buddy/features/profile/data/data_sources/user_remote_data_source.dart';
+import 'package:hey_buddy/features/profile/domain/usecases/update_my_data_usecase.dart';
+import 'package:hey_buddy/features/profile/domain/usecases/get_my_data_usecase.dart';
+import 'package:hey_buddy/features/profile/data/repository/my_data_repository_impl.dart';
+import 'package:hey_buddy/features/profile/data/data_sources/my_data_source.dart';
 
-final userRemoteDataSourceProvider = Provider((ref) {
+final myDataSourceProvider = Provider((ref) {
   final firestore = ref.read(firebaseFirestoreProvider);
   final auth = ref.read(firebaseAuthProvider);
 
-  return UserRemoteDataSource(auth.currentUser?.uid ?? '', firestore);
+  return MyDataSource(auth.currentUser?.uid ?? '', firestore);
 });
 
-final userRepositoryProvider = Provider((ref) {
-  final userRemoteDataSource = ref.read(userRemoteDataSourceProvider);
-  return UserRepositoryImpl(userRemoteDataSource);
+final myDataRepositoryProvider = Provider((ref) {
+  final userRemoteDataSource = ref.read(myDataSourceProvider);
+  return MyDataRepositoryImpl(userRemoteDataSource);
 });
 
-final userDataUsecaseProvider = Provider((ref) {
-  final userRepository = ref.read(userRepositoryProvider);
-  return UserDataUsecase(userRepository);
+final getMyDataUsecaseProvider = Provider((ref) {
+  final myDataRepository = ref.read(myDataRepositoryProvider);
+  return GetMyDataUsecase(myDataRepository);
 });
 
-final updateUserDataUsecaseProvider = Provider((ref) {
-  final userRepository = ref.read(userRepositoryProvider);
-  return UpdateUserDataUsecase(userRepository);
+final updateMyDataUsecaseProvider = Provider((ref) {
+  final userRepository = ref.read(myDataRepositoryProvider);
+  return UpdateMyDataUsecase(userRepository);
 });

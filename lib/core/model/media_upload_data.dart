@@ -1,18 +1,18 @@
-class ImageUploadData {
+class MediaUploadData {
   final String url;
   final int width;
   final int height;
   final double aspectRatio;
 
-  ImageUploadData({
+  MediaUploadData({
     required this.url,
     required this.width,
     required this.height,
     required this.aspectRatio,
   });
 
-  factory ImageUploadData.fromFirebase(Map<String, dynamic> imageData) {
-    return ImageUploadData(
+  factory MediaUploadData.fromFirebase(Map<String, dynamic> imageData) {
+    return MediaUploadData(
       url: imageData['url'],
       width: imageData['width'],
       height: imageData['height'],

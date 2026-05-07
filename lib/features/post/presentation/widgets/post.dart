@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
@@ -7,6 +8,7 @@ import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/get_color.dart';
 import 'package:hey_buddy/core/widgets/app_logo.dart';
 import 'package:hey_buddy/core/widgets/collapsible_text.dart';
+import 'package:hey_buddy/features/chat/presentation/riverpod/users_provider.dart';
 import 'package:hey_buddy/features/feed/domain/entity/feed_item_entity.dart';
 import 'package:hey_buddy/features/post/presentation/widgets/post_actions.dart';
 import 'package:hey_buddy/features/post/presentation/widgets/post_images_slider.dart';
@@ -45,39 +47,54 @@ class Post extends StatelessWidget {
   }
 
   Widget _buildPostHeader(BuildContext context) {
-    final createdAt = post.timestamps.createdAt.toDate();
+    final createdAt = post.timestamps.createdAt;
     final isToday =
         DateFormat.yMMMEd().format(DateTime.now()) ==
         DateFormat.yMMMEd().format(createdAt);
-    return Container(
-      color: context.colors.container,
-      padding: AppPadding.p12,
-      child: Row(
-        children: [
-          _buildUserImage(),
-          AppSpacing.w12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: .start,
-              children: [
-                Text(post.user.name, style: context.style.h3),
-                Text(DateFormat('hh:mm a').format(createdAt)),
-              ],
-            ),
-          ),
-          AppSpacing.w12,
-          Text(
-            isToday ? 'Today' : DateFormat.yMMMd().format(createdAt),
-            style: context.style.bs2,
-          ),
-        ],
-      ),
+    return Consumer(
+      builder: (context, ref, child) {
+        final userDataRef = ref.watch(usersDataProvider(post.userId));
+        return userDataRef.when(
+          data: (user) {
+            return Container(
+              color: context.colors.container,
+              padding: AppPadding.p12,
+              child: Row(
+                children: [
+                  _buildUserImage(user.profile.profileImage),
+                  AppSpacing.w12,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: .start,
+                      children: [
+                        Text(user.details.name, style: context.style.h3),
+                        Text(DateFormat('hh:mm a').format(createdAt)),
+                      ],
+                    ),
+                  ),
+                  AppSpacing.w12,
+                  Text(
+                    isToday ? 'Today' : DateFormat.yMMMd().format(createdAt),
+                    style: context.style.bs2,
+                  ),
+                ],
+              ),
+            );
+          },
+          error: (error, stackTrace) {
+            return SizedBox.shrink();
+          },
+          loading: () {
+            return Container();
+          },
+        );
+      },
     );
   }
 
-  Widget _buildUserImage() {
+  Widget _buildUserImage(String? image) {
     return CachedNetworkImage(
-      imageUrl: post.user.profileImage!,
+      imageUrl: image!,
       placeholder: (context, url) {
         return CircleAvatar(radius: 20, backgroundColor: context.colors.card);
       },

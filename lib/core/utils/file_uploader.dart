@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
-import 'package:hey_buddy/core/model/image_upload_data.dart';
+import 'package:hey_buddy/core/model/media_upload_data.dart';
 import 'package:hey_buddy/keys.dart';
 // ignore_for_file: implementation_imports
 import 'package:cloudinary_url_gen/cloudinary.dart';
@@ -19,7 +19,7 @@ class FileUploader {
     cloudinary.config.urlConfig.secure = true;
   }
 
-  static Future<List<ImageUploadData>?> uploadFiles({
+  static Future<List<MediaUploadData>?> uploadFiles({
     required WidgetRef ref,
     required dynamic folder,
     required List<File> files,
@@ -63,13 +63,13 @@ class FileUploader {
         }),
       );
 
-      List<ImageUploadData> urls = [];
+      List<MediaUploadData> urls = [];
 
       for (final r in response) {
         if (r != null && r.rawResponse != null) {
           final uploadData = jsonDecode(r.rawResponse!);
           urls.add(
-            ImageUploadData(
+            MediaUploadData(
               url: uploadData['secure_url'],
               width: uploadData['width'],
               height: uploadData['height'],

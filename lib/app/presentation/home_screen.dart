@@ -17,7 +17,7 @@ import 'package:hey_buddy/features/post/presentation/pages/post_upload_screeen.d
 import 'package:hey_buddy/features/profile/data/models/user.dart';
 import 'package:hey_buddy/features/profile/presentation/pages/profile_screen.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/toggle_edit_provider.dart';
-import 'package:hey_buddy/features/profile/presentation/riverpod/user_data_provider.dart';
+import 'package:hey_buddy/features/profile/presentation/riverpod/my_data_provider.dart';
 import 'package:hey_buddy/features/video/presentation/pages/video_screen.dart';
 import 'package:hey_buddy/features/video/presentation/pages/video_upload_screen.dart';
 
@@ -106,7 +106,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget? _buildAppbar(int tabIndex) {
-    final userRef = ref.watch(userProvider);
+    final userRef = ref.watch(myDataProvider);
     final canEdit = ref.watch(toggleEditProvider);
 
     UserModel? user = userRef.value as UserModel?;

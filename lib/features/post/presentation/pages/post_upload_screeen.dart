@@ -8,7 +8,7 @@ import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/get_color.dart';
-import 'package:hey_buddy/core/model/image_upload_data.dart';
+import 'package:hey_buddy/core/model/media_upload_data.dart';
 import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/riverpod/upload_progress_provider.dart';
@@ -21,7 +21,7 @@ import 'package:hey_buddy/core/widgets/primary_button.dart';
 import 'package:hey_buddy/features/feed/data/models/feed_item.dart';
 import 'package:hey_buddy/features/feed/riverpod/feed_provider.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
-import 'package:hey_buddy/features/profile/presentation/riverpod/user_data_provider.dart';
+import 'package:hey_buddy/features/profile/presentation/riverpod/my_data_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:uuid/uuid.dart';
@@ -131,7 +131,7 @@ class _PostUploadScreeenState extends State<PostUploadScreeen> {
     String text = _contentController.text.trim();
     if (text.isNotEmpty || _images.isNotEmpty) {
       String postId = const Uuid().v4();
-      UserEntity? user = ref.read(userProvider).value;
+      UserEntity? user = ref.read(myDataProvider).value;
       if (user == null) {
         if (mounted) {
           showMessenger(
@@ -141,11 +141,11 @@ class _PostUploadScreeenState extends State<PostUploadScreeen> {
         }
         return;
       }
-      List<ImageUploadData>? images;
+      List<MediaUploadData>? images;
       if (_images.isNotEmpty) {
         String uid = ref.read(uidProvider);
         List<String> names = _images.map((file) => const Uuid().v4()).toList();
-        List<ImageUploadData>? uploadedImages = await FileUploader.uploadFiles(
+        List<MediaUploadData>? uploadedImages = await FileUploader.uploadFiles(
           ref: ref,
           files: _images,
           names: names,
@@ -173,18 +173,9 @@ class _PostUploadScreeenState extends State<PostUploadScreeen> {
         tags: [],
         type: .post,
       );
-      FeedItemUser feedItemUser = FeedItemUser(
-        ref: ref
-            .read(firebaseFirestoreProvider)
-            .collection('user')
-            .doc(user.uid),
-        id: user.uid,
-        name: user.details.name,
-        profileImage: user.profile.profileImage,
-      );
       FeedItem feedItem = FeedItem.setNewPost(
         id: postId,
-        user: feedItemUser,
+        userId: user.uid,
         content: content,
       );
       Result result = await ref

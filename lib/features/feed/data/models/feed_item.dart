@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hey_buddy/core/model/image_upload_data.dart';
+import 'package:hey_buddy/core/model/media_upload_data.dart';
+import 'package:hey_buddy/features/feed/data/models/timestamps.dart';
 import 'package:hey_buddy/features/feed/domain/entity/feed_item_entity.dart';
 
 extension VisibilityX on Visibility {
@@ -29,7 +30,7 @@ extension MediaTypeX on MediaType {
 class FeedItem extends FeedItemEntity {
   FeedItem({
     required super.id,
-    required super.user,
+    required super.userId,
     required super.content,
     required super.timestamps,
     required super.status,
@@ -38,29 +39,29 @@ class FeedItem extends FeedItemEntity {
     required super.shared,
   });
 
-  factory FeedItem.fromJson(Map<String, dynamic> feedItem) {
+  factory FeedItem.fromFirebase(Map<String, dynamic> feedItem) {
     return FeedItem(
-      id: feedItem['id'] ?? '',
-      user: FeedItemUser.fromJson(feedItem['user'] ?? {}),
-      content: Content.fromJson(feedItem['content'] ?? {}),
-      timestamps: Timestamps.fromJson(feedItem['timestamps'] ?? {}),
-      status: Status.fromJson(feedItem['status'] ?? {}),
-      location: Location.fromJson(feedItem['location']),
-      moderation: Moderation.fromJson(feedItem['moderation']),
-      shared: Shared.fromJson(feedItem['shared']),
+      id: feedItem['id'],
+      userId: feedItem['userId'],
+      content: Content.fromFirebase(feedItem['content'] ?? {}),
+      timestamps: Timestamps.fromFirebase(feedItem['timestamps'] ?? {}),
+      status: Status.fromFirebase(feedItem['status'] ?? {}),
+      location: Location.fromFirebase(feedItem['location']),
+      moderation: Moderation.fromFirebase(feedItem['moderation']),
+      shared: Shared.fromFirebase(feedItem['shared']),
     );
   }
 
   factory FeedItem.setNewPost({
     required String id,
-    required FeedItemUser user,
+    required String userId,
     required Content content,
   }) {
     return FeedItem(
       id: id,
-      user: user,
+      userId: userId,
       content: content,
-      timestamps: Timestamps(createdAt: Timestamp.now()),
+      timestamps: Timestamps(createdAt: DateTime.now()),
       status: Status(
         allowComments: true,
         visibility: .public,
@@ -73,39 +74,17 @@ class FeedItem extends FeedItemEntity {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toFirebase() {
     return {
       'id': id,
-      'user': (user as FeedItemUser).toJson(),
-      'content': (content as Content).toJson(),
-      'timestamps': (timestamps as Timestamps).toJson(),
-      'status': (status as Status).toJson(),
-      'location': (location as Location).toJson(),
-      'moderation': (moderation as Moderation).toJson(),
-      'shared': (shared as Shared).toJson(),
+      'userId': userId,
+      'content': (content as Content).toFirebase(),
+      'timestamps': (timestamps as Timestamps).toFirebase(),
+      'status': (status as Status).toFirebase(),
+      'location': (location as Location).toFirebase(),
+      'moderation': (moderation as Moderation).toFirebase(),
+      'shared': (shared as Shared).toFirebase(),
     };
-  }
-}
-
-class FeedItemUser extends FeedItemUserEntity {
-  FeedItemUser({
-    required super.ref,
-    required super.id,
-    required super.name,
-    required super.profileImage,
-  });
-
-  factory FeedItemUser.fromJson(Map<String, dynamic> user) {
-    return FeedItemUser(
-      ref: user['ref'] as DocumentReference,
-      id: user['id'] ?? '',
-      name: user['name'] ?? 'Unknown',
-      profileImage: user['profileImage'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {'ref': ref, 'id': id, 'name': name, 'profileImage': profileImage};
   }
 }
 
@@ -117,12 +96,14 @@ class Content extends ContentEntity {
     required super.type,
   });
 
-  factory Content.fromJson(Map<String, dynamic> content) {
+  factory Content.fromFirebase(Map<String, dynamic> content) {
     return Content(
       text: content['text'],
       media: content['media'] != null
           ? (content['media'] as List<dynamic>)
-                .map((media) => Media.fromJson(media as Map<String, dynamic>))
+                .map(
+                  (media) => Media.fromFirebase(media as Map<String, dynamic>),
+                )
                 .toList()
           : null,
       tags: content['tags']?.cast<String>(),
@@ -130,10 +111,10 @@ class Content extends ContentEntity {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toFirebase() {
     return {
       "text": text,
-      "media": media?.map((medium) => (medium as Media).toJson()).toList(),
+      "media": media?.map((medium) => (medium as Media).toFirebase()).toList(),
       "tags": tags,
       "type": type.name,
     };
@@ -142,30 +123,15 @@ class Content extends ContentEntity {
 
 class Media extends MediaEntity {
   Media({required super.data, required super.type});
-  factory Media.fromJson(Map<String, dynamic> media) {
+  factory Media.fromFirebase(Map<String, dynamic> media) {
     return Media(
       type: MediaTypeX.fromFirebase(media['type']),
-      data: ImageUploadData.fromFirebase(media['data']),
+      data: MediaUploadData.fromFirebase(media['data']),
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toFirebase() {
     return {'data': data.toFirebase(), 'type': type.name};
-  }
-}
-
-class Timestamps extends TimestampsEntity {
-  Timestamps({required super.createdAt, super.updatedAt});
-
-  factory Timestamps.fromJson(Map<String, dynamic> timestamps) {
-    return Timestamps(
-      createdAt: timestamps['createdAt'] ?? Timestamp.now(),
-      updatedAt: timestamps['updatedAt'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {'createdAt': createdAt, 'updatedAt': updatedAt};
   }
 }
 
@@ -177,7 +143,7 @@ class Status extends StatusEntity {
     required super.visibility,
   });
 
-  factory Status.fromJson(Map<String, dynamic> status) {
+  factory Status.fromFirebase(Map<String, dynamic> status) {
     return Status(
       isEdited: status['isEdited'] ?? false,
       pinned: status['pinned'] ?? false,
@@ -186,7 +152,7 @@ class Status extends StatusEntity {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toFirebase() {
     return {
       'isEdited': isEdited,
       'pinned': pinned,
@@ -199,7 +165,7 @@ class Status extends StatusEntity {
 class Location extends LocationEntity {
   Location({super.lat, super.lng, super.placeName});
 
-  factory Location.fromJson(Map<String, dynamic> location) {
+  factory Location.fromFirebase(Map<String, dynamic> location) {
     return Location(
       lat: location['lat'],
       lng: location['lng'],
@@ -207,7 +173,7 @@ class Location extends LocationEntity {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toFirebase() {
     return {'lat': lat, 'lng': lng, 'placeName': placeName};
   }
 }
@@ -220,7 +186,7 @@ class Moderation extends ModerationEntity {
     super.reason,
   });
 
-  factory Moderation.fromJson(Map<String, dynamic> moderation) {
+  factory Moderation.fromFirebase(Map<String, dynamic> moderation) {
     return Moderation(
       status: ModerationStatusX.fromFirebase(moderation['status']),
       reviewedBy: moderation['reviewedBy'],
@@ -229,7 +195,7 @@ class Moderation extends ModerationEntity {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toFirebase() {
     return {
       'status': status.name,
       'reviewedBy': reviewedBy,
@@ -247,7 +213,7 @@ class Shared extends SharedEntity {
     super.sharedAt,
   });
 
-  factory Shared.fromJson(Map<String, dynamic> shared) {
+  factory Shared.fromFirebase(Map<String, dynamic> shared) {
     return Shared(
       originalFeedItemRef: shared['originalFeedItemRef'] as DocumentReference?,
       sharedByRef: shared['sharedByRef'] as DocumentReference?,
@@ -256,7 +222,7 @@ class Shared extends SharedEntity {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toFirebase() {
     return {
       'originalFeedItemRef': originalFeedItemRef,
       'sharedByRef': sharedByRef,

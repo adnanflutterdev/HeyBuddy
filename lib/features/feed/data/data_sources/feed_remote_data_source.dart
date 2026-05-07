@@ -11,7 +11,7 @@ class FeedRemoteDataSource {
     await firestore
         .collection(feedItem.content.type.name)
         .doc(feedItem.id)
-        .set((feedItem as FeedItem).toJson());
+        .set((feedItem as FeedItem).toFirebase());
   }
 
   Stream<List<FeedItemEntity>> getAllPosts() {
@@ -20,8 +20,9 @@ class FeedRemoteDataSource {
         .orderBy('timestamps.createdAt', descending: true)
         .snapshots();
     return stream.map(
-      (snapshots) =>
-          snapshots.docs.map((doc) => FeedItem.fromJson(doc.data())).toList(),
+      (snapshots) => snapshots.docs
+          .map((doc) => FeedItem.fromFirebase(doc.data()))
+          .toList(),
     );
   }
 
@@ -30,7 +31,7 @@ class FeedRemoteDataSource {
         .collection('post')
         .doc(id)
         .get()
-        .then((data) => FeedItem.fromJson(data.data() ?? {}));
+        .then((data) => FeedItem.fromFirebase(data.data() ?? {}));
   }
 
   Stream<List<String>> getLikeStream(String id) {

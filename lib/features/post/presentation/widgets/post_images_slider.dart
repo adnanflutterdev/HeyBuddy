@@ -26,8 +26,11 @@ class _PostImagesSliderState extends State<PostImagesSlider> {
       children: [
         GestureDetector(
           onTap: () {
+            List<String> images = widget.media
+                .map((media) => media.data.url)
+                .toList();
             AppNavigator.push(
-              ImageViewer(images: widget.media, pageIndex: _pageIndex.value),
+              ImageViewer(images: images, pageIndex: _pageIndex.value),
             );
           },
           child: AspectRatio(

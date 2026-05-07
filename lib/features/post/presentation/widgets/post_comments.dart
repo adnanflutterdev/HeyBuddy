@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/size_extention.dart';
 import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
+import 'package:hey_buddy/core/model/result.dart';
+import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
+import 'package:hey_buddy/core/utils/messenger.dart';
 import 'package:hey_buddy/core/widgets/app_text_field.dart';
+import 'package:hey_buddy/features/feed/data/models/comment.dart';
+import 'package:hey_buddy/features/feed/data/models/timestamps.dart';
+import 'package:hey_buddy/features/feed/domain/entity/comment_entity.dart';
+import 'package:hey_buddy/features/feed/riverpod/add_comment_provider.dart';
+import 'package:hey_buddy/features/feed/riverpod/feed_provider.dart';
+import 'package:uuid/uuid.dart';
 
 class PostComments extends StatefulWidget {
   const PostComments({super.key, required this.id});
@@ -16,6 +26,29 @@ class PostComments extends StatefulWidget {
 
 class _PostCommentsState extends State<PostComments> {
   double _height = 400;
+  final TextEditingController _controller = .new();
+
+  Future<void> addComment(WidgetRef ref) async {
+    CommentEntity comment = Comment(
+      id: const Uuid().v4(),
+      userId: ref.read(uidProvider),
+      content: CommentContent(text: _controller.text),
+      timestamps: Timestamps(createdAt: DateTime.now()),
+    );
+
+    Result result = await ref
+        .read(addCommentProvider.notifier)
+        .addComment(widget.id, comment);
+
+    if (!result.success) {
+      if (mounted) {
+        showMessenger(context, result: result);
+      }
+    } else {
+      _controller.clear();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -58,23 +91,56 @@ class _PostCommentsState extends State<PostComments> {
             ),
             Padding(
               padding: AppPadding.p16,
-              child: AppTextField(
-                suffixIcon: Icons.send,
-                unfocousOnTapOutside: true,
-                onSuffixIconTapped: () {
-                  print('Comment Sent');
+              child: Consumer(
+                builder: (context, ref, _) {
+                  final addCommentRef = ref.watch(addCommentProvider);
+                  if (addCommentRef.isLoading) {
+                    return AppTextField(
+                      isSuffixIconLoading: true,
+                      controller: _controller,
+                      isReadOnly: true,
+                    );
+                  }
+                  return AppTextField(
+                    suffixIcon: Icons.send,
+                    controller: _controller,
+                    unfocousOnTapOutside: true,
+                    onSuffixIconTapped: () => addComment(ref),
+                  );
                 },
               ),
             ),
             Expanded(
-              child: ListView.separated(
-                itemBuilder: (context, index) {
-                  return const Text('hello');
+              child: Consumer(
+                builder: (context, ref, _) {
+                  final commentStream = ref.watch(getCommentStream(widget.id));
+                  return commentStream.when(
+                    data: (comments) {
+                      return ListView.separated(
+                        itemBuilder: (context, index) {
+                          CommentEntity comment = comments[index];
+                          return Text(comment.content.text ?? '');
+                        },
+                        separatorBuilder: (context, index) {
+                          return AppSpacing.h8;
+                        },
+                        itemCount: comments.length,
+                      );
+                    },
+                    error: (error, stackTrace) {
+                      return const SizedBox.expand();
+                    },
+                    loading: () {
+                      return const Center(
+                        child: SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    },
+                  );
                 },
-                separatorBuilder: (context, index) {
-                  return AppSpacing.h8;
-                },
-                itemCount: 100,
               ),
             ),
           ],

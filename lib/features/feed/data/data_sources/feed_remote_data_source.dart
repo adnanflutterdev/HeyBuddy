@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hey_buddy/features/feed/data/models/comment.dart';
 import 'package:hey_buddy/features/feed/data/models/feed_item.dart';
+import 'package:hey_buddy/features/feed/domain/entity/comment_entity.dart';
 import 'package:hey_buddy/features/feed/domain/entity/feed_item_entity.dart';
 
 class FeedRemoteDataSource {
@@ -65,5 +67,27 @@ class FeedRemoteDataSource {
           .doc(uid)
           .set({});
     }
+  }
+
+  Stream<List<CommentEntity>> getComments(String postId) {
+    return firestore
+        .collection('post')
+        .doc(postId)
+        .collection('comments')
+        .snapshots()
+        .map(
+          (snaphots) => snaphots.docs
+              .map((doc) => Comment.fromFirebase(doc.data()))
+              .toList(),
+        );
+  }
+
+  Future<void> addComment(String postId, CommentEntity comment) async {
+    firestore
+        .collection('post')
+        .doc(postId)
+        .collection('comments')
+        .doc(comment.id)
+        .set((comment as Comment).toFirebase());
   }
 }

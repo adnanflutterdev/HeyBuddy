@@ -7,7 +7,7 @@ class Timestamps extends TimestampsEntity {
   factory Timestamps.fromFirebase(Map<String, dynamic> timestamps) {
     return Timestamps(
       createdAt: (timestamps['createdAt'] as Timestamp).toDate(),
-      updatedAt: (timestamps['updatedAt'] as Timestamp).toDate(),
+      updatedAt: (timestamps['updatedAt'] as Timestamp?)?.toDate(),
     );
   }
 

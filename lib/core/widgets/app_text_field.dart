@@ -12,13 +12,14 @@ class AppTextField extends StatelessWidget {
     this.suffixIcon,
     this.controller,
     this.onSuffixIconTapped,
-    this.isObscure = false,
     this.textInputType,
     this.textStyle,
     this.iconWidth,
     this.onChanged,
     this.focusNode,
+    this.isObscure = false,
     this.isReadOnly = false,
+    this.isSuffixIconLoading = false,
     this.unfocousOnTapOutside = false,
     this.onSubmitted,
     this.maxLines = 1,
@@ -39,6 +40,7 @@ class AppTextField extends StatelessWidget {
   final String? hintText;
   final IconData? prefixIcon;
   final IconData? suffixIcon;
+  final bool isSuffixIconLoading;
   final Function()? onSuffixIconTapped;
   final TextEditingController? controller;
   final TextInputType? textInputType;
@@ -105,10 +107,12 @@ class AppTextField extends StatelessWidget {
               onPressed: () {},
               icon: Icon(prefixIcon, size: iconSize, color: iconColor),
             ),
-            suffixIcon: IconButton(
-              onPressed: onSuffixIconTapped,
-              icon: Icon(suffixIcon, size: iconSize, color: iconColor),
-            ),
+            suffixIcon: isSuffixIconLoading
+                ? const CircularProgressIndicator()
+                : IconButton(
+                    onPressed: onSuffixIconTapped,
+                    icon: Icon(suffixIcon, size: iconSize, color: iconColor),
+                  ),
           ),
 
           onTap: onTap,

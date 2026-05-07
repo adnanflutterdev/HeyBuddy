@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:hey_buddy/core/model/result.dart';
+import 'package:hey_buddy/features/feed/domain/entity/comment_entity.dart';
 import 'package:hey_buddy/features/feed/domain/entity/feed_item_entity.dart';
 import 'package:hey_buddy/features/feed/domain/usecases/upload_feed_item_usecase.dart';
 import 'package:hey_buddy/features/feed/riverpod/providers.dart';
@@ -46,4 +47,12 @@ final postDataProvider = FutureProvider.family<FeedItemEntity?, String>((
 final postLikeStream = StreamProvider.family<List<String>, String>((ref, id) {
   final postLikeStreamUsecase = ref.read(postLikeStreamUsecaseProvider);
   return postLikeStreamUsecase(id);
+});
+
+final getCommentStream = StreamProvider.family<List<CommentEntity>, String>((
+  ref,
+  postId,
+) {
+  final getCommentUsecase = ref.read(getCommentUsecaseProvider);
+  return getCommentUsecase(postId);
 });

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/features/feed/data/data_sources/feed_remote_data_source.dart';
+import 'package:hey_buddy/features/feed/domain/entity/comment_entity.dart';
 import 'package:hey_buddy/features/feed/domain/entity/feed_item_entity.dart';
 import 'package:hey_buddy/features/feed/domain/repository/feed_repository.dart';
 
@@ -47,7 +48,22 @@ class FeedRepositoryImpl extends FeedRepository {
     required String id,
     required String uid,
     required bool isLiked,
-  }) async{
+  }) async {
     await remote.togglePostLike(id: id, uid: uid, isLiked: isLiked);
+  }
+
+  @override
+  Future<Result> addComment(String postId, CommentEntity comment) async {
+    try {
+      await remote.addComment(postId, comment);
+      return Result.success('Comment added!!!');
+    } catch (e) {
+      return Result.failure('Failed to add comment');
+    }
+  }
+
+  @override
+  Stream<List<CommentEntity>> getComments(String postId) {
+    return remote.getComments(postId);
   }
 }

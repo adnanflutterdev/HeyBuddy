@@ -7,11 +7,10 @@ import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/get_color.dart';
 import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
 import 'package:hey_buddy/core/widgets/title_text.dart';
-import 'package:hey_buddy/features/feed/domain/entity/feed_item_entity.dart';
 
 class ImageViewer extends StatefulWidget {
-  const ImageViewer({super.key, required this.images, required this.pageIndex});
-  final List<MediaEntity> images;
+  const ImageViewer({super.key, required this.images, this.pageIndex = 0});
+  final List<String> images;
   final int pageIndex;
 
   @override
@@ -20,9 +19,11 @@ class ImageViewer extends StatefulWidget {
 
 class _ImageViewerState extends State<ImageViewer> {
   late int _pageIndex = widget.pageIndex;
-  late final List<MediaEntity> _images = widget.images;
+  late final List<String> _images = widget.images;
   final double _thumbnailSize = 50;
-  late final PageController _pageController = .new(initialPage:widget.pageIndex);
+  late final PageController _pageController = .new(
+    initialPage: widget.pageIndex,
+  );
   final ScrollController _scrollController = .new();
 
   @override
@@ -66,7 +67,7 @@ class _ImageViewerState extends State<ImageViewer> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: AppPadding.p16,
+          padding: AppPadding.p4,
           child: Column(
             spacing: 10,
             children: [
@@ -91,7 +92,7 @@ class _ImageViewerState extends State<ImageViewer> {
       itemBuilder: (context, index) {
         return InteractiveViewer(
           maxScale: 10,
-          child: CachedNetworkImage(imageUrl: _images[index].data.url),
+          child: CachedNetworkImage(imageUrl: _images[index]),
         );
       },
     );
@@ -108,7 +109,7 @@ class _ImageViewerState extends State<ImageViewer> {
           return GestureDetector(
             onTap: () => scrollToIndex(index),
             child: CachedNetworkImage(
-              imageUrl: _images[index].data.url,
+              imageUrl: _images[index],
               imageBuilder: (context, imageProvider) {
                 return Container(
                   width: _thumbnailSize,

@@ -17,7 +17,7 @@ abstract class CommentEntity {
 
 abstract class CommentContentEntity {
   final String? text;
-  final MediaEntity mediaEntity;
+  final MediaEntity? mediaEntity;
 
-  CommentContentEntity({required this.text, required this.mediaEntity});
+  CommentContentEntity({required this.text, this.mediaEntity});
 }

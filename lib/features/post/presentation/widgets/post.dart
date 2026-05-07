@@ -82,7 +82,7 @@ class Post extends StatelessWidget {
             );
           },
           error: (error, stackTrace) {
-            return SizedBox.shrink();
+            return const SizedBox.shrink();
           },
           loading: () {
             return Container();

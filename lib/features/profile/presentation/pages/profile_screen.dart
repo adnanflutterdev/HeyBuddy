@@ -15,6 +15,7 @@ import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/riverpod/upload_progress_provider.dart';
 import 'package:hey_buddy/core/utils/file_uploader.dart';
+import 'package:hey_buddy/core/widgets/image_viewer.dart';
 import 'package:hey_buddy/core/widgets/labeled_icon_button.dart';
 import 'package:hey_buddy/core/utils/messenger.dart';
 import 'package:hey_buddy/core/widgets/app_chip.dart';
@@ -292,8 +293,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   return _buildCoverImage();
                 },
                 imageBuilder: (context, imageProvider) {
-                  return _buildCoverImage(
-                    image: DecorationImage(image: imageProvider, fit: .cover),
+                  return GestureDetector(
+                    onTap: () {
+                      AppNavigator.push(
+                        ImageViewer(images: [profile.coverImage!]),
+                      );
+                    },
+                    child: _buildCoverImage(
+                      image: DecorationImage(image: imageProvider, fit: .cover),
+                    ),
                   );
                 },
                 errorWidget: (context, url, error) {
@@ -354,10 +362,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             return const AppLogo(size: 120);
                           },
                           imageBuilder: (context, imageProvider) {
-                            return _buildProfileImage(
-                              DecorationImage(
-                                image: imageProvider,
-                                fit: .cover,
+                            return GestureDetector(
+                              onTap: () {
+                                AppNavigator.push(
+                                  ImageViewer(images: [profile.profileImage!]),
+                                );
+                              },
+                              child: _buildProfileImage(
+                                DecorationImage(
+                                  image: imageProvider,
+                                  fit: .cover,
+                                ),
                               ),
                             );
                           },

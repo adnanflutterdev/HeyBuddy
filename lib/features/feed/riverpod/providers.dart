@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/features/feed/data/data_sources/feed_remote_data_source.dart';
 import 'package:hey_buddy/features/feed/data/repository/feed_repository_impl.dart';
+import 'package:hey_buddy/features/feed/domain/usecases/add_comment_usecase.dart';
+import 'package:hey_buddy/features/feed/domain/usecases/get_comment_usecase.dart';
 import 'package:hey_buddy/features/feed/domain/usecases/posts_usecase.dart';
 import 'package:hey_buddy/features/feed/domain/usecases/get_post_data_usecase.dart';
 import 'package:hey_buddy/features/feed/domain/usecases/post_like_stream_usecase.dart';
@@ -36,7 +38,18 @@ final postLikeStreamUsecaseProvider = Provider((ref) {
   final postRepository = ref.read(postRepositoryProvider);
   return PostLikeStreamUsecase(postRepository);
 });
+
 final togglePostLikeUsecaseProvider = Provider((ref) {
   final postRepository = ref.read(postRepositoryProvider);
   return TogglePostLikeUsecase(postRepository);
+});
+
+final addCommentUsecaseProvider = Provider((ref) {
+  final postRepository = ref.read(postRepositoryProvider);
+  return AddCommentUsecase(postRepository);
+});
+
+final getCommentUsecaseProvider = Provider((ref) {
+  final postRepository = ref.read(postRepositoryProvider);
+  return GetCommentUsecase(postRepository);
 });

@@ -18,7 +18,7 @@ class PostActions extends StatelessWidget {
       color: context.colors.container,
       padding: AppPadding.p12,
       child: Row(
-        spacing: 12,
+        spacing: 20,
         children: [
           Consumer(
             builder: (context, ref, _) {
@@ -66,7 +66,7 @@ class PostActions extends StatelessWidget {
                     spacing: 8,
                     children: [
                       const Icon(Icons.favorite),
-                      Text('loading...', style: context.style.b2),
+                      Text('0', style: context.style.b2),
                     ],
                   );
                 },
@@ -89,7 +89,22 @@ class PostActions extends StatelessWidget {
               spacing: 8,
               children: [
                 const Icon(Icons.comment),
-                Text('0', style: context.style.b2),
+                Consumer(
+                  builder: (context, ref, _) {
+                    final commentStream = ref.watch(getCommentStream(id));
+                    return commentStream.when(
+                      data: (data) {
+                        return Text('${data.length}', style: context.style.b2);
+                      },
+                      error: (error, stackTrace) {
+                        return const Text('0');
+                      },
+                      loading: () {
+                        return const Text('0');
+                      },
+                    );
+                  },
+                ),
               ],
             ),
           ),

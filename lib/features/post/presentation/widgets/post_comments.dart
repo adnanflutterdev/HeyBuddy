@@ -14,6 +14,7 @@ import 'package:hey_buddy/features/feed/data/models/timestamps.dart';
 import 'package:hey_buddy/features/feed/domain/entity/comment_entity.dart';
 import 'package:hey_buddy/features/feed/riverpod/add_comment_provider.dart';
 import 'package:hey_buddy/features/feed/riverpod/feed_provider.dart';
+import 'package:hey_buddy/features/post/presentation/widgets/comment_bubble.dart';
 import 'package:uuid/uuid.dart';
 
 class PostComments extends StatefulWidget {
@@ -25,7 +26,7 @@ class PostComments extends StatefulWidget {
 }
 
 class _PostCommentsState extends State<PostComments> {
-  double _height = 400;
+  double _height = 600;
   final TextEditingController _controller = .new();
 
   Future<void> addComment(WidgetRef ref) async {
@@ -61,89 +62,105 @@ class _PostCommentsState extends State<PostComments> {
       child: SafeArea(
         child: Column(
           mainAxisSize: .min,
-          children: [
-            GestureDetector(
-              onVerticalDragUpdate: (details) {
-                double newHeight = _height - (details.primaryDelta ?? 0);
-                if (newHeight < 300) {
-                  AppNavigator.pop();
-                }
-                setState(() {
-                  _height = newHeight.clamp(300, (9 / 10) * context.height);
-                });
-              },
-              child: Container(
-                color: Colors.transparent,
-                width: context.width,
-                height: 40,
-                child: Align(
-                  alignment: .center,
-                  child: Container(
-                    width: 50,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: context.colors.secondaryText,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                  ),
-                ),
-              ),
+          children: [_buildDragger(), _buildCommentField(), _buildComments()],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDragger() {
+    return GestureDetector(
+      onVerticalDragUpdate: (details) {
+        double newHeight = _height - (details.primaryDelta ?? 0);
+        if (newHeight < 300) {
+          AppNavigator.pop();
+        }
+        setState(() {
+          _height = newHeight.clamp(300, (9 / 10) * context.height);
+        });
+      },
+      child: Container(
+        color: Colors.transparent,
+        width: context.width,
+        height: 40,
+        child: Align(
+          alignment: .center,
+          child: Container(
+            width: 50,
+            height: 8,
+            decoration: BoxDecoration(
+              color: context.colors.secondaryText,
+              borderRadius: BorderRadius.circular(5),
             ),
-            Padding(
-              padding: AppPadding.p16,
-              child: Consumer(
-                builder: (context, ref, _) {
-                  final addCommentRef = ref.watch(addCommentProvider);
-                  if (addCommentRef.isLoading) {
-                    return AppTextField(
-                      isSuffixIconLoading: true,
-                      controller: _controller,
-                      isReadOnly: true,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCommentField() {
+    return Padding(
+      padding: AppPadding.p16,
+      child: Consumer(
+        builder: (context, ref, _) {
+          final addCommentRef = ref.watch(addCommentProvider);
+          if (addCommentRef.isLoading) {
+            return AppTextField(
+              isSuffixIconLoading: true,
+              controller: _controller,
+              isReadOnly: true,
+            );
+          }
+          return AppTextField(
+            hintText: 'Write your comment',
+            suffixIcon: Icons.send,
+            controller: _controller,
+            unfocousOnTapOutside: true,
+            onSuffixIconTapped: () => addComment(ref),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildComments() {
+    return Expanded(
+      child: Padding(
+        padding: AppPadding.p8,
+        child: Consumer(
+          builder: (context, ref, _) {
+            final commentStream = ref.watch(getCommentStream(widget.id));
+            return commentStream.when(
+              data: (comments) {
+                return ListView.separated(
+                  itemBuilder: (context, index) {
+                    return CommentBubble(
+                      comments: (
+                        prev: index == 0 ? null : comments[index - 1],
+                        current: comments[index],
+                      ),
                     );
-                  }
-                  return AppTextField(
-                    suffixIcon: Icons.send,
-                    controller: _controller,
-                    unfocousOnTapOutside: true,
-                    onSuffixIconTapped: () => addComment(ref),
-                  );
-                },
-              ),
-            ),
-            Expanded(
-              child: Consumer(
-                builder: (context, ref, _) {
-                  final commentStream = ref.watch(getCommentStream(widget.id));
-                  return commentStream.when(
-                    data: (comments) {
-                      return ListView.separated(
-                        itemBuilder: (context, index) {
-                          CommentEntity comment = comments[index];
-                          return Text(comment.content.text ?? '');
-                        },
-                        separatorBuilder: (context, index) {
-                          return AppSpacing.h8;
-                        },
-                        itemCount: comments.length,
-                      );
-                    },
-                    error: (error, stackTrace) {
-                      return const SizedBox.expand();
-                    },
-                    loading: () {
-                      return const Center(
-                        child: SizedBox(
-                          width: 30,
-                          height: 30,
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
+                  },
+                  separatorBuilder: (context, index) {
+                    return AppSpacing.h8;
+                  },
+                  itemCount: comments.length,
+                );
+              },
+              error: (error, stackTrace) {
+                return const SizedBox.expand();
+              },
+              loading: () {
+                return const Center(
+                  child: SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              },
+            );
+          },
         ),
       ),
     );

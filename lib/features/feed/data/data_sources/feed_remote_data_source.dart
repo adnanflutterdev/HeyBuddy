@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hey_buddy/features/feed/data/models/comment.dart';
 import 'package:hey_buddy/features/feed/data/models/feed_item.dart';
+import 'package:hey_buddy/features/feed/data/models/reactions.dart';
 import 'package:hey_buddy/features/feed/domain/entity/comment_entity.dart';
 import 'package:hey_buddy/features/feed/domain/entity/feed_item_entity.dart';
+import 'package:hey_buddy/features/feed/domain/entity/reactions_entity.dart';
 
 class FeedRemoteDataSource {
   final FirebaseFirestore firestore;
@@ -52,20 +54,15 @@ class FeedRemoteDataSource {
     required String uid,
     required bool isLiked,
   }) async {
+    final doc = firestore
+        .collection('post')
+        .doc(id)
+        .collection('likes')
+        .doc(uid);
     if (isLiked) {
-      await firestore
-          .collection('post')
-          .doc(id)
-          .collection('likes')
-          .doc(uid)
-          .delete();
+      await doc.delete();
     } else {
-      await firestore
-          .collection('post')
-          .doc(id)
-          .collection('likes')
-          .doc(uid)
-          .set({});
+      await doc.set({});
     }
   }
 
@@ -74,6 +71,7 @@ class FeedRemoteDataSource {
         .collection('post')
         .doc(postId)
         .collection('comments')
+        .orderBy('timestamps.createdAt')
         .snapshots()
         .map(
           (snaphots) => snaphots.docs
@@ -89,5 +87,20 @@ class FeedRemoteDataSource {
         .collection('comments')
         .doc(comment.id)
         .set((comment as Comment).toFirebase());
+  }
+
+  Future<void> addReaction({
+    required String postId,
+    required String commentId,
+    required ReactionEntity reaction,
+  }) async {
+    firestore
+        .collection('post')
+        .doc(postId)
+        .collection('comments')
+        .doc(commentId)
+        .collection('reactions')
+        .doc(reaction.userId)
+        .set((reaction as Reaction).toFirebase());
   }
 }

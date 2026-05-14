@@ -20,94 +20,8 @@ class PostActions extends StatelessWidget {
       child: Row(
         spacing: 20,
         children: [
-          Consumer(
-            builder: (context, ref, _) {
-              final likeStream = ref.watch(postLikeStream(id));
-              final uid = ref.read(uidProvider);
-              return likeStream.when(
-                data: (likes) {
-                  bool isLiked = likes.contains(uid);
-                  return Row(
-                    mainAxisSize: .min,
-                    spacing: 8,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          ref
-                              .read(postActionProvider.notifier)
-                              .togglePostLikeUsecase(
-                                id: id,
-                                uid: uid,
-                                isLiked: isLiked,
-                              );
-                        },
-                        child: Icon(
-                          isLiked ? Icons.favorite : Icons.favorite_outline,
-                          color: isLiked ? context.colors.error : null,
-                        ),
-                      ),
-                      Text('${likes.length}', style: context.style.b2),
-                    ],
-                  );
-                },
-                error: (error, stackTrace) {
-                  return Row(
-                    mainAxisSize: .min,
-                    spacing: 8,
-                    children: [
-                      const Icon(Icons.favorite),
-                      Text('0', style: context.style.b2),
-                    ],
-                  );
-                },
-                loading: () {
-                  return Row(
-                    mainAxisSize: .min,
-                    spacing: 8,
-                    children: [
-                      const Icon(Icons.favorite),
-                      Text('0', style: context.style.b2),
-                    ],
-                  );
-                },
-              );
-            },
-          ),
-          GestureDetector(
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                enableDrag: false,
-                isScrollControlled: true,
-                builder: (context) {
-                  return PostComments(id: id);
-                },
-              );
-            },
-            child: Row(
-              mainAxisSize: .min,
-              spacing: 8,
-              children: [
-                const Icon(Icons.comment),
-                Consumer(
-                  builder: (context, ref, _) {
-                    final commentStream = ref.watch(getCommentStream(id));
-                    return commentStream.when(
-                      data: (data) {
-                        return Text('${data.length}', style: context.style.b2);
-                      },
-                      error: (error, stackTrace) {
-                        return const Text('0');
-                      },
-                      loading: () {
-                        return const Text('0');
-                      },
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
+          _buildLikeButton(),
+          _buildCommentButton(context),
           Row(
             mainAxisSize: .min,
             spacing: 8,
@@ -115,6 +29,95 @@ class PostActions extends StatelessWidget {
               const Icon(Icons.share),
               Text('0', style: context.style.b2),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLikeButton() {
+    void toggleLike(WidgetRef ref, String uid, bool isLiked) {
+      final notifier = ref.read(postActionProvider.notifier);
+      notifier.togglePostLikeUsecase(id: id, uid: uid, isLiked: isLiked);
+    }
+
+    return Consumer(
+      builder: (context, ref, _) {
+        final uid = ref.read(uidProvider);
+        final likeStream = ref.watch(postLikeStream(id));
+        return likeStream.when(
+          data: (likes) {
+            bool isLiked = likes.contains(uid);
+            return Row(
+              mainAxisSize: .min,
+              spacing: 8,
+              children: [
+                GestureDetector(
+                  onTap: () => toggleLike(ref, uid, isLiked),
+                  child: Icon(
+                    isLiked ? Icons.favorite : Icons.favorite_outline,
+                    color: isLiked ? context.colors.error : null,
+                  ),
+                ),
+                Text('${likes.length}', style: context.style.b2),
+              ],
+            );
+          },
+          error: (_, _) {
+            return Row(
+              mainAxisSize: .min,
+              spacing: 8,
+              children: [
+                const Icon(Icons.favorite),
+                Text('0', style: context.style.b2),
+              ],
+            );
+          },
+          loading: () {
+            return Row(
+              mainAxisSize: .min,
+              spacing: 8,
+              children: [
+                const Icon(Icons.favorite),
+                Text('0', style: context.style.b2),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildCommentButton(BuildContext context) {
+    void openCommentSheet(String id) {
+      showModalBottomSheet(
+        context: context,
+        enableDrag: false,
+        isScrollControlled: true,
+        builder: (context) {
+          return PostComments(id: id);
+        },
+      );
+    }
+
+    return GestureDetector(
+      onTap: () => openCommentSheet(id),
+      child: Row(
+        mainAxisSize: .min,
+        spacing: 8,
+        children: [
+          const Icon(Icons.comment),
+          Consumer(
+            builder: (context, ref, _) {
+              final commentStream = ref.watch(getCommentStream(id));
+              return commentStream.when(
+                data: (data) {
+                  return Text('${data.length}', style: context.style.b2);
+                },
+                error: (_, _) => const Text('0'),
+                loading: () => const Text('0'),
+              );
+            },
           ),
         ],
       ),

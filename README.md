@@ -1,16 +1,141 @@
-# hey_buddy
+# HeyBuddy 🚀
 
-A new Flutter project.
+A modern real-time social media application built with Flutter, Firebase, and Riverpod.
+HeyBuddy enables users to connect with friends, chat in real-time, and share photos/videos with a smooth and responsive user experience.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 📱 Features
 
-A few resources to get you started if this is your first Flutter project:
+* 🔐 User Authentication (Firebase Auth)
+* 💬 Real-time Chat System
+* 👥 Friend Request & Friend Management
+* 📸 Photo & Video Sharing
+* 📰 Social Feed System
+* ⚡ Responsive & Modern UI
+* 🔄 Real-time Firebase Integration
+* 🧠 Scalable State Management using Riverpod
+* ☁️ Cloud-based Backend with Firebase
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🛠 Tech Stack
+
+### Frontend
+
+* Flutter
+* Dart
+
+### Backend & Services
+
+* Firebase Authentication
+* Cloud Firestore
+* Firebase Storage
+* Firebase Realtime Database
+
+### State Management
+
+* Riverpod
+
+---
+
+## 🏗 Architecture
+
+The project follows a scalable and maintainable architecture using:
+
+* Feature-based folder structure
+* Riverpod for dependency injection & state management
+* Firebase services abstraction
+* Reusable widgets and utilities
+
+---
+
+## 🔥 Firebase Features Used
+
+* Authentication
+* Firestore Database
+* Storage
+* Real-time updates
+* User profile management
+* Media upload handling
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+* Flutter SDK installed
+* Firebase project setup
+* Android Studio / VS Code
+
+---
+
+## ⚙️ Installation
+
+### 1️⃣ Clone the repository
+
+```bash
+git clone https://github.com/yourusername/heybuddy.git
+```
+
+### 2️⃣ Navigate to project directory
+
+```bash
+cd heybuddy
+```
+
+### 3️⃣ Install dependencies
+
+```bash
+flutter pub get
+```
+
+### 4️⃣ Run the app
+
+```bash
+flutter run
+```
+
+---
+
+## 🧠 Challenges Solved
+
+* Managing scalable real-time chat updates
+* Optimizing Firebase read/write operations
+* Designing responsive UI across devices
+* Structuring Riverpod providers efficiently
+* Handling media upload and caching
+
+---
+
+## 📈 Future Improvements
+
+* Push Notifications
+* Voice & Video Calling
+* Story Feature
+* Dark Mode
+* Group Chats
+* End-to-End Encryption
+
+---
+
+## 👨‍💻 Developer
+
+**Adnan**
+Flutter Developer | Firebase | Riverpod
+
+* GitHub: `Add your GitHub link`
+* LinkedIn: `Add your LinkedIn link`
+
+---
+
+## ⭐ Show Your Support
+
+If you like this project, give it a ⭐ on GitHub.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.

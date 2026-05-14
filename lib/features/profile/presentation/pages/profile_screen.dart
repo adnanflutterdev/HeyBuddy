@@ -19,10 +19,10 @@ import 'package:hey_buddy/core/widgets/image_viewer.dart';
 import 'package:hey_buddy/core/widgets/labeled_icon_button.dart';
 import 'package:hey_buddy/core/utils/messenger.dart';
 import 'package:hey_buddy/core/widgets/app_chip.dart';
-import 'package:hey_buddy/core/widgets/app_logo.dart';
 import 'package:hey_buddy/core/widgets/app_text_field.dart';
 import 'package:hey_buddy/core/widgets/material_icon_button.dart';
 import 'package:hey_buddy/core/widgets/primary_button.dart';
+import 'package:hey_buddy/core/widgets/profile_image.dart';
 import 'package:hey_buddy/core/widgets/stroke_text.dart';
 import 'package:hey_buddy/features/auth/presentation/riverpod/auth_provider.dart';
 import 'package:hey_buddy/features/profile/data/models/user.dart';
@@ -349,37 +349,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     alignment: .center,
                     children: [
                       if (canEdit && profileImage != null)
-                        _buildProfileImage(
+                        _buildFileImage(
                           DecorationImage(
                             image: FileImage(profileImage),
                             fit: .cover,
                           ),
                         )
                       else
-                        CachedNetworkImage(
-                          imageUrl: profile.profileImage ?? '',
-                          placeholder: (context, url) {
-                            return const AppLogo(size: 120);
-                          },
-                          imageBuilder: (context, imageProvider) {
-                            return GestureDetector(
-                              onTap: () {
-                                AppNavigator.push(
-                                  ImageViewer(images: [profile.profileImage!]),
-                                );
-                              },
-                              child: _buildProfileImage(
-                                DecorationImage(
-                                  image: imageProvider,
-                                  fit: .cover,
-                                ),
-                              ),
-                            );
-                          },
-                          errorWidget: (context, url, error) {
-                            return const AppLogo(size: 120);
-                          },
-                        ),
+                        ProfileImage(imageUrl: profile.profileImage, size: 120),
                       if (canEdit)
                         Positioned(
                           left: (context.width / 2),
@@ -423,7 +400,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileImage(DecorationImage image) {
+  Widget _buildFileImage(DecorationImage image) {
     return Container(
       width: 120,
       height: 120,

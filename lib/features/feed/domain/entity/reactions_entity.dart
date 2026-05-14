@@ -1,18 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-abstract class ReactionsEntity {
-  final List<ReactionEntity> reactions;
-
-  ReactionsEntity({required this.reactions});
-}
-
 abstract class ReactionEntity {
-  final String userRef;
-  final String type;
-  final Timestamp reactedAt;
+  final String userId;
+  final String reaction;
+  final DateTime createAt;
+  final DateTime? updatedAt;
   ReactionEntity({
-    required this.userRef,
-    required this.type,
-    required this.reactedAt,
+    required this.userId,
+    required this.reaction,
+    required this.createAt,
+    required this.updatedAt,
   });
 }

@@ -14,7 +14,7 @@ class AppLogo extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: .circle,
-          border: Border.all(color: context.colors.neonBlue, width: 2),
+          border: Border.all(color: context.colors.neonBlue),
           image: const DecorationImage(
             image: AssetImage('assets/images/logo.png'),
           ),

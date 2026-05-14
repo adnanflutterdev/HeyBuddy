@@ -125,8 +125,8 @@ flutter run
 **Adnan**
 Flutter Developer | Firebase | Riverpod
 
-* GitHub: `Add your GitHub link`
-* LinkedIn: `Add your LinkedIn link`
+* GitHub: [https://github.com/adnanflutterdev](https://github.com/adnanflutterdev)
+* LinkedIn: [www.linkedin.com/in/mohammad-adnan-linked-in](www.linkedin.com/in/mohammad-adnan-linked-in)
 
 ---
 

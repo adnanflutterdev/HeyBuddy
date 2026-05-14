@@ -126,7 +126,7 @@ flutter run
 Flutter Developer | Firebase | Riverpod
 
 * GitHub: [https://github.com/adnanflutterdev](https://github.com/adnanflutterdev)
-* LinkedIn: [www.linkedin.com/in/mohammad-adnan-linked-in](www.linkedin.com/in/mohammad-adnan-linked-in)
+* LinkedIn: [https://linkedin.com/in/mohammad-adnan-linked-in](https://linkedin.com/in/mohammad-adnan-linked-in)
 
 ---
 

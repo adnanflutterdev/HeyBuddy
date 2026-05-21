@@ -15,7 +15,7 @@ class AuthRepositoryImpl extends AuthRepository {
       if (response.user == null) {
         return Result.failure('User is null');
       } else {
-        return Result.success('Login success');
+        return Result.success(message: 'Login success');
       }
     } on FirebaseAuthException catch (e) {
       return Result.failure(e.message ?? 'Falied to login');
@@ -32,7 +32,7 @@ class AuthRepositoryImpl extends AuthRepository {
         return Result.failure('User is null');
       } else {
         await remote.saveUser(response.user!.uid, name, email);
-        return Result.success('Signup success');
+        return Result.success(message: 'Signup success');
       }
     } on FirebaseAuthException catch (e) {
       return Result.failure(e.message ?? 'Falied to create account');

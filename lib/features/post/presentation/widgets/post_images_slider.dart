@@ -4,12 +4,12 @@ import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
-import 'package:hey_buddy/features/feed/domain/entity/feed_item_entity.dart';
+import 'package:hey_buddy/features/post/domain/entity/post.dart';
 import 'package:hey_buddy/core/widgets/image_viewer.dart';
 
 class PostImagesSlider extends StatefulWidget {
   const PostImagesSlider({super.key, required this.media});
-  final List<MediaEntity> media;
+  final List<Media> media;
 
   @override
   State<PostImagesSlider> createState() => _PostImagesSliderState();
@@ -43,7 +43,7 @@ class _PostImagesSliderState extends State<PostImagesSlider> {
                     _pageIndex.value = value;
                   },
                   itemBuilder: (context, index) {
-                    MediaEntity img = widget.media[index];
+                    Media img = widget.media[index];
                     return CachedNetworkImage(
                       imageUrl: img.data.url,
                       fit: .cover,

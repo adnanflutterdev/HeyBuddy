@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
-import 'package:hey_buddy/features/feed/riverpod/feed_provider.dart';
-import 'package:hey_buddy/features/post/presentation/widgets/post.dart';
+import 'package:hey_buddy/features/post/presentation/riverpod/feed_provider.dart';
+import 'package:hey_buddy/features/post/presentation/widgets/build_post.dart';
 
 class PostScreen extends ConsumerWidget {
   const PostScreen({super.key});
@@ -18,7 +18,7 @@ class PostScreen extends ConsumerWidget {
           padding: AppPadding.p8,
           itemCount: posts.length,
           itemBuilder: (context, index) {
-            return Post(post: posts[index]);
+            return BuildPost(post: posts[index]);
           },
           separatorBuilder: (context, index) {
             return AppSpacing.h16;

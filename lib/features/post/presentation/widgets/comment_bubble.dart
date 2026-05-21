@@ -6,16 +6,16 @@ import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/get_color.dart';
+import 'package:hey_buddy/core/model/comment.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/widgets/material_text_button.dart';
 import 'package:hey_buddy/core/widgets/profile_image.dart';
 import 'package:hey_buddy/features/chat/presentation/riverpod/users_provider.dart';
-import 'package:hey_buddy/features/feed/domain/entity/comment_entity.dart';
 import 'package:intl/intl.dart';
 
 class CommentBubble extends ConsumerWidget {
   const CommentBubble({super.key, required this.comments});
-  final ({CommentEntity? prev, CommentEntity current}) comments;
+  final ({Comment? prev, Comment current}) comments;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

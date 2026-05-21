@@ -4,8 +4,8 @@ import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
-import 'package:hey_buddy/features/feed/riverpod/feed_provider.dart';
-import 'package:hey_buddy/features/feed/riverpod/post_actions_provider.dart';
+import 'package:hey_buddy/features/post/presentation/riverpod/feed_provider.dart';
+import 'package:hey_buddy/features/post/presentation/riverpod/post_actions_provider.dart';
 import 'package:hey_buddy/features/post/presentation/widgets/post_comments.dart';
 
 class PostActions extends StatelessWidget {

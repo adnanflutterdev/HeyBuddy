@@ -8,7 +8,7 @@ import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/get_color.dart';
-import 'package:hey_buddy/core/model/media_upload_data.dart';
+import 'package:hey_buddy/core/model/media_meta.dart';
 import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/riverpod/upload_progress_provider.dart';
@@ -18,8 +18,8 @@ import 'package:hey_buddy/core/widgets/app_text_field.dart';
 import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
 import 'package:hey_buddy/core/widgets/material_icon_button.dart';
 import 'package:hey_buddy/core/widgets/primary_button.dart';
-import 'package:hey_buddy/features/feed/data/models/feed_item.dart';
-import 'package:hey_buddy/features/feed/riverpod/feed_provider.dart';
+import 'package:hey_buddy/features/post/data/models/post_model.dart';
+import 'package:hey_buddy/features/post/presentation/riverpod/feed_provider.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/my_data_provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -141,11 +141,11 @@ class _PostUploadScreeenState extends State<PostUploadScreeen> {
         }
         return;
       }
-      List<MediaUploadData>? images;
+      List<MediaMeta>? images;
       if (_images.isNotEmpty) {
         String uid = ref.read(uidProvider);
         List<String> names = _images.map((file) => const Uuid().v4()).toList();
-        List<MediaUploadData>? uploadedImages = await FileUploader.uploadFiles(
+        List<MediaMeta>? uploadedImages = await FileUploader.uploadFiles(
           ref: ref,
           files: _images,
           names: names,
@@ -164,16 +164,15 @@ class _PostUploadScreeenState extends State<PostUploadScreeen> {
           images = uploadedImages;
         }
       }
-      List<Media>? media = images
-          ?.map((imageData) => Media(data: imageData, type: .image))
+      List<MediaModel>? media = images
+          ?.map((imageData) => MediaModel(data: imageData, type: .image))
           .toList();
-      Content content = Content(
+      PostContentModel content = PostContentModel(
         text: text,
         media: media,
         tags: [],
-        type: .post,
       );
-      FeedItem feedItem = FeedItem.setNewPost(
+      PostModel feedItem = PostModel.setNewPost(
         id: postId,
         userId: user.uid,
         content: content,

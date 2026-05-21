@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hey_buddy/features/profile/data/models/analytics.dart';
 import 'package:hey_buddy/features/profile/data/models/security.dart';
 import 'package:hey_buddy/features/profile/data/models/settings.dart';
-import 'package:hey_buddy/features/profile/data/models/user.dart';
+import 'package:hey_buddy/features/profile/data/models/user__data_model.dart';
 
 class AuthRemoteDataSource {
   final FirebaseAuth auth;
@@ -35,7 +35,7 @@ class AuthRemoteDataSource {
 
   Future<void> saveUser(String uid, String name, String email) async {
     try {
-      UserModel userDto = UserModel.setNewUser(
+      UserDataModel userDto = UserDataModel.setNewUser(
         uid: uid,
         name: name,
         email: email,

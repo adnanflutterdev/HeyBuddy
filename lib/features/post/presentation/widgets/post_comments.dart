@@ -6,14 +6,13 @@ import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/model/result.dart';
+import 'package:hey_buddy/core/model/timestamps.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/utils/messenger.dart';
 import 'package:hey_buddy/core/widgets/app_text_field.dart';
-import 'package:hey_buddy/features/feed/data/models/comment.dart';
-import 'package:hey_buddy/features/feed/data/models/timestamps.dart';
-import 'package:hey_buddy/features/feed/domain/entity/comment_entity.dart';
-import 'package:hey_buddy/features/feed/riverpod/add_comment_provider.dart';
-import 'package:hey_buddy/features/feed/riverpod/feed_provider.dart';
+import 'package:hey_buddy/core/model/comment.dart';
+import 'package:hey_buddy/features/post/presentation/riverpod/add_comment_provider.dart';
+import 'package:hey_buddy/features/post/presentation/riverpod/feed_provider.dart';
 import 'package:hey_buddy/features/post/presentation/widgets/comment_bubble.dart';
 import 'package:uuid/uuid.dart';
 
@@ -30,11 +29,11 @@ class _PostCommentsState extends State<PostComments> {
   final TextEditingController _controller = .new();
 
   Future<void> addComment(WidgetRef ref) async {
-    CommentEntity comment = Comment(
+    Comment comment = CommentModel(
       id: const Uuid().v4(),
       userId: ref.read(uidProvider),
-      content: CommentContent(text: _controller.text),
-      timestamps: Timestamps(createdAt: DateTime.now()),
+      content: CommentContentModel(text: _controller.text),
+      timestamps: TimestampsModel(createdAt: DateTime.now()),
     );
 
     Result result = await ref

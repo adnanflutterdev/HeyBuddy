@@ -1,0 +1,58 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
+import 'package:hey_buddy/core/model/comment.dart';
+import 'package:hey_buddy/core/model/result.dart';
+import 'package:hey_buddy/features/post/domain/entity/post.dart';
+import 'package:hey_buddy/features/post/domain/usecases/upload_feed_item_usecase.dart';
+import 'package:hey_buddy/features/post/presentation/riverpod/providers.dart';
+
+class UploadFeedItemNotifier extends StateNotifier<AsyncValue> {
+  final UploadFeedItemUsecase uploadFeedItemUsecase;
+  UploadFeedItemNotifier(this.uploadFeedItemUsecase)
+    : super(const AsyncData(null));
+
+  Future<Result> uploadFeedItem(Post post) async {
+    state = const AsyncLoading();
+    try {
+      Result result = await uploadFeedItemUsecase(post);
+      state = const AsyncData(null);
+      return result;
+    } catch (_) {
+      state = const AsyncData(null);
+      return Result.failure('Something went wrong');
+    }
+  }
+}
+
+final createPostProvider = StateNotifierProvider((ref) {
+  UploadFeedItemUsecase createPostUsecase = ref.read(
+    uploadFeedItemUsecaseProvider,
+  );
+  return UploadFeedItemNotifier(createPostUsecase);
+});
+
+final postsProvider = StreamProvider((ref) {
+  final postsUsecase = ref.read(postsUsecaseProvider);
+  return postsUsecase();
+});
+
+final postDataProvider = FutureProvider.family<Post?, String>((
+  ref,
+  postId,
+) async {
+  final getPostData = ref.read(getPostDataUsecaseProvider);
+  return await getPostData(postId);
+});
+
+final postLikeStream = StreamProvider.family<List<String>, String>((ref, id) {
+  final postLikeStreamUsecase = ref.read(postLikeStreamUsecaseProvider);
+  return postLikeStreamUsecase(id);
+});
+
+final getCommentStream = StreamProvider.family<List<Comment>, String>((
+  ref,
+  postId,
+) {
+  final getCommentUsecase = ref.read(getCommentUsecaseProvider);
+  return getCommentUsecase(postId);
+});

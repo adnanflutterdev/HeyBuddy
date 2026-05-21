@@ -10,7 +10,7 @@ import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/app_validators.dart';
-import 'package:hey_buddy/core/model/media_upload_data.dart';
+import 'package:hey_buddy/core/model/media_meta.dart';
 import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/riverpod/upload_progress_provider.dart';
@@ -25,7 +25,7 @@ import 'package:hey_buddy/core/widgets/primary_button.dart';
 import 'package:hey_buddy/core/widgets/profile_image.dart';
 import 'package:hey_buddy/core/widgets/stroke_text.dart';
 import 'package:hey_buddy/features/auth/presentation/riverpod/auth_provider.dart';
-import 'package:hey_buddy/features/profile/data/models/user.dart';
+import 'package:hey_buddy/features/profile/data/models/user__data_model.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/toggle_edit_provider.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/update_my_data_provider.dart';
@@ -142,8 +142,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       //
       _formKey.currentState?.save();
 
-      Details prevDetails = ref.read(myDataProvider).value!.details as Details;
-      Profile prevProfile = ref.read(myDataProvider).value!.profile as Profile;
+      DetailsModel prevDetails =
+          ref.read(myDataProvider).value!.details as DetailsModel;
+      ProfileModel prevProfile =
+          ref.read(myDataProvider).value!.profile as ProfileModel;
 
       String? coverImage = prevProfile.coverImage;
       String? profileImage = prevProfile.profileImage;
@@ -156,7 +158,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ];
         List<String> names = [ref.read(uidProvider), ref.read(uidProvider)];
 
-        List<MediaUploadData>? urls = await FileUploader.uploadFiles(
+        List<MediaMeta>? urls = await FileUploader.uploadFiles(
           ref: ref,
           files: files,
           names: names,
@@ -179,7 +181,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         }
       }
 
-      Details details = Details(
+      DetailsModel details = DetailsModel(
         name: _nameController.text.trim(),
         email: prevDetails.email,
         dob: _selectedDob != null
@@ -188,7 +190,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         gender: _selectedGender ?? prevDetails.gender,
       );
 
-      Profile profile = Profile(
+      ProfileModel profile = ProfileModel(
         coverImage: coverImage,
         profileImage: profileImage,
         interests: _interests.value,

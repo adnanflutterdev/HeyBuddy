@@ -60,24 +60,26 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  void _authenticate(WidgetRef ref) {
+  void _authenticate(WidgetRef ref) async {
     if (_formKey.currentState!.validate()) {
+      Result result;
       _formKey.currentState!.save();
+      final authNotifier = ref.read(authProvider.notifier);
+
       if (_isLoginScreen.value) {
-        ref
-            .read(authProvider.notifier)
-            .login(
-              _emailController.text.trim(),
-              _passwordController.text.trim(),
-            );
+        result = await authNotifier.login(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+        );
       } else {
-        ref
-            .read(authProvider.notifier)
-            .signup(
-              _nameController.text.trim(),
-              _emailController.text.trim(),
-              _passwordController.text.trim(),
-            );
+        result = await authNotifier.signup(
+          _nameController.text.trim(),
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+        );
+      }
+      if (!result.success && mounted) {
+        showMessenger(context, result: result);
       }
     }
   }
@@ -184,7 +186,9 @@ class _LoginScreenState extends State<LoginScreen>
                     isObscure: isObscure,
                     hintText: '●●●●●●●●',
                     controller: _passwordController,
-                    suffixIcon: isObscure ? Icons.lock : Icons.lock_open,
+                    suffixIcon: isObscure
+                        ? Icons.visibility_off
+                        : Icons.visibility,
                     onSuffixIconTapped: () {
                       _isObscure.value = !isObscure;
                     },
@@ -233,26 +237,6 @@ class _LoginScreenState extends State<LoginScreen>
   Widget _buildAuthenticationButton(bool isLoginScreen) {
     return Consumer(
       builder: (context, ref, child) {
-        ref.listen(authProvider, (previous, next) {
-          next.when(
-            data: (result) {
-              if (result == null) return;
-              if (!result.success) {
-                showMessenger(context, result: result);
-              }
-            },
-            error: (error, stackTrace) {
-              showMessenger(
-                context,
-                result: Result(
-                  success: false,
-                  message: 'Something went wrong!!!',
-                ),
-              );
-            },
-            loading: () {},
-          );
-        });
         final authState = ref.watch(authProvider);
         return PrimaryButton(
           onPressed: () => _authenticate(ref),

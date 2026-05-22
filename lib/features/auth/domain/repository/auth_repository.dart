@@ -1,7 +1,7 @@
-import 'package:hey_buddy/core/model/result.dart';
+import 'package:hey_buddy/core/typedefs/typedefs.dart';
 
 abstract class AuthRepository {
-  Future<Result> login(String email, String password);
-  Future<Result> signup(String name, String email, String password);
-  Future<void> logout();
+  ResultFuture<void> login(String email, String password);
+  ResultFuture<void> signup(String name, String email, String password);
+  ResultFuture<void> logout();
 }

@@ -1,10 +1,11 @@
-abstract class AnalyticsEntity {
+abstract class Analytics {
   final int postCount;
   final int videoCount;
   final int friendsCount;
   final int followerCount;
   final int engagementScore;
-  AnalyticsEntity({
+  
+  Analytics({
     required this.postCount,
     required this.videoCount,
     required this.friendsCount,

@@ -3,13 +3,11 @@ import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/features/profile/domain/usecases/update_my_data_usecase.dart';
 import 'package:hey_buddy/features/profile/domain/usecases/get_my_data_usecase.dart';
 import 'package:hey_buddy/features/profile/data/repository/my_data_repository_impl.dart';
-import 'package:hey_buddy/features/profile/data/data_sources/my_data_source.dart';
+import 'package:hey_buddy/features/profile/data/data_sources/my_data_remote_source.dart';
 
 final myDataSourceProvider = Provider((ref) {
   final firestore = ref.read(firebaseFirestoreProvider);
-  final auth = ref.read(firebaseAuthProvider);
-
-  return MyDataSource(auth.currentUser?.uid ?? '', firestore);
+  return MyDataRemoteSource(firestore);
 });
 
 final myDataRepositoryProvider = Provider((ref) {

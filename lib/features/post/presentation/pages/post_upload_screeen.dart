@@ -131,7 +131,7 @@ class _PostUploadScreeenState extends State<PostUploadScreeen> {
     String text = _contentController.text.trim();
     if (text.isNotEmpty || _images.isNotEmpty) {
       String postId = const Uuid().v4();
-      UserEntity? user = ref.read(myDataProvider).value;
+      UserData? user = ref.read(myDataProvider).value;
       if (user == null) {
         if (mounted) {
           showMessenger(

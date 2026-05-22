@@ -18,13 +18,13 @@ enum Interest {
   travel,
 }
 
-abstract class UserEntity {
+abstract class UserData {
   final String uid;
-  final ProfileEnity profile;
-  final AccountEntity account;
-  final DetailsEntity details;
+  final Profile profile;
+  final Account account;
+  final Details details;
 
-  UserEntity({
+  UserData({
     required this.uid,
     required this.profile,
     required this.account,
@@ -32,26 +32,21 @@ abstract class UserEntity {
   });
 }
 
-abstract class DetailsEntity {
+abstract class Details {
   final String name;
   final String email;
   final Timestamp? dob;
   final Gender? gender;
-  DetailsEntity({
-    required this.name,
-    required this.email,
-    this.dob,
-    this.gender,
-  });
+  Details({required this.name, required this.email, this.dob, this.gender});
 }
 
-abstract class AccountEntity {
+abstract class Account {
   final bool isOnline;
   final bool isVerified;
   final AccountType accountType;
   final Timestamp createdAt;
   final Timestamp lastActive;
-  AccountEntity({
+  Account({
     required this.isOnline,
     required this.isVerified,
     required this.accountType,
@@ -60,14 +55,14 @@ abstract class AccountEntity {
   });
 }
 
-abstract class ProfileEnity {
+abstract class Profile {
   final String? profileImage;
   final String? coverImage;
   final String? bio;
   final String? location;
   final String? website;
   final List<Interest>? interests;
-  ProfileEnity({
+  Profile({
     this.profileImage,
     this.coverImage,
     this.bio,

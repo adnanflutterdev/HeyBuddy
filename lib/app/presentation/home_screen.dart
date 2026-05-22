@@ -14,7 +14,7 @@ import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
 import 'package:hey_buddy/features/chat/presentation/pages/chat_screen.dart';
 import 'package:hey_buddy/features/post/presentation/pages/post_screen.dart';
 import 'package:hey_buddy/features/post/presentation/pages/post_upload_screeen.dart';
-import 'package:hey_buddy/features/profile/data/models/user__data_model.dart';
+import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 import 'package:hey_buddy/features/profile/presentation/pages/profile_screen.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/toggle_edit_provider.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/my_data_provider.dart';
@@ -109,7 +109,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final userRef = ref.watch(myDataProvider);
     final canEdit = ref.watch(toggleEditProvider);
 
-    UserDataModel? user = userRef.value as UserDataModel?;
+    UserData? user = userRef.value;
     (String, String) title = ('Hey ', 'Buddy');
     if (tabIndex == 3) {
       if (user != null) {

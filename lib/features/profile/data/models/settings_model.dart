@@ -1,4 +1,4 @@
-import 'package:hey_buddy/features/profile/domain/entity/settings_entity.dart';
+import 'package:hey_buddy/features/profile/domain/entity/settings.dart';
 
 extension AllowMessagesFromX on AllowMessagesFrom {
   static AllowMessagesFrom fromFirebase(String allowMessagesFrom) {
@@ -8,7 +8,7 @@ extension AllowMessagesFromX on AllowMessagesFrom {
   }
 }
 
-class SettingsModel extends SettingsEntity {
+class SettingsModel extends Settings {
   SettingsModel({
     required super.language,
     required super.privacySettings,
@@ -18,16 +18,18 @@ class SettingsModel extends SettingsEntity {
   factory SettingsModel.setNewUser() {
     return SettingsModel(
       language: 'English',
-      privacySettings: PrivacySettings.setNewUser(),
-      notificationSettings: NotificationSettings.setNewUser(),
+      privacySettings: PrivacySettingsModel.setNewUser(),
+      notificationSettings: NotificationSettingsModel.setNewUser(),
     );
   }
 
   factory SettingsModel.fromFirebase(Map<String, dynamic> settings) {
     return SettingsModel(
       language: settings['language'],
-      privacySettings: PrivacySettings.fromFirebase(settings['privacySettings']),
-      notificationSettings: NotificationSettings.fromFirebase(
+      privacySettings: PrivacySettingsModel.fromFirebase(
+        settings['privacySettings'],
+      ),
+      notificationSettings: NotificationSettingsModel.fromFirebase(
         settings['notificationSettings'],
       ),
     );
@@ -36,23 +38,23 @@ class SettingsModel extends SettingsEntity {
   Map<String, dynamic> toFirebase() {
     return {
       "language": language,
-      "privacySettings": (privacySettings as PrivacySettings).toFirebase(),
-      "notificationSettings": (notificationSettings as NotificationSettings)
-          .toFirebase(),
+      "privacySettings": (privacySettings as PrivacySettingsModel).toFirebase(),
+      "notificationSettings":
+          (notificationSettings as NotificationSettingsModel).toFirebase(),
     };
   }
 }
 
-class PrivacySettings extends PrivacySettingsEntity {
-  PrivacySettings({
+class PrivacySettingsModel extends PrivacySettings {
+  PrivacySettingsModel({
     required super.showEmail,
     required super.showDOB,
     required super.allowFriendRequests,
     required super.allowMessagesFrom,
   });
 
-  factory PrivacySettings.setNewUser() {
-    return PrivacySettings(
+  factory PrivacySettingsModel.setNewUser() {
+    return PrivacySettingsModel(
       showEmail: true,
       showDOB: true,
       allowFriendRequests: true,
@@ -60,8 +62,10 @@ class PrivacySettings extends PrivacySettingsEntity {
     );
   }
 
-  factory PrivacySettings.fromFirebase(Map<String, dynamic> privacySettings) {
-    return PrivacySettings(
+  factory PrivacySettingsModel.fromFirebase(
+    Map<String, dynamic> privacySettings,
+  ) {
+    return PrivacySettingsModel(
       showEmail: privacySettings['showEmail'],
       showDOB: privacySettings['showDOB'],
       allowFriendRequests: privacySettings['allowFriendRequests'],
@@ -79,25 +83,25 @@ class PrivacySettings extends PrivacySettingsEntity {
   }
 }
 
-class NotificationSettings extends NotificationSettingsEntity {
-  NotificationSettings({
+class NotificationSettingsModel extends NotificationSettings {
+  NotificationSettingsModel({
     required super.comments,
     required super.friendRequests,
     required super.messages,
   });
 
-  factory NotificationSettings.setNewUser() {
-    return NotificationSettings(
+  factory NotificationSettingsModel.setNewUser() {
+    return NotificationSettingsModel(
       comments: true,
       friendRequests: true,
       messages: true,
     );
   }
 
-  factory NotificationSettings.fromFirebase(
+  factory NotificationSettingsModel.fromFirebase(
     Map<String, dynamic> notificationSettings,
   ) {
-    return NotificationSettings(
+    return NotificationSettingsModel(
       comments: notificationSettings['comments'],
       friendRequests: notificationSettings['friendRequests'],
       messages: notificationSettings['messages'],

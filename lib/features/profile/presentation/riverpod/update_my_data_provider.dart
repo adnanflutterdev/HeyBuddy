@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:hey_buddy/core/model/result.dart';
-import 'package:hey_buddy/features/profile/data/models/user__data_model.dart';
+import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 import 'package:hey_buddy/features/profile/domain/usecases/update_my_data_usecase.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/providers.dart';
 
@@ -11,13 +11,15 @@ class UpdateMyDataNotifier extends StateNotifier<AsyncValue> {
   UpdateMyDataNotifier(this.updateMyDataUsecase) : super(const AsyncData(null));
 
   Future<Result> updateMyData(
-    DetailsModel details,
-    ProfileModel profile,
+    String uid,
+    Details details,
+    Profile profile,
   ) async {
     state = const AsyncLoading();
 
     try {
-      Result result = await updateMyDataUsecase(details, profile);
+      UpdateMyDataParams params = UpdateMyDataParams(uid, details, profile);
+      Result result = await updateMyDataUsecase(params);
       state = const AsyncData(null);
       return result;
     } catch (e) {

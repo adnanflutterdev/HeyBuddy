@@ -1,24 +1,24 @@
-enum AllowMessagesFrom{
-  none,everyone,friends
-}
+enum AllowMessagesFrom { none, everyone, friends }
 
-abstract class SettingsEntity {
+abstract class Settings {
   final String language;
-  final PrivacySettingsEntity privacySettings;
-  final NotificationSettingsEntity notificationSettings;
-  SettingsEntity({
+  final PrivacySettings privacySettings;
+  final NotificationSettings notificationSettings;
+
+  Settings({
     required this.language,
     required this.privacySettings,
     required this.notificationSettings,
   });
 }
 
-abstract class PrivacySettingsEntity {
+abstract class PrivacySettings {
   final bool showEmail;
   final bool showDOB;
   final bool allowFriendRequests;
   final AllowMessagesFrom allowMessagesFrom;
-  PrivacySettingsEntity({
+
+  PrivacySettings({
     required this.showEmail,
     required this.showDOB,
     required this.allowFriendRequests,
@@ -26,11 +26,12 @@ abstract class PrivacySettingsEntity {
   });
 }
 
-abstract class NotificationSettingsEntity {
+abstract class NotificationSettings {
   final bool comments;
   final bool friendRequests;
   final bool messages;
-  NotificationSettingsEntity({
+  
+  NotificationSettings({
     required this.comments,
     required this.friendRequests,
     required this.messages,

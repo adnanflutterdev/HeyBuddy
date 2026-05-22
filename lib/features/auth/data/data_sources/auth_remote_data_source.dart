@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hey_buddy/features/profile/data/models/analytics.dart';
-import 'package:hey_buddy/features/profile/data/models/security.dart';
-import 'package:hey_buddy/features/profile/data/models/settings.dart';
-import 'package:hey_buddy/features/profile/data/models/user__data_model.dart';
+import 'package:hey_buddy/features/profile/data/models/analytics_model.dart';
+import 'package:hey_buddy/features/profile/data/models/security_model.dart';
+import 'package:hey_buddy/features/profile/data/models/settings_model.dart';
+import 'package:hey_buddy/features/profile/data/models/user_data_model.dart';
 
 class AuthRemoteDataSource {
   final FirebaseAuth auth;
@@ -34,24 +34,22 @@ class AuthRemoteDataSource {
   }
 
   Future<void> saveUser(String uid, String name, String email) async {
-    try {
-      UserDataModel userDto = UserDataModel.setNewUser(
-        uid: uid,
-        name: name,
-        email: email,
-      );
+    UserDataModel userDto = UserDataModel.setNewUser(
+      uid: uid,
+      name: name,
+      email: email,
+    );
 
-      SettingsModel settings = SettingsModel.setNewUser();
-      Security security = Security.setNewUser();
-      Analytics analytics = Analytics.setNewUser();
+    SettingsModel settings = SettingsModel.setNewUser();
+    SecurityModel security = SecurityModel.setNewUser();
+    AnalyticsModel analytics = AnalyticsModel.setNewUser();
 
-      DocumentReference ref = firestore.collection('user').doc(uid);
-      await ref.set(userDto.toFirebase());
+    DocumentReference ref = firestore.collection('user').doc(uid);
+    await ref.set(userDto.toFirebase());
 
-      CollectionReference metaData = ref.collection('config');
-      await metaData.doc('settings').set(settings.toFirebase());
-      await metaData.doc('security').set(security.toFirebase());
-      await metaData.doc('analytics').set(analytics.toFirebase());
-    } catch (_) {}
+    CollectionReference metaData = ref.collection('config');
+    await metaData.doc('settings').set(settings.toFirebase());
+    await metaData.doc('security').set(security.toFirebase());
+    await metaData.doc('analytics').set(analytics.toFirebase());
   }
 }

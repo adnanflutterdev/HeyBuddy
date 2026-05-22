@@ -18,13 +18,22 @@ extension InterestX on Interest {
   }
 }
 
-class UserDataModel extends UserEntity {
+class UserDataModel extends UserData {
   UserDataModel({
     required super.uid,
     required super.profile,
     required super.account,
     required super.details,
   });
+
+  factory UserDataModel.fromEntity(UserData user) {
+    return UserDataModel(
+      uid: user.uid,
+      profile: ProfileModel.fromEntity(user.profile),
+      account: AccountModel.fromEntity(user.account),
+      details: DetailsModel.fromEntity(user.details),
+    );
+  }
 
   factory UserDataModel.setNewUser({
     required String uid,
@@ -58,13 +67,22 @@ class UserDataModel extends UserEntity {
   }
 }
 
-class DetailsModel extends DetailsEntity {
+class DetailsModel extends Details {
   DetailsModel({
     required super.name,
     required super.email,
     required super.dob,
     required super.gender,
   });
+
+  factory DetailsModel.fromEntity(Details details) {
+    return DetailsModel(
+      name: details.name,
+      email: details.email,
+      dob: details.dob,
+      gender: details.gender,
+    );
+  }
 
   factory DetailsModel.setNewUser(String name, String email) {
     return DetailsModel(name: name, email: email, dob: null, gender: null);
@@ -86,7 +104,7 @@ class DetailsModel extends DetailsEntity {
   }
 }
 
-class AccountModel extends AccountEntity {
+class AccountModel extends Account {
   AccountModel({
     required super.isOnline,
     required super.isVerified,
@@ -94,6 +112,16 @@ class AccountModel extends AccountEntity {
     required super.createdAt,
     required super.lastActive,
   });
+
+  factory AccountModel.fromEntity(Account account) {
+    return AccountModel(
+      isOnline: account.isOnline,
+      isVerified: account.isVerified,
+      accountType: account.accountType,
+      createdAt: account.createdAt,
+      lastActive: account.lastActive,
+    );
+  }
 
   factory AccountModel.setNewUser() {
     return AccountModel(
@@ -128,7 +156,7 @@ class AccountModel extends AccountEntity {
   }
 }
 
-class ProfileModel extends ProfileEnity {
+class ProfileModel extends Profile {
   ProfileModel({
     required super.profileImage,
     required super.coverImage,
@@ -137,6 +165,17 @@ class ProfileModel extends ProfileEnity {
     required super.website,
     required super.interests,
   });
+
+  factory ProfileModel.fromEntity(Profile profile) {
+    return ProfileModel(
+      profileImage: profile.profileImage,
+      coverImage: profile.coverImage,
+      bio: profile.bio,
+      location: profile.location,
+      website: profile.website,
+      interests: profile.interests,
+    );
+  }
 
   factory ProfileModel.setNewUser() {
     return ProfileModel(

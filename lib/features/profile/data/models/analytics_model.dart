@@ -1,7 +1,7 @@
-import 'package:hey_buddy/features/profile/domain/entity/analytics_entity.dart';
+import 'package:hey_buddy/features/profile/domain/entity/analytics.dart';
 
-class Analytics extends AnalyticsEntity {
-  Analytics({
+class AnalyticsModel extends Analytics {
+  AnalyticsModel({
     required super.postCount,
     required super.videoCount,
     required super.friendsCount,
@@ -9,8 +9,8 @@ class Analytics extends AnalyticsEntity {
     required super.engagementScore,
   });
 
-  factory Analytics.setNewUser() {
-    return Analytics(
+  factory AnalyticsModel.setNewUser() {
+    return AnalyticsModel(
       postCount: 0,
       videoCount: 0,
       friendsCount: 0,
@@ -19,8 +19,8 @@ class Analytics extends AnalyticsEntity {
     );
   }
 
-  factory Analytics.fromFirebase(Map<String, dynamic> analytics) {
-    return Analytics(
+  factory AnalyticsModel.fromFirebase(Map<String, dynamic> analytics) {
+    return AnalyticsModel(
       postCount: analytics['postCount'],
       videoCount: analytics['videoCount'],
       friendsCount: analytics['friendsCount'],

@@ -1,5 +1,4 @@
 import 'package:hey_buddy/core/model/comment.dart';
-import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/typedefs/typedefs.dart';
 import 'package:hey_buddy/features/post/domain/entity/post.dart';
 

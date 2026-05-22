@@ -1,16 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-abstract class SecurityEntity {
+abstract class Security {
   final String token;
-  final List<LoginHistoryEntity> loginHistory;
-  SecurityEntity({required this.token, required this.loginHistory});
+  final List<LoginHistory> loginHistory;
+  
+  Security({required this.token, required this.loginHistory});
 }
 
-abstract class LoginHistoryEntity {
+abstract class LoginHistory {
   final String device;
   final String ip;
   final Timestamp loginTime;
-  LoginHistoryEntity({
+
+  LoginHistory({
     required this.device,
     required this.ip,
     required this.loginTime,

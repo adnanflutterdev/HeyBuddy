@@ -14,7 +14,7 @@ class PostRepositoryImpl extends PostRepository {
   ResultFuture uploadPost(Post post) async {
     try {
       await remote.uploadFeedItem(PostModel.fromEntity(post));
-      return Result.success(message: 'Post created successfully');
+      return Result.success('Post created successfully');
     } on FirebaseException catch (e) {
       return Result.failure(e.message ?? 'Failed to create post');
     } catch (e) {
@@ -56,14 +56,14 @@ class PostRepositoryImpl extends PostRepository {
     } catch (e) {
       return Result.failure('Liked Successfully');
     }
-    return Result.success(message: 'Liked Successfully');
+    return Result.success('Liked Successfully');
   }
 
   @override
   ResultFuture addComment(String postId, Comment comment) async {
     try {
       await remote.addComment(postId, comment);
-      return Result.success(message: 'Comment added!!!');
+      return Result.success('Comment added!!!');
     } catch (e) {
       return Result.failure('Failed to add comment');
     }

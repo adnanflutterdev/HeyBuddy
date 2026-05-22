@@ -25,7 +25,7 @@ import 'package:hey_buddy/core/widgets/primary_button.dart';
 import 'package:hey_buddy/core/widgets/profile_image.dart';
 import 'package:hey_buddy/core/widgets/stroke_text.dart';
 import 'package:hey_buddy/features/auth/presentation/riverpod/auth_provider.dart';
-import 'package:hey_buddy/features/profile/data/models/user__data_model.dart';
+import 'package:hey_buddy/features/profile/data/models/user_data_model.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/toggle_edit_provider.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/update_my_data_provider.dart';
@@ -142,10 +142,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       //
       _formKey.currentState?.save();
 
-      DetailsModel prevDetails =
-          ref.read(myDataProvider).value!.details as DetailsModel;
-      ProfileModel prevProfile =
-          ref.read(myDataProvider).value!.profile as ProfileModel;
+      UserData? userData = ref.read(myDataProvider).value;
+
+      if (userData == null) {
+        showMessenger(
+          context,
+          result: Result.failure('Failed to update your data'),
+        );
+        return;
+      }
+
+      Details prevDetails = userData.details;
+      Profile prevProfile = userData.profile;
 
       String? coverImage = prevProfile.coverImage;
       String? profileImage = prevProfile.profileImage;
@@ -201,7 +209,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
       final result = await ref
           .read(updateMyDataProvider.notifier)
-          .updateMyData(details, profile);
+          .updateMyData(ref.read(uidProvider), details, profile);
 
       if (mounted) {
         showMessenger(context, result: result);
@@ -271,7 +279,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         : null;
   }
 
-  Widget _buildProfile(ProfileEnity profile, bool canEdit) {
+  Widget _buildProfile(Profile profile, bool canEdit) {
     return SizedBox(
       width: context.width,
       height: 250,
@@ -414,7 +422,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildUserDetails(DetailsEntity details, bool canEdit) {
+  Widget _buildUserDetails(Details details, bool canEdit) {
     DateTime? dob = details.dob?.toDate();
     String? dobString = dob != null ? DateFormat.yMMMd().format(dob) : null;
     _nameController.text = details.name;
@@ -535,7 +543,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileDetails(ProfileEnity profile, bool canEdit) {
+  Widget _buildProfileDetails(Profile profile, bool canEdit) {
     _locationController.text = profile.location ?? '';
     _bioController.text = profile.bio ?? '';
     _interests.value = [...?profile.interests];
@@ -657,7 +665,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildAccountInfo(AccountEntity account) {
+  Widget _buildAccountInfo(Account account) {
     return Column(
       crossAxisAlignment: .start,
       children: [

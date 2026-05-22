@@ -19,7 +19,7 @@ import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
 import 'package:hey_buddy/core/widgets/material_icon_button.dart';
 import 'package:hey_buddy/core/widgets/primary_button.dart';
 import 'package:hey_buddy/features/post/data/models/post_model.dart';
-import 'package:hey_buddy/features/post/presentation/riverpod/feed_provider.dart';
+import 'package:hey_buddy/features/post/presentation/riverpod/post_provider.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/my_data_provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -179,7 +179,7 @@ class _PostUploadScreeenState extends State<PostUploadScreeen> {
       );
       Result result = await ref
           .read(createPostProvider.notifier)
-          .uploadFeedItem(feedItem);
+          .uploadPost(feedItem);
       if (mounted) {
         showMessenger(context, result: result);
         ref.read(uploadProgressProvider.notifier).updateProgress(0);

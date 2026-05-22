@@ -14,7 +14,7 @@ class PostActionsNotifier extends StateNotifier<AsyncValue> {
     required bool isLiked,
   }) async {
     state = const AsyncLoading();
-    await togglePostLikeUsecase(id: id, uid: uid, isLiked: isLiked);
+    await togglePostLikeUsecase(TogglePostLikeParams(id, uid, isLiked));
     state = const AsyncData(null);
   }
 }

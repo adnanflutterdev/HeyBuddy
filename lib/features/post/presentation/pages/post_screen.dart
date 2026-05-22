@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
-import 'package:hey_buddy/features/post/presentation/riverpod/feed_provider.dart';
+import 'package:hey_buddy/features/post/presentation/riverpod/post_provider.dart';
 import 'package:hey_buddy/features/post/presentation/widgets/build_post.dart';
 
 class PostScreen extends ConsumerWidget {

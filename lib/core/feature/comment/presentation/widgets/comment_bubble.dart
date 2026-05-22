@@ -6,20 +6,30 @@ import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/get_color.dart';
-import 'package:hey_buddy/core/model/comment.dart';
+import 'package:hey_buddy/core/feature/comment/data/model/comment_model.dart';
+import 'package:hey_buddy/core/feature/comment/domain/usecase/add_reaction_usecase.dart';
+import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_providers.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
+import 'package:hey_buddy/core/utils/messenger.dart';
 import 'package:hey_buddy/core/widgets/material_text_button.dart';
 import 'package:hey_buddy/core/widgets/profile_image.dart';
 import 'package:hey_buddy/features/chat/presentation/riverpod/users_provider.dart';
+import 'package:hey_buddy/features/post/data/models/reaction_model.dart';
 import 'package:intl/intl.dart';
 
 class CommentBubble extends ConsumerWidget {
-  const CommentBubble({super.key, required this.comments});
+  const CommentBubble({
+    super.key,
+    required this.postId,
+    required this.comments,
+  });
+  final String postId;
   final ({Comment? prev, Comment current}) comments;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     String? date;
+    OverlayEntry? overlayEntry;
     final GetColor colors = context.colors;
     final String myUid = ref.watch(uidProvider);
     final bool isMine = comments.current.userId == myUid;
@@ -37,8 +47,36 @@ class CommentBubble extends ConsumerWidget {
         date = currentDate;
       }
     }
-    OverlayEntry? overlayEntry;
-    void openReactionMenu(TapDownDetails details) {
+
+    void removeReactionOverlay() {
+      if (overlayEntry != null) {
+        overlayEntry?.remove();
+        overlayEntry = null;
+      }
+    }
+
+    Future<void> addReaction(String reaction) async {
+      removeReactionOverlay();
+      Comment comment = comments.current;
+      String userId = ref.read(uidProvider);
+      final commentNotifier = ref.read(commentProvider.notifier);
+      ReactionModel reactionModel = ReactionModel(
+        userId: userId,
+        reaction: reaction,
+        createAt: DateTime.now(),
+      );
+      AddReactionParams params = AddReactionParams(
+        id: postId,
+        commentId: comment.id,
+        reaction: reactionModel,
+      );
+      final result = await commentNotifier.addReaction(params);
+      if (!result.success && context.mounted) {
+        showMessenger(context, result: result);
+      }
+    }
+
+    void openReactionOverlay(TapDownDetails details) {
       final Offset offset = details.globalPosition;
 
       List<String> reactions = ['😆', '😂', '❤️', '😍', '😡'];
@@ -48,14 +86,7 @@ class CommentBubble extends ConsumerWidget {
           return Stack(
             children: [
               Positioned.fill(
-                child: GestureDetector(
-                  onTap: () {
-                    if (overlayEntry != null) {
-                      overlayEntry?.remove();
-                      overlayEntry = null;
-                    }
-                  },
-                ),
+                child: GestureDetector(onTap: removeReactionOverlay),
               ),
               Positioned(
                 left: offset.dx,
@@ -78,7 +109,10 @@ class CommentBubble extends ConsumerWidget {
                         .map(
                           (reaction) => MaterialTextButton(
                             text: reaction,
-                            onPressed: () {},
+                            onPressed: () {
+                              print('Tapped');
+                              addReaction(reaction);
+                            },
                             isTransparent: true,
                             style: context.style.h1,
                           ),
@@ -170,7 +204,7 @@ class CommentBubble extends ConsumerWidget {
                                 children: [
                                   MaterialTextButton(
                                     text: '😆',
-                                    onTapDown: openReactionMenu,
+                                    onTapDown: openReactionOverlay,
                                     style: context.style.b3,
                                   ),
                                   MaterialTextButton(

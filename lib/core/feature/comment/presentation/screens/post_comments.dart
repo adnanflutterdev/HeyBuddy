@@ -5,15 +5,15 @@ import 'package:hey_buddy/config/extensions/size_extention.dart';
 import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
+import 'package:hey_buddy/core/feature/comment/data/model/comment_model.dart';
 import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/model/timestamps.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/utils/messenger.dart';
 import 'package:hey_buddy/core/widgets/app_text_field.dart';
-import 'package:hey_buddy/core/model/comment.dart';
-import 'package:hey_buddy/features/post/presentation/riverpod/add_comment_provider.dart';
-import 'package:hey_buddy/features/post/presentation/riverpod/feed_provider.dart';
-import 'package:hey_buddy/features/post/presentation/widgets/comment_bubble.dart';
+import 'package:hey_buddy/core/feature/comment/domain/entity/comment.dart';
+import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_providers.dart';
+import 'package:hey_buddy/core/feature/comment/presentation/widgets/comment_bubble.dart';
 import 'package:uuid/uuid.dart';
 
 class PostComments extends StatefulWidget {
@@ -37,7 +37,7 @@ class _PostCommentsState extends State<PostComments> {
     );
 
     Result result = await ref
-        .read(addCommentProvider.notifier)
+        .read(commentProvider.notifier)
         .addComment(widget.id, comment);
 
     if (!result.success) {
@@ -102,7 +102,7 @@ class _PostCommentsState extends State<PostComments> {
       padding: AppPadding.p16,
       child: Consumer(
         builder: (context, ref, _) {
-          final addCommentRef = ref.watch(addCommentProvider);
+          final addCommentRef = ref.watch(commentProvider);
           if (addCommentRef.isLoading) {
             return AppTextField(
               isSuffixIconLoading: true,
@@ -134,6 +134,7 @@ class _PostCommentsState extends State<PostComments> {
                 return ListView.separated(
                   itemBuilder: (context, index) {
                     return CommentBubble(
+                      postId: widget.id,
                       comments: (
                         prev: index == 0 ? null : comments[index - 1],
                         current: comments[index],

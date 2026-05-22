@@ -1,27 +1,6 @@
+import 'package:hey_buddy/core/feature/comment/data/model/comment_model.dart';
 import 'package:hey_buddy/core/model/timestamps.dart';
 import 'package:hey_buddy/features/post/data/models/post_model.dart';
-import 'package:hey_buddy/features/post/domain/entity/post.dart';
-
-abstract class Comment {
-  final String id;
-  final String userId;
-  final CommentContent content;
-  final Timestamps timestamps;
-
-  Comment({
-    required this.id,
-    required this.userId,
-    required this.content,
-    required this.timestamps,
-  });
-}
-
-abstract class CommentContent {
-  final String? text;
-  final Media? media;
-
-  CommentContent({required this.text, this.media});
-}
 
 class CommentModel extends Comment {
   CommentModel({
@@ -30,6 +9,15 @@ class CommentModel extends Comment {
     required super.content,
     required super.timestamps,
   });
+
+  factory CommentModel.fromEntity(Comment comment) {
+    return CommentModel(
+      id: comment.id,
+      userId: comment.userId,
+      content: comment.content,
+      timestamps: comment.timestamps,
+    );
+  }
 
   factory CommentModel.fromFirebase(Map<String, dynamic> comment) {
     return CommentModel(
@@ -52,6 +40,10 @@ class CommentModel extends Comment {
 
 class CommentContentModel extends CommentContent {
   CommentContentModel({required super.text, super.media});
+
+  factory CommentContentModel.fromEntity(CommentContent content) {
+    return CommentContentModel(text: content.text,media: content.media);
+  }
 
   factory CommentContentModel.fromFirebase(Map<String, dynamic> content) {
     return CommentContentModel(

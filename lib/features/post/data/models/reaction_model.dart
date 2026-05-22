@@ -6,8 +6,17 @@ class ReactionModel extends Reaction {
     required super.userId,
     required super.reaction,
     required super.createAt,
-    required super.updatedAt,
+    super.updatedAt,
   });
+
+  factory ReactionModel.fromEntity(Reaction reaction) {
+    return ReactionModel(
+      userId: reaction.userId,
+      reaction: reaction.reaction,
+      createAt: reaction.createAt,
+      updatedAt: reaction.updatedAt,
+    );
+  }
 
   factory ReactionModel.fromFirebase(Map<String, dynamic> json) {
     return ReactionModel(

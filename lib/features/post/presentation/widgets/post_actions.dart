@@ -3,10 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
+import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_providers.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
-import 'package:hey_buddy/features/post/presentation/riverpod/feed_provider.dart';
+import 'package:hey_buddy/features/post/presentation/riverpod/post_provider.dart';
 import 'package:hey_buddy/features/post/presentation/riverpod/post_actions_provider.dart';
-import 'package:hey_buddy/features/post/presentation/widgets/post_comments.dart';
+import 'package:hey_buddy/core/feature/comment/presentation/screens/post_comments.dart';
 
 class PostActions extends StatelessWidget {
   const PostActions({super.key, required this.id});
@@ -38,7 +39,7 @@ class PostActions extends StatelessWidget {
   Widget _buildLikeButton() {
     void toggleLike(WidgetRef ref, String uid, bool isLiked) {
       final notifier = ref.read(postActionProvider.notifier);
-      notifier.togglePostLikeUsecase(id: id, uid: uid, isLiked: isLiked);
+      notifier.togglePostLike(id: id, uid: uid, isLiked: isLiked);
     }
 
     return Consumer(

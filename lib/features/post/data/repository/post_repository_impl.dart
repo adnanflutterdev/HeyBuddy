@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hey_buddy/core/model/comment.dart';
 import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/typedefs/typedefs.dart';
 import 'package:hey_buddy/features/post/data/data_sources/post_remote_data_source.dart';
@@ -13,7 +12,7 @@ class PostRepositoryImpl extends PostRepository {
   @override
   ResultFuture uploadPost(Post post) async {
     try {
-      await remote.uploadFeedItem(PostModel.fromEntity(post));
+      await remote.uploadPost(PostModel.fromEntity(post));
       return Result.success('Post created successfully');
     } on FirebaseException catch (e) {
       return Result.failure(e.message ?? 'Failed to create post');
@@ -27,16 +26,19 @@ class PostRepositoryImpl extends PostRepository {
     try {
       return remote.getAllPosts();
     } catch (_) {
-      return Stream.value([]);
+      return Stream.error('Failed to fetch posts');
     }
   }
 
   @override
-  Future<Post?> getPostData(String id) async {
+  ResultFuture<Post> getPostData(String id) async {
     try {
-      return await remote.getPostData(id);
+      final post = await remote.getPostData(id);
+      return Result.success('Post Data Fetched', data: post);
+    } on FirebaseException catch (e) {
+      return Result.failure(e.message ?? 'Failed to fetch post');
     } catch (_) {
-      return null;
+      return Result.failure('Failed to fetch post');
     }
   }
 
@@ -53,24 +55,11 @@ class PostRepositoryImpl extends PostRepository {
   }) async {
     try {
       await remote.togglePostLike(id: id, uid: uid, isLiked: isLiked);
+      return Result.success('Liked toggled Successfully');
+    } on FirebaseException catch (e) {
+      return Result.failure(e.message ?? 'Failed to toggle like');
     } catch (e) {
-      return Result.failure('Liked Successfully');
+      return Result.failure('Failed liked to toggle like');
     }
-    return Result.success('Liked Successfully');
-  }
-
-  @override
-  ResultFuture addComment(String postId, Comment comment) async {
-    try {
-      await remote.addComment(postId, comment);
-      return Result.success('Comment added!!!');
-    } catch (e) {
-      return Result.failure('Failed to add comment');
-    }
-  }
-
-  @override
-  ResultStream<List<Comment>> getComments(String postId) {
-    return remote.getComments(postId);
   }
 }

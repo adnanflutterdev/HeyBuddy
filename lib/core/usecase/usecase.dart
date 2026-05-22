@@ -9,3 +9,9 @@ abstract class StreamUsecase<T, Params> {
 }
 
 class NoParams {}
+
+class IdParam {
+  final String id;
+
+  IdParam(this.id);
+}

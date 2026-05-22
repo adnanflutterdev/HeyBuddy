@@ -1,20 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hey_buddy/core/model/comment.dart';
 import 'package:hey_buddy/features/post/data/models/post_model.dart';
-import 'package:hey_buddy/features/post/data/models/reaction.dart';
 import 'package:hey_buddy/features/post/domain/entity/post.dart';
-import 'package:hey_buddy/features/post/domain/entity/reaction.dart';
 
 class PostRemoteDataSource {
   final FirebaseFirestore firestore;
 
   PostRemoteDataSource(this.firestore);
 
-  Future<void> uploadFeedItem(PostModel post) async {
-    await firestore
-        .collection('post')
-        .doc(post.id)
-        .set(post.toFirebase());
+  Future<void> uploadPost(PostModel post) async {
+    await firestore.collection('post').doc(post.id).set(post.toFirebase());
   }
 
   Stream<List<Post>> getAllPosts() {
@@ -63,43 +57,5 @@ class PostRemoteDataSource {
     } else {
       await doc.set({});
     }
-  }
-
-  Stream<List<Comment>> getComments(String postId) {
-    return firestore
-        .collection('post')
-        .doc(postId)
-        .collection('comments')
-        .orderBy('timestamps.createdAt')
-        .snapshots()
-        .map(
-          (snaphots) => snaphots.docs
-              .map((doc) => CommentModel.fromFirebase(doc.data()))
-              .toList(),
-        );
-  }
-
-  Future<void> addComment(String postId, Comment comment) async {
-    firestore
-        .collection('post')
-        .doc(postId)
-        .collection('comments')
-        .doc(comment.id)
-        .set((comment as CommentModel).toFirebase());
-  }
-
-  Future<void> addReaction({
-    required String postId,
-    required String commentId,
-    required Reaction reaction,
-  }) async {
-    firestore
-        .collection('post')
-        .doc(postId)
-        .collection('comments')
-        .doc(commentId)
-        .collection('reactions')
-        .doc(reaction.userId)
-        .set((reaction as ReactionModel).toFirebase());
   }
 }

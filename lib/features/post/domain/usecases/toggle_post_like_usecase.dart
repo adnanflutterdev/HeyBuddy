@@ -1,16 +1,25 @@
 import 'package:hey_buddy/core/typedefs/typedefs.dart';
+import 'package:hey_buddy/core/usecase/usecase.dart';
 import 'package:hey_buddy/features/post/domain/repository/post_repository.dart';
 
-class TogglePostLikeUsecase {
+class TogglePostLikeUsecase extends FutureUsecase<void, TogglePostLikeParams> {
   final PostRepository repository;
 
   TogglePostLikeUsecase(this.repository);
-
-  ResultFuture call({
-    required String id,
-    required String uid,
-    required bool isLiked,
-  }) async {
-    return await repository.togglePostLike(id: id, uid: uid, isLiked: isLiked);
+  @override
+  ResultFuture call(TogglePostLikeParams params) async {
+    return await repository.togglePostLike(
+      id: params.id,
+      uid: params.uid,
+      isLiked: params.isLiked,
+    );
   }
+}
+
+class TogglePostLikeParams {
+  final String id;
+  final String uid;
+  final bool isLiked;
+
+  TogglePostLikeParams(this.id, this.uid, this.isLiked);
 }

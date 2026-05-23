@@ -1,7 +1,7 @@
 import 'package:hey_buddy/core/feature/comment/domain/repository/comment_repository.dart';
 import 'package:hey_buddy/core/typedefs/typedefs.dart';
 import 'package:hey_buddy/core/usecase/usecase.dart';
-import 'package:hey_buddy/features/post/domain/entity/reaction.dart';
+import 'package:hey_buddy/core/model/reaction.dart';
 
 class AddReactionUsecase extends FutureUsecase<void,AddReactionParams>{
   final CommentRepository repository;

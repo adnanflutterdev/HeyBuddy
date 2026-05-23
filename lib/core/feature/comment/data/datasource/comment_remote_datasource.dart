@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hey_buddy/core/feature/comment/domain/entity/comment.dart';
-import 'package:hey_buddy/features/post/data/models/reaction_model.dart';
+import 'package:hey_buddy/core/model/reaction.dart';
+import 'package:hey_buddy/core/typedefs/typedefs.dart';
 
 abstract class CommentRemoteDatasource {
   Stream<List<CommentModel>> getComments(String postId);
@@ -9,6 +10,10 @@ abstract class CommentRemoteDatasource {
     required String id,
     required String commentId,
     required ReactionModel reaction,
+  });
+  ResultStream<List<ReactionModel>> getReactions({
+    required String id,
+    required String commentId,
   });
 }
 
@@ -55,5 +60,27 @@ class CommentRemoteDatasourceImpl implements CommentRemoteDatasource {
         .collection('reactions')
         .doc(reaction.userId)
         .set(reaction.toFirebase());
+        
+        // .doc('${reaction.userId}${DateTime.now()}')
+        // For adding multiple Reactions with same id
+  }
+
+  @override
+  ResultStream<List<ReactionModel>> getReactions({
+    required String id,
+    required String commentId,
+  }) {
+    return firestore
+        .collection('post')
+        .doc(id)
+        .collection('comments')
+        .doc(commentId)
+        .collection('reactions')
+        .snapshots()
+        .map(
+          (snap) => snap.docs
+              .map((doc) => ReactionModel.fromFirebase(doc.data()))
+              .toList(),
+        );
   }
 }

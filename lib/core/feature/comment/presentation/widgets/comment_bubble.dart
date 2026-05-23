@@ -7,17 +7,15 @@ import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/get_color.dart';
 import 'package:hey_buddy/core/feature/comment/data/model/comment_model.dart';
-import 'package:hey_buddy/core/feature/comment/domain/usecase/add_reaction_usecase.dart';
-import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_providers.dart';
+import 'package:hey_buddy/core/feature/comment/domain/usecase/get_reaction_usecase.dart';
+import 'package:hey_buddy/core/feature/comment/presentation/widgets/reaction_button.dart';
+import 'package:hey_buddy/core/feature/comment/presentation/widgets/reply_button.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
-import 'package:hey_buddy/core/utils/messenger.dart';
-import 'package:hey_buddy/core/widgets/material_text_button.dart';
 import 'package:hey_buddy/core/widgets/profile_image.dart';
 import 'package:hey_buddy/features/chat/presentation/riverpod/users_provider.dart';
-import 'package:hey_buddy/features/post/data/models/reaction_model.dart';
 import 'package:intl/intl.dart';
 
-class CommentBubble extends ConsumerWidget {
+class CommentBubble extends StatelessWidget {
   const CommentBubble({
     super.key,
     required this.postId,
@@ -27,223 +25,182 @@ class CommentBubble extends ConsumerWidget {
   final ({Comment? prev, Comment current}) comments;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     String? date;
-    OverlayEntry? overlayEntry;
-    final GetColor colors = context.colors;
-    final String myUid = ref.watch(uidProvider);
-    final bool isMine = comments.current.userId == myUid;
+
+    final Comment comment = comments.current;
 
     if (comments.prev == null) {
-      date = DateFormat.yMMMEd().format(comments.current.timestamps.createdAt);
+      date = DateFormat.yMMMEd().format(comment.timestamps.createdAt);
     } else {
       String prevDate = DateFormat.yMMMEd().format(
         comments.prev!.timestamps.createdAt,
       );
       String currentDate = DateFormat.yMMMEd().format(
-        comments.current.timestamps.createdAt,
+        comment.timestamps.createdAt,
       );
       if (prevDate != currentDate) {
         date = currentDate;
       }
     }
 
-    void removeReactionOverlay() {
-      if (overlayEntry != null) {
-        overlayEntry?.remove();
-        overlayEntry = null;
-      }
-    }
-
-    Future<void> addReaction(String reaction) async {
-      removeReactionOverlay();
-      Comment comment = comments.current;
-      String userId = ref.read(uidProvider);
-      final commentNotifier = ref.read(commentProvider.notifier);
-      ReactionModel reactionModel = ReactionModel(
-        userId: userId,
-        reaction: reaction,
-        createAt: DateTime.now(),
-      );
-      AddReactionParams params = AddReactionParams(
-        id: postId,
-        commentId: comment.id,
-        reaction: reactionModel,
-      );
-      final result = await commentNotifier.addReaction(params);
-      if (!result.success && context.mounted) {
-        showMessenger(context, result: result);
-      }
-    }
-
-    void openReactionOverlay(TapDownDetails details) {
-      final Offset offset = details.globalPosition;
-
-      List<String> reactions = ['😆', '😂', '❤️', '😍', '😡'];
-      final overlay = Overlay.of(context);
-      overlayEntry = OverlayEntry(
-        builder: (context) {
-          return Stack(
-            children: [
-              Positioned.fill(
-                child: GestureDetector(onTap: removeReactionOverlay),
-              ),
-              Positioned(
-                left: offset.dx,
-                top: offset.dy,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: colors.container,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        offset: Offset.zero,
-                        blurRadius: 2,
-                        color: colors.shadow,
-                      ),
-                    ],
-                  ),
-                  padding: AppPadding.p8,
-                  child: Row(
-                    children: reactions
-                        .map(
-                          (reaction) => MaterialTextButton(
-                            text: reaction,
-                            onPressed: () {
-                              print('Tapped');
-                              addReaction(reaction);
-                            },
-                            isTransparent: true,
-                            style: context.style.h1,
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      );
-
-      overlay.insert(overlayEntry!);
-    }
-
     return Column(
       mainAxisSize: .min,
       children: [
-        if (date != null)
-          Padding(
-            padding: AppPadding.v12,
-            child: Container(
-              padding: AppPadding.symmetric(8, 4),
-              decoration: BoxDecoration(
-                color: colors.container,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(date),
-            ),
-          ),
-        Consumer(
-          builder: (context, ref, child) {
-            final userRef = ref.watch(
-              usersDataProvider(comments.current.userId),
-            );
-            return userRef.when(
-              data: (user) {
-                return Row(
-                  crossAxisAlignment: .start,
-                  children: [
-                    if (!isMine) ...[
-                      ProfileImage(imageUrl: user.profile.profileImage),
-                      AppSpacing.w8,
-                    ],
-                    Container(
-                      width: context.width - (isMine ? 20 : 70),
-                      alignment: isMine ? .centerRight : .centerLeft,
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth:
-                              ((9 / 10) * context.width) - (isMine ? 0 : 50),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: .start,
-                          children: [
-                            Container(
-                              padding: AppPadding.symmetric(12, 6),
-                              decoration: BoxDecoration(
-                                color: isMine
-                                    ? colors.neonGreen.withValues(alpha: 0.3)
-                                    : colors.neonBlue.withValues(alpha: 0.3),
-                                borderRadius: BorderRadius.only(
-                                  topLeft: const Radius.circular(12),
-                                  topRight: const Radius.circular(12),
-                                  bottomLeft: Radius.circular(isMine ? 12 : 0),
-                                  bottomRight: Radius.circular(isMine ? 0 : 12),
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: .end,
-                                children: [
-                                  Text(comments.current.content.text!),
-                                  Text(
-                                    DateFormat('hh:mm:a').format(
-                                      comments.current.timestamps.createdAt,
-                                    ),
-                                    style: context.style.bs3.copyWith(
-                                      fontWeight: .bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (!isMine) ...[
-                              AppSpacing.h4,
-                              Row(
-                                mainAxisSize: .min,
-                                children: [
-                                  MaterialTextButton(
-                                    text: '😆',
-                                    onTapDown: openReactionOverlay,
-                                    style: context.style.b3,
-                                  ),
-                                  MaterialTextButton(
-                                    text: 'Reply',
-                                    onPressed: () {},
-                                    style: context.style.b3.copyWith(
-                                      color: colors.neonBlue,
-                                    ),
-                                  ),
-                                  MaterialTextButton(
-                                    text: 'View Replies',
-                                    onPressed: () {},
-                                    style: context.style.b3,
-                                  ),
-                                  Text('(0)', style: context.style.bs3),
-                                ],
-                              ),
-                              AppSpacing.h4,
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-              error: (error, stackTrace) => const SizedBox.shrink(),
-              loading: () => Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: colors.container,
-                  shape: .circle,
-                ),
-              ),
-            );
-          },
-        ),
+        if (date != null) _buildDate(context: context, date: date),
+        _buildComment(context: context, comment: comment),
       ],
     );
+  }
+
+  Widget _buildDate({required BuildContext context, required String date}) {
+    return Padding(
+      padding: AppPadding.v12,
+      child: Container(
+        padding: AppPadding.symmetric(8, 4),
+        decoration: BoxDecoration(
+          color: context.colors.container,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(date),
+      ),
+    );
+  }
+
+  Widget _buildComment({
+    required BuildContext context,
+    required Comment comment,
+  }) {
+    final GetColor colors = context.colors;
+    return Consumer(
+      builder: (context, ref, child) {
+        //
+        final String myUid = ref.watch(uidProvider);
+        final bool isMine = comments.current.userId == myUid;
+        final userRef = ref.watch(usersDataProvider(comment.userId));
+
+        final constraints = BoxConstraints(
+          maxWidth: ((8.5 / 10) * context.width) - (isMine ? 0 : 50),
+        );
+
+        return userRef.when(
+          data: (user) {
+            return Row(
+              crossAxisAlignment: isMine ? .end : .start,
+              children: [
+                if (isMine)
+                  const Spacer()
+                else
+                  ..._buildProfileImage(user.profile.profileImage),
+                Container(
+                  alignment: isMine ? .centerRight : .centerLeft,
+                  child: ConstrainedBox(
+                    constraints: constraints,
+                    child: Column(
+                      crossAxisAlignment: .start,
+                      children: [
+                        _buildCommentBubble(
+                          context: context,
+                          colors: colors,
+                          isMine: isMine,
+                          comment: comment,
+                          userName: isMine ? 'You' : user.details.name,
+                        ),
+                        if (!isMine) ..._buildActions(comment),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+          error: (error, stackTrace) => const SizedBox.shrink(),
+          loading: () => Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(color: colors.container, shape: .circle),
+          ),
+        );
+      },
+    );
+  }
+
+  List<Widget> _buildProfileImage(String? profileImage) {
+    return [ProfileImage(imageUrl: profileImage), AppSpacing.w8];
+  }
+
+  Widget _buildCommentBubble({
+    required BuildContext context,
+    required GetColor colors,
+    required bool isMine,
+    required Comment comment,
+    required String userName,
+  }) {
+    return Container(
+      padding: AppPadding.symmetric(12, 6),
+      decoration: BoxDecoration(
+        color: isMine
+            ? colors.neonGreen.withValues(alpha: 0.3)
+            : colors.neonBlue.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.only(
+          topLeft: const Radius.circular(12),
+          topRight: const Radius.circular(12),
+          bottomLeft: Radius.circular(isMine ? 12 : 0),
+          bottomRight: Radius.circular(isMine ? 0 : 12),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: .start,
+        children: [
+          Text(
+            userName,
+            style: context.style.b1.copyWith(
+              color: isMine
+                  ? context.colors.neonGreen
+                  : context.colors.neonBlue,
+            ),
+          ),
+          AppSpacing.h4,
+          Column(
+            crossAxisAlignment: .end,
+            children: [
+              Text(comment.content.text!),
+              Row(
+                mainAxisSize: .min,
+                mainAxisAlignment: .end,
+                children: [
+                  Text(
+                    DateFormat('hh:mm a').format(comment.timestamps.createdAt),
+                    style: context.style.bs3.copyWith(
+                      fontWeight: .bold,
+                      color: colors.primaryText.withValues(alpha: 0.7),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildActions(Comment comment) {
+    return [
+      AppSpacing.h4,
+      Row(
+        mainAxisSize: .min,
+        children: [
+          ReactionButton(
+            postId: postId,
+            comment: comment,
+            params: GetReactionParams(id: postId, commentId: comment.id),
+          ),
+          AppSpacing.w8,
+          const ReplyButton(),
+        ],
+      ),
+      AppSpacing.h4,
+    ];
   }
 }

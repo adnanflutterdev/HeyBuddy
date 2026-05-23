@@ -5,8 +5,7 @@ import 'package:hey_buddy/core/feature/comment/domain/entity/comment.dart';
 import 'package:hey_buddy/core/feature/comment/domain/repository/comment_repository.dart';
 import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/typedefs/typedefs.dart';
-import 'package:hey_buddy/features/post/data/models/reaction_model.dart';
-import 'package:hey_buddy/features/post/domain/entity/reaction.dart';
+import 'package:hey_buddy/core/model/reaction.dart';
 
 class CommentRepositoryImpl implements CommentRepository {
   final CommentRemoteDatasource remote;
@@ -47,5 +46,13 @@ class CommentRepositoryImpl implements CommentRepository {
     } catch (_) {
       return Result.failure('Failed to add reaction');
     }
+  }
+
+  @override
+  ResultStream<List<Reaction>> getReactions({
+    required String id,
+    required String commentId,
+  }) {
+    return remote.getReactions(id: id, commentId: commentId);
   }
 }

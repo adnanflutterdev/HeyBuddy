@@ -4,6 +4,7 @@ import 'package:hey_buddy/core/feature/comment/data/repository/comment_repositor
 import 'package:hey_buddy/core/feature/comment/domain/usecase/add_comment_usecase.dart';
 import 'package:hey_buddy/core/feature/comment/domain/usecase/add_reaction_usecase.dart';
 import 'package:hey_buddy/core/feature/comment/domain/usecase/get_comment_usecase.dart';
+import 'package:hey_buddy/core/feature/comment/domain/usecase/get_reaction_usecase.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 
 final postRemoteDataSourceProvider = Provider((ref) {
@@ -29,4 +30,9 @@ final getCommentUsecaseProvider = Provider((ref) {
 final addReactionUsecaseProvider = Provider((ref) {
   final postRepository = ref.read(postRepositoryProvider);
   return AddReactionUsecase(postRepository);
+});
+
+final getReactionUsecaseProvider = Provider((ref) {
+  final postRepository = ref.read(postRepositoryProvider);
+  return GetReactionUsecase(postRepository);
 });

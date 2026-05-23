@@ -4,11 +4,6 @@ import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 import 'package:hey_buddy/features/profile/domain/usecases/get_my_data_usecase.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/providers.dart';
 
-final authStateProvider = StreamProvider((ref) {
-  final auth = ref.read(firebaseAuthProvider);
-  return auth.authStateChanges();
-});
-
 final myDataProvider = FutureProvider<UserData>((ref) async {
   final getMyDatausecase = ref.read(getMyDataUsecaseProvider);
   final authState = ref.watch(authStateProvider);

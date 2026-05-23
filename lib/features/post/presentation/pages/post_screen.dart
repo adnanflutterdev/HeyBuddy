@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
@@ -14,7 +15,7 @@ class PostScreen extends ConsumerWidget {
     return postIdsRef.when(
       data: (posts) {
         return ListView.separated(
-          cacheExtent: 2000,
+          scrollCacheExtent: const ScrollCacheExtent.viewport(3),
           padding: AppPadding.p8,
           itemCount: posts.length,
           itemBuilder: (context, index) {

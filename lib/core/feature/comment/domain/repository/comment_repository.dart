@@ -1,6 +1,6 @@
 import 'package:hey_buddy/core/feature/comment/data/model/comment_model.dart';
 import 'package:hey_buddy/core/typedefs/typedefs.dart';
-import 'package:hey_buddy/features/post/domain/entity/reaction.dart';
+import 'package:hey_buddy/core/model/reaction.dart';
 
 abstract class CommentRepository {
   ResultStream<List<Comment>> getComments(String postId);
@@ -10,4 +10,5 @@ abstract class CommentRepository {
     required String commentId,
     required Reaction reaction,
   });
+  ResultStream<List<Reaction>> getReactions({required String id,required String commentId});
 }

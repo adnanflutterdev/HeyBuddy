@@ -16,15 +16,15 @@ import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_pro
 import 'package:hey_buddy/core/feature/comment/presentation/widgets/comment_bubble.dart';
 import 'package:uuid/uuid.dart';
 
-class PostComments extends StatefulWidget {
-  const PostComments({super.key, required this.id});
+class CommentsSheet extends StatefulWidget {
+  const CommentsSheet({super.key, required this.id});
   final String id;
 
   @override
-  State<PostComments> createState() => _PostCommentsState();
+  State<CommentsSheet> createState() => _CommentsSheetState();
 }
 
-class _PostCommentsState extends State<PostComments> {
+class _CommentsSheetState extends State<CommentsSheet> {
   double _height = 600;
   final TextEditingController _controller = .new();
 
@@ -134,7 +134,7 @@ class _PostCommentsState extends State<PostComments> {
                 return ListView.separated(
                   itemBuilder: (context, index) {
                     return CommentBubble(
-                      postId: widget.id,
+                      id: widget.id,
                       comments: (
                         prev: index == 0 ? null : comments[index - 1],
                         current: comments[index],

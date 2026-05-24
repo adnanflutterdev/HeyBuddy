@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
-import 'package:hey_buddy/core/feature/comment/data/model/comment_model.dart';
 import 'package:hey_buddy/core/feature/comment/domain/usecase/add_reaction_usecase.dart';
 import 'package:hey_buddy/core/feature/comment/domain/usecase/get_reaction_usecase.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/widgets/reaction_sheet.dart';
@@ -19,11 +18,11 @@ class ReactionButton extends ConsumerWidget {
   const ReactionButton({
     super.key,
     required this.postId,
-    required this.comment,
+    required this.commentId,
     required this.params,
   });
   final String postId;
-  final Comment comment;
+  final String commentId;
   final GetReactionParams params;
 
   @override
@@ -54,7 +53,7 @@ class ReactionButton extends ConsumerWidget {
       );
       AddReactionParams params = AddReactionParams(
         id: postId,
-        commentId: comment.id,
+        commentId: commentId,
         reaction: reactionModel,
       );
       final result = await commentNotifier.addReaction(params);

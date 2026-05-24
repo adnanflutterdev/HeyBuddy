@@ -3,11 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
+import 'package:hey_buddy/core/feature/comment/presentation/helper/open_comment_sheet.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_providers.dart';
+import 'package:hey_buddy/core/feature/comment/presentation/screens/comments_sheet.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/features/post/presentation/riverpod/post_provider.dart';
 import 'package:hey_buddy/features/post/presentation/riverpod/post_actions_provider.dart';
-import 'package:hey_buddy/core/feature/comment/presentation/screens/post_comments.dart';
 
 class PostActions extends StatelessWidget {
   const PostActions({super.key, required this.id});
@@ -90,19 +91,11 @@ class PostActions extends StatelessWidget {
   }
 
   Widget _buildCommentButton(BuildContext context) {
-    void openCommentSheet(String id) {
-      showModalBottomSheet(
-        context: context,
-        enableDrag: false,
-        isScrollControlled: true,
-        builder: (context) {
-          return PostComments(id: id);
-        },
-      );
-    }
-
     return GestureDetector(
-      onTap: () => openCommentSheet(id),
+      onTap: () => openCommentSheet(
+        context: context,
+        sheet: CommentsSheet(id: id),
+      ),
       child: Row(
         mainAxisSize: .min,
         spacing: 8,

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/core/feature/comment/data/datasource/comment_remote_datasource.dart';
 import 'package:hey_buddy/core/feature/comment/data/repository/comment_repository_impl.dart';
+import 'package:hey_buddy/core/feature/comment/domain/usecase/add_comment_reply_usecase.dart';
 import 'package:hey_buddy/core/feature/comment/domain/usecase/add_comment_usecase.dart';
 import 'package:hey_buddy/core/feature/comment/domain/usecase/add_reaction_usecase.dart';
 import 'package:hey_buddy/core/feature/comment/domain/usecase/get_comment_usecase.dart';
@@ -20,6 +21,11 @@ final postRepositoryProvider = Provider((ref) {
 final addCommentUsecaseProvider = Provider((ref) {
   final postRepository = ref.read(postRepositoryProvider);
   return AddCommentUsecase(postRepository);
+});
+
+final addCommentReplyUsecaseProvider = Provider((ref) {
+  final postRepository = ref.read(postRepositoryProvider);
+  return AddCommentReplyUsecase(postRepository);
 });
 
 final getCommentUsecaseProvider = Provider((ref) {

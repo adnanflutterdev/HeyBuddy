@@ -8,6 +8,7 @@ import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/get_color.dart';
 import 'package:hey_buddy/core/feature/comment/data/model/comment_model.dart';
 import 'package:hey_buddy/core/feature/comment/domain/usecase/get_reaction_usecase.dart';
+import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_reply_provider.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/widgets/reaction_button.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/widgets/reply_button.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
@@ -16,12 +17,8 @@ import 'package:hey_buddy/features/chat/presentation/riverpod/users_provider.dar
 import 'package:intl/intl.dart';
 
 class CommentBubble extends StatelessWidget {
-  const CommentBubble({
-    super.key,
-    required this.postId,
-    required this.comments,
-  });
-  final String postId;
+  const CommentBubble({super.key, required this.id, required this.comments});
+  final String id;
   final ({Comment? prev, Comment current}) comments;
 
   @override
@@ -106,7 +103,14 @@ class CommentBubble extends StatelessWidget {
                           comment: comment,
                           userName: isMine ? 'You' : user.details.name,
                         ),
-                        if (!isMine) ..._buildActions(comment),
+                        if (!isMine)
+                          ..._buildActions(
+                            CommentReplyTo(
+                              id: id,
+                              comment: comment,
+                              user: user,
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -185,19 +189,19 @@ class CommentBubble extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildActions(Comment comment) {
+  List<Widget> _buildActions(CommentReplyTo replyTo) {
     return [
       AppSpacing.h4,
       Row(
         mainAxisSize: .min,
         children: [
           ReactionButton(
-            postId: postId,
-            comment: comment,
-            params: GetReactionParams(id: postId, commentId: comment.id),
+            postId: id,
+            commentId: replyTo.comment.id,
+            params: GetReactionParams(id: id, commentId: replyTo.comment.id),
           ),
           AppSpacing.w8,
-          const ReplyButton(),
+          ReplyButton(replyTo),
         ],
       ),
       AppSpacing.h4,

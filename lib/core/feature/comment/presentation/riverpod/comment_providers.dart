@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:hey_buddy/core/feature/comment/data/model/comment_model.dart';
+import 'package:hey_buddy/core/feature/comment/domain/usecase/add_comment_reply_usecase.dart';
 import 'package:hey_buddy/core/feature/comment/domain/usecase/add_reaction_usecase.dart';
 import 'package:hey_buddy/core/feature/comment/domain/usecase/get_reaction_usecase.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/riverpod/providers.dart';
@@ -11,13 +12,24 @@ import 'package:hey_buddy/core/model/reaction.dart';
 
 class CommentNotifier extends StateNotifier<AsyncValue> {
   final AddCommentUsecase addCommentUsecase;
+  final AddCommentReplyUsecase addCommentReplyUsecase;
   final AddReactionUsecase addReactionUsecase;
-  CommentNotifier(this.addCommentUsecase, this.addReactionUsecase)
-    : super(const AsyncData(null));
+  CommentNotifier({
+    required this.addCommentUsecase,
+    required this.addCommentReplyUsecase,
+    required this.addReactionUsecase,
+  }) : super(const AsyncData(null));
 
   Future<Result> addComment(String postId, Comment comment) async {
     state = const AsyncLoading();
     Result result = await addCommentUsecase(AddCommentParams(postId, comment));
+    state = const AsyncData(null);
+    return result;
+  }
+
+  Future<Result> addCommentReply(AddCommentReplyParams params) async {
+    state = const AsyncLoading();
+    Result result = await addCommentReplyUsecase(params);
     state = const AsyncData(null);
     return result;
   }
@@ -34,8 +46,13 @@ final commentProvider = StateNotifierProvider<CommentNotifier, AsyncValue>((
   ref,
 ) {
   final addCommentUsecase = ref.read(addCommentUsecaseProvider);
+  final addCommentReplyUsecase = ref.read(addCommentReplyUsecaseProvider);
   final addReactionUsecase = ref.read(addReactionUsecaseProvider);
-  return CommentNotifier(addCommentUsecase, addReactionUsecase);
+  return CommentNotifier(
+    addCommentUsecase: addCommentUsecase,
+    addCommentReplyUsecase: addCommentReplyUsecase,
+    addReactionUsecase: addReactionUsecase,
+  );
 });
 
 final getCommentStream = StreamProvider.autoDispose

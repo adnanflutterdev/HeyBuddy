@@ -3,6 +3,7 @@ import 'package:hey_buddy/core/feature/comment/data/datasource/comment_remote_da
 import 'package:hey_buddy/core/feature/comment/data/model/comment_model.dart';
 import 'package:hey_buddy/core/feature/comment/domain/entity/comment.dart';
 import 'package:hey_buddy/core/feature/comment/domain/repository/comment_repository.dart';
+import 'package:hey_buddy/core/feature/comment/domain/usecase/add_comment_reply_usecase.dart';
 import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/typedefs/typedefs.dart';
 import 'package:hey_buddy/core/model/reaction.dart';
@@ -20,6 +21,22 @@ class CommentRepositoryImpl implements CommentRepository {
       return Result.failure(e.message ?? 'Failed to add comment');
     } catch (e) {
       return Result.failure('Failed to add comment');
+    }
+  }
+
+  @override
+  ResultFuture<void> addCommentReply(AddCommentReplyParams params) async {
+    try {
+      await remote.addCommentReply(
+        id: params.id,
+        commentId: params.commentId,
+        commentReply: CommentModel.fromEntity(params.commentReply),
+      );
+      return Result.success('Reply added!!!');
+    } on FirebaseException catch (e) {
+      return Result.failure(e.message ?? 'Failed to add reply');
+    } catch (e) {
+      return Result.failure('Failed to add reply');
     }
   }
 

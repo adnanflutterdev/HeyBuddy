@@ -6,6 +6,11 @@ import 'package:hey_buddy/core/typedefs/typedefs.dart';
 abstract class CommentRemoteDatasource {
   Stream<List<CommentModel>> getComments(String postId);
   Future<void> addComment(String postId, CommentModel comment);
+  Future<void> addCommentReply({
+    required String id,
+    required String commentId,
+    required CommentModel commentReply,
+  });
   Future<void> addReaction({
     required String id,
     required String commentId,
@@ -47,6 +52,22 @@ class CommentRemoteDatasourceImpl implements CommentRemoteDatasource {
   }
 
   @override
+  Future<void> addCommentReply({
+    required String id,
+    required String commentId,
+    required CommentModel commentReply,
+  }) async {
+    firestore
+        .collection('post')
+        .doc(id)
+        .collection('comments')
+        .doc(commentId)
+        .collection('reply')
+        .doc(commentReply.id)
+        .set(commentReply.toFirebase());
+  }
+
+  @override
   Future<void> addReaction({
     required String id,
     required String commentId,
@@ -60,9 +81,9 @@ class CommentRemoteDatasourceImpl implements CommentRemoteDatasource {
         .collection('reactions')
         .doc(reaction.userId)
         .set(reaction.toFirebase());
-        
-        // .doc('${reaction.userId}${DateTime.now()}')
-        // For adding multiple Reactions with same id
+
+    // .doc('${reaction.userId}${DateTime.now()}')
+    // For adding multiple Reactions with same id
   }
 
   @override

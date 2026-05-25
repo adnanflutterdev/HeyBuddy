@@ -29,8 +29,8 @@ OverlayEntry openReactionOverlay({
         children: [
           Positioned.fill(child: GestureDetector(onTap: removeReactionOverlay)),
           Positioned(
-            left: offset.dx,
-            top: offset.dy,
+            left: offset.dx / 2,
+            top: offset.dy - 40,
             child: Container(
               decoration: BoxDecoration(
                 color: context.colors.container,

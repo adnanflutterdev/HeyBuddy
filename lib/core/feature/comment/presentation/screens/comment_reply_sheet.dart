@@ -4,9 +4,7 @@ import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/size_extention.dart';
 import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
-import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/feature/comment/data/model/comment_model.dart';
-import 'package:hey_buddy/core/feature/comment/domain/usecase/add_comment_reply_usecase.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_reply_provider.dart';
 import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/model/timestamps.dart';
@@ -38,15 +36,18 @@ class _CommentsReplySheetState extends State<CommentsReplySheet> {
       timestamps: TimestampsModel(createdAt: DateTime.now()),
     );
 
-    AddCommentReplyParams params = AddCommentReplyParams(
-      id: replyTo.id,
-      commentId: replyTo.comment.id,
-      commentReply: commentReply,
-    );
+    final commentReplyRef = ref
+        .read(firebaseFirestoreProvider)
+        .collection('post')
+        .doc(replyTo.id)
+        .collection('comments')
+        .doc(replyTo.comment.id)
+        .collection('reply')
+        .doc(commentReply.id);
 
     Result result = await ref
         .read(commentProvider.notifier)
-        .addCommentReply(params);
+        .addComment(commentReplyRef, commentReply);
 
     if (!result.success) {
       if (mounted) {

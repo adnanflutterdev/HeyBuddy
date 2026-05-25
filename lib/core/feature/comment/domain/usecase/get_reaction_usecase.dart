@@ -4,19 +4,12 @@ import 'package:hey_buddy/core/usecase/usecase.dart';
 import 'package:hey_buddy/core/model/reaction.dart';
 
 class GetReactionUsecase
-    extends StreamUsecase<List<Reaction>, GetReactionParams> {
+    extends StreamUsecase<List<Reaction>, CollectionReferenceParam> {
   final CommentRepository repository;
 
   GetReactionUsecase(this.repository);
   @override
-  ResultStream<List<Reaction>> call(GetReactionParams params) {
-    return repository.getReactions(id: params.id, commentId: params.commentId);
+  ResultStream<List<Reaction>> call(CollectionReferenceParam params) {
+    return repository.getReactions(params.ref);
   }
-}
-
-class GetReactionParams {
-  final String id;
-  final String commentId;
-
-  GetReactionParams({required this.id, required this.commentId});
 }

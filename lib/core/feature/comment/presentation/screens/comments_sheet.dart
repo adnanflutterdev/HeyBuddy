@@ -36,9 +36,16 @@ class _CommentsSheetState extends State<CommentsSheet> {
       timestamps: TimestampsModel(createdAt: DateTime.now()),
     );
 
+    final commentRef = ref
+        .read(firebaseFirestoreProvider)
+        .collection('post')
+        .doc(widget.id)
+        .collection('comments')
+        .doc(comment.id);
+
     Result result = await ref
         .read(commentProvider.notifier)
-        .addComment(widget.id, comment);
+        .addComment(commentRef, comment);
 
     if (!result.success) {
       if (mounted) {
@@ -128,7 +135,12 @@ class _CommentsSheetState extends State<CommentsSheet> {
         padding: AppPadding.p8,
         child: Consumer(
           builder: (context, ref, _) {
-            final commentStream = ref.watch(getCommentStream(widget.id));
+            final commentRef = ref
+                .read(firebaseFirestoreProvider)
+                .collection('post')
+                .doc(widget.id)
+                .collection('comments');
+            final commentStream = ref.watch(getCommentStream(commentRef));
             return commentStream.when(
               data: (comments) {
                 return ListView.separated(

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hey_buddy/core/feature/comment/data/model/comment_model.dart';
 import 'package:hey_buddy/core/feature/comment/domain/repository/comment_repository.dart';
 import 'package:hey_buddy/core/model/result.dart';
@@ -10,13 +11,13 @@ class AddCommentUsecase extends FutureUsecase<void, AddCommentParams> {
 
   @override
   Future<Result> call(AddCommentParams params) {
-    return repository.addComment(params.id, params.comment);
+    return repository.addComment(params.ref, params.comment);
   }
 }
 
 class AddCommentParams {
-  final String id;
+  final DocumentReference ref;
   final Comment comment;
 
-  AddCommentParams(this.id, this.comment);
+  AddCommentParams(this.ref, this.comment);
 }

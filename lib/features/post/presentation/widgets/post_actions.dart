@@ -11,8 +11,8 @@ import 'package:hey_buddy/features/post/presentation/riverpod/post_provider.dart
 import 'package:hey_buddy/features/post/presentation/riverpod/post_actions_provider.dart';
 
 class PostActions extends StatelessWidget {
-  const PostActions({super.key, required this.id});
-  final String id;
+  const PostActions({super.key, required this.postId});
+  final String postId;
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +40,13 @@ class PostActions extends StatelessWidget {
   Widget _buildLikeButton() {
     void toggleLike(WidgetRef ref, String uid, bool isLiked) {
       final notifier = ref.read(postActionProvider.notifier);
-      notifier.togglePostLike(id: id, uid: uid, isLiked: isLiked);
+      notifier.togglePostLike(id: postId, uid: uid, isLiked: isLiked);
     }
 
     return Consumer(
       builder: (context, ref, _) {
         final uid = ref.read(uidProvider);
-        final likeStream = ref.watch(postLikeStream(id));
+        final likeStream = ref.watch(postLikeStream(postId));
         return likeStream.when(
           data: (likes) {
             bool isLiked = likes.contains(uid);
@@ -94,7 +94,7 @@ class PostActions extends StatelessWidget {
     return GestureDetector(
       onTap: () => openCommentSheet(
         context: context,
-        sheet: CommentsSheet(id: id),
+        sheet: CommentsSheet(id: postId),
       ),
       child: Row(
         mainAxisSize: .min,
@@ -103,7 +103,12 @@ class PostActions extends StatelessWidget {
           const Icon(Icons.comment),
           Consumer(
             builder: (context, ref, _) {
-              final commentStream = ref.watch(getCommentStream(id));
+              final commentsRef = ref
+                  .watch(firebaseFirestoreProvider)
+                  .collection('post')
+                  .doc(postId)
+                  .collection('comments');
+              final commentStream = ref.watch(getCommentStream(commentsRef));
               return commentStream.when(
                 data: (data) {
                   return Text('${data.length}', style: context.style.b2);

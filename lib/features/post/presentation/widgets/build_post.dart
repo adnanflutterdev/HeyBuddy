@@ -40,7 +40,7 @@ class BuildPost extends StatelessWidget {
         children: [
           _buildPostHeader(context),
           _buildContent(context),
-          PostActions(id: post.id),
+          PostActions(postId: post.id),
         ],
       ),
     );

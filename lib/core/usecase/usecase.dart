@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hey_buddy/core/typedefs/typedefs.dart';
 
 abstract class FutureUsecase<T, Params> {
@@ -14,4 +15,16 @@ class IdParam {
   final String id;
 
   IdParam(this.id);
+}
+
+class DocumentReferenceParam {
+  final DocumentReference ref;
+
+  DocumentReferenceParam(this.ref);
+}
+
+class CollectionReferenceParam {
+  final CollectionReference ref;
+
+  CollectionReferenceParam(this.ref);
 }

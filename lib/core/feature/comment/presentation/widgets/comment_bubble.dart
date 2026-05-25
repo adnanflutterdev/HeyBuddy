@@ -7,7 +7,6 @@ import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/get_color.dart';
 import 'package:hey_buddy/core/feature/comment/data/model/comment_model.dart';
-import 'package:hey_buddy/core/feature/comment/domain/usecase/get_reaction_usecase.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_reply_provider.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/widgets/reaction_button.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/widgets/reply_button.dart';
@@ -195,11 +194,7 @@ class CommentBubble extends StatelessWidget {
       Row(
         mainAxisSize: .min,
         children: [
-          ReactionButton(
-            postId: id,
-            commentId: replyTo.comment.id,
-            params: GetReactionParams(id: id, commentId: replyTo.comment.id),
-          ),
+          ReactionButton(postId: id, commentId: replyTo.comment.id),
           AppSpacing.w8,
           ReplyButton(replyTo),
         ],

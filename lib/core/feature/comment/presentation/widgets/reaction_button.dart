@@ -1,9 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/feature/comment/domain/usecase/add_reaction_usecase.dart';
-import 'package:hey_buddy/core/feature/comment/domain/usecase/get_reaction_usecase.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/widgets/reaction_sheet.dart';
 import 'package:hey_buddy/core/model/reaction_data.dart';
 import 'package:hey_buddy/core/utils/get_reaction_data.dart';
@@ -14,82 +14,106 @@ import 'package:hey_buddy/core/utils/messenger.dart';
 import 'package:hey_buddy/core/widgets/material_text_button.dart';
 import 'package:hey_buddy/core/model/reaction.dart';
 
-class ReactionButton extends ConsumerWidget {
+class ReactionButton extends ConsumerStatefulWidget {
   const ReactionButton({
     super.key,
     required this.postId,
     required this.commentId,
-    required this.params,
   });
   final String postId;
   final String commentId;
-  final GetReactionParams params;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    OverlayEntry? overlayEntry;
-    Reaction? myReaction;
-    Widget loader() => MaterialTextButton(text: '😆', style: context.style.b3);
+  ConsumerState<ReactionButton> createState() => _ReactionButtonState();
+}
 
-    void removeReactionOverlay() {
-      if (overlayEntry != null) {
-        overlayEntry?.remove();
-        overlayEntry = null;
-      }
+class _ReactionButtonState extends ConsumerState<ReactionButton> {
+  Reaction? myReaction;
+  OverlayEntry? overlayEntry;
+  late String uid = ref.watch(uidProvider);
+  late FirebaseFirestore firestore = ref.watch(firebaseFirestoreProvider);
+  late CollectionReference baseRef;
+
+  @override
+  initState() {
+    super.initState();
+
+    uid = ref.read(uidProvider);
+    firestore = ref.read(firebaseFirestoreProvider);
+    baseRef = firestore
+        .collection('post')
+        .doc(widget.postId)
+        .collection('comments');
+  }
+
+  Widget loader() {
+    return MaterialTextButton(text: '😆', style: context.style.b3);
+  }
+
+  void removeReactionOverlay() {
+    if (overlayEntry != null) {
+      overlayEntry?.remove();
+      overlayEntry = null;
     }
+  }
 
-    Future<void> addReaction(
-      ({String reactionEmoji, String reactionName}) reaction,
-    ) async {
-      removeReactionOverlay();
-      String userId = ref.read(uidProvider);
-      final commentNotifier = ref.read(commentProvider.notifier);
-      ReactionModel reactionModel = ReactionModel(
-        userId: userId,
-        reactionName: reaction.reactionName,
-        reactionEmoji: reaction.reactionEmoji,
-        createAt: myReaction != null ? myReaction!.createAt : DateTime.now(),
-        updatedAt: myReaction != null ? DateTime.now() : null,
-      );
-      AddReactionParams params = AddReactionParams(
-        id: postId,
-        commentId: commentId,
-        reaction: reactionModel,
-      );
-      final result = await commentNotifier.addReaction(params);
-      if (!result.success && context.mounted) {
-        showMessenger(context, result: result);
-      }
+  Future<void> addReaction(
+    ({String reactionEmoji, String reactionName}) reaction,
+  ) async {
+    removeReactionOverlay();
+    final commentNotifier = ref.read(commentProvider.notifier);
+    ReactionModel newReaction = ReactionModel(
+      userId: uid,
+      reactionName: reaction.reactionName,
+      reactionEmoji: reaction.reactionEmoji,
+      createAt: myReaction != null ? myReaction!.createAt : DateTime.now(),
+      updatedAt: myReaction != null ? DateTime.now() : null,
+    );
+    DocumentReference docRef = firestore
+        .collection('post')
+        .doc(widget.postId)
+        .collection('comments')
+        .doc(widget.commentId)
+        .collection('reactions')
+        .doc(uid);
+    AddReactionParams params = AddReactionParams(docRef, newReaction);
+    final result = await commentNotifier.addReaction(params);
+    if (!result.success && mounted) {
+      showMessenger(context, result: result);
     }
+  }
 
-    void showReactionOverlay(TapDownDetails details) {
-      final overlay = Overlay.of(context);
-      overlayEntry = openReactionOverlay(
-        details: details,
-        context: context,
-        addReaction: addReaction,
-        overlayEntry: overlayEntry,
-        currentReaction: myReaction?.reactionEmoji ?? '',
-        removeReactionOverlay: removeReactionOverlay,
-      );
-      if (overlayEntry != null) {
-        overlay.insert(overlayEntry!);
-      }
+  void showReactionOverlay(TapDownDetails details) {
+    final overlay = Overlay.of(context);
+    overlayEntry = openReactionOverlay(
+      details: details,
+      context: context,
+      addReaction: addReaction,
+      overlayEntry: overlayEntry,
+      currentReaction: myReaction?.reactionEmoji ?? '',
+      removeReactionOverlay: removeReactionOverlay,
+    );
+    if (overlayEntry != null) {
+      overlay.insert(overlayEntry!);
     }
+  }
 
-    void openReactionDataSheet(ReactionData reactionData) {
-      showModalBottomSheet(
-        context: context,
-        showDragHandle: true,
-        useSafeArea: true,
-        builder: (context) {
-          return ReactionSheet(reactionData: reactionData);
-        },
-      );
-    }
+  void openReactionDataSheet(ReactionData reactionData) {
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      useSafeArea: true,
+      builder: (context) {
+        return ReactionSheet(reactionData: reactionData);
+      },
+    );
+  }
 
-    final uid = ref.watch(uidProvider);
-    final reactionsRef = ref.watch(getReactionStream(params));
+  @override
+  Widget build(BuildContext context) {
+    final reactionsRef = ref.watch(
+      getReactionStream(baseRef.doc(widget.commentId).collection('reactions')),
+    );
     return reactionsRef.when(
       data: (reactions) {
         String text = '😆';

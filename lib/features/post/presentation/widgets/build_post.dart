@@ -6,6 +6,7 @@ import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/get_color.dart';
+import 'package:hey_buddy/core/utils/error_state.dart';
 import 'package:hey_buddy/core/widgets/app_logo.dart';
 import 'package:hey_buddy/core/widgets/collapsible_text.dart';
 import 'package:hey_buddy/features/chat/presentation/riverpod/users_provider.dart';
@@ -81,9 +82,7 @@ class BuildPost extends StatelessWidget {
               ),
             );
           },
-          error: (error, stackTrace) {
-            return const SizedBox.shrink();
-          },
+          error: error,
           loading: () {
             return Container();
           },

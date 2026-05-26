@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
@@ -9,6 +10,8 @@ import 'package:hey_buddy/core/feature/comment/data/model/comment_model.dart';
 import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/model/timestamps.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
+import 'package:hey_buddy/core/utils/error_state.dart';
+import 'package:hey_buddy/core/utils/loader.dart';
 import 'package:hey_buddy/core/utils/messenger.dart';
 import 'package:hey_buddy/core/widgets/app_text_field.dart';
 import 'package:hey_buddy/core/feature/comment/domain/entity/comment.dart';
@@ -16,19 +19,31 @@ import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_pro
 import 'package:hey_buddy/core/feature/comment/presentation/widgets/comment_bubble.dart';
 import 'package:uuid/uuid.dart';
 
-class CommentsSheet extends StatefulWidget {
+class CommentsSheet extends ConsumerStatefulWidget {
   const CommentsSheet({super.key, required this.id});
   final String id;
 
   @override
-  State<CommentsSheet> createState() => _CommentsSheetState();
+  ConsumerState<CommentsSheet> createState() => _CommentsSheetState();
 }
 
-class _CommentsSheetState extends State<CommentsSheet> {
-  double _height = 600;
+class _CommentsSheetState extends ConsumerState<CommentsSheet> {
+  late double _height = (9 / 10) * context.height;
   final TextEditingController _controller = .new();
+  late CollectionReference commentsRef;
 
-  Future<void> addComment(WidgetRef ref) async {
+  @override
+  initState() {
+    super.initState();
+
+    commentsRef = ref
+        .read(firebaseFirestoreProvider)
+        .collection('post')
+        .doc(widget.id)
+        .collection('comments');
+  }
+
+  Future<void> addComment() async {
     Comment comment = CommentModel(
       id: const Uuid().v4(),
       userId: ref.read(uidProvider),
@@ -36,16 +51,9 @@ class _CommentsSheetState extends State<CommentsSheet> {
       timestamps: TimestampsModel(createdAt: DateTime.now()),
     );
 
-    final commentRef = ref
-        .read(firebaseFirestoreProvider)
-        .collection('post')
-        .doc(widget.id)
-        .collection('comments')
-        .doc(comment.id);
-
     Result result = await ref
         .read(commentProvider.notifier)
-        .addComment(commentRef, comment);
+        .addComment(commentsRef.doc(comment.id), comment);
 
     if (!result.success) {
       if (mounted) {
@@ -65,10 +73,17 @@ class _CommentsSheetState extends State<CommentsSheet> {
         color: context.colors.bg,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      child: SafeArea(
-        child: Column(
-          mainAxisSize: .min,
-          children: [_buildDragger(), _buildCommentField(), _buildComments()],
+      child: AnimatedPadding(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: .min,
+            children: [_buildDragger(), _buildComments(), _buildCommentField()],
+          ),
         ),
       ),
     );
@@ -88,17 +103,31 @@ class _CommentsSheetState extends State<CommentsSheet> {
       child: Container(
         color: Colors.transparent,
         width: context.width,
-        height: 40,
-        child: Align(
-          alignment: .center,
-          child: Container(
-            width: 50,
-            height: 8,
-            decoration: BoxDecoration(
-              color: context.colors.secondaryText,
-              borderRadius: BorderRadius.circular(5),
+        height: 50,
+        child: Stack(
+          children: [
+            Positioned(
+              left: 10,
+              top: 0,
+              bottom: 0,
+              child: IconButton(
+                onPressed: () {
+                  AppNavigator.pop();
+                },
+                icon: const Icon(Icons.arrow_back, size: 30),
+              ),
             ),
-          ),
+            Center(
+              child: Container(
+                width: 50,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: context.colors.secondaryText,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -122,7 +151,7 @@ class _CommentsSheetState extends State<CommentsSheet> {
             suffixIcon: Icons.send,
             controller: _controller,
             unfocousOnTapOutside: true,
-            onSuffixIconTapped: () => addComment(ref),
+            onSuffixIconTapped: addComment,
           );
         },
       ),
@@ -130,49 +159,31 @@ class _CommentsSheetState extends State<CommentsSheet> {
   }
 
   Widget _buildComments() {
+    final commentStream = ref.watch(getCommentStream(commentsRef));
     return Expanded(
       child: Padding(
         padding: AppPadding.p8,
-        child: Consumer(
-          builder: (context, ref, _) {
-            final commentRef = ref
-                .read(firebaseFirestoreProvider)
-                .collection('post')
-                .doc(widget.id)
-                .collection('comments');
-            final commentStream = ref.watch(getCommentStream(commentRef));
-            return commentStream.when(
-              data: (comments) {
-                return ListView.separated(
-                  itemBuilder: (context, index) {
-                    return CommentBubble(
-                      id: widget.id,
-                      comments: (
-                        prev: index == 0 ? null : comments[index - 1],
-                        current: comments[index],
-                      ),
-                    );
-                  },
-                  separatorBuilder: (context, index) {
-                    return AppSpacing.h8;
-                  },
-                  itemCount: comments.length,
-                );
-              },
-              error: (error, stackTrace) {
-                return const SizedBox.expand();
-              },
-              loading: () {
-                return const Center(
-                  child: SizedBox(
-                    width: 30,
-                    height: 30,
-                    child: CircularProgressIndicator(),
+        child: commentStream.when(
+          data: (comments) {
+            return ListView.separated(
+              itemBuilder: (context, index) {
+                return CommentBubble(
+                  id: widget.id,
+                  commentsRef: commentsRef,
+                  comments: (
+                    prev: index == 0 ? null : comments[index - 1],
+                    current: comments[index],
                   ),
                 );
               },
+              separatorBuilder: (context, index) {
+                return AppSpacing.h8;
+              },
+              itemCount: comments.length,
             );
           },
+          error: error,
+          loading: loader,
         ),
       ),
     );

@@ -37,6 +37,10 @@ class GetColor {
   final Color neutral;
   final Color onNeutral;
 
+  // Chat Bubble Colors
+  final Color myBubble;
+  final Color otherBubble;
+
   const GetColor({
     required this.neonBlue,
     required this.neonGreen,
@@ -60,5 +64,7 @@ class GetColor {
     required this.onSuccess,
     required this.neutral,
     required this.onNeutral,
+    required this.myBubble,
+    required this.otherBubble,
   });
 }

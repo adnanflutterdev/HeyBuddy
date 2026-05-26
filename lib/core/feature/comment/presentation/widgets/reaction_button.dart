@@ -15,13 +15,8 @@ import 'package:hey_buddy/core/widgets/material_text_button.dart';
 import 'package:hey_buddy/core/model/reaction.dart';
 
 class ReactionButton extends ConsumerStatefulWidget {
-  const ReactionButton({
-    super.key,
-    required this.postId,
-    required this.commentId,
-  });
-  final String postId;
-  final String commentId;
+  const ReactionButton({super.key, required this.reactionsRef});
+  final CollectionReference reactionsRef;
 
   @override
   ConsumerState<ReactionButton> createState() => _ReactionButtonState();
@@ -30,20 +25,12 @@ class ReactionButton extends ConsumerStatefulWidget {
 class _ReactionButtonState extends ConsumerState<ReactionButton> {
   Reaction? myReaction;
   OverlayEntry? overlayEntry;
-  late String uid = ref.watch(uidProvider);
-  late FirebaseFirestore firestore = ref.watch(firebaseFirestoreProvider);
-  late CollectionReference baseRef;
+  late String uid;
 
   @override
   initState() {
     super.initState();
-
     uid = ref.read(uidProvider);
-    firestore = ref.read(firebaseFirestoreProvider);
-    baseRef = firestore
-        .collection('post')
-        .doc(widget.postId)
-        .collection('comments');
   }
 
   Widget loader() {
@@ -69,14 +56,8 @@ class _ReactionButtonState extends ConsumerState<ReactionButton> {
       createAt: myReaction != null ? myReaction!.createAt : DateTime.now(),
       updatedAt: myReaction != null ? DateTime.now() : null,
     );
-    DocumentReference docRef = firestore
-        .collection('post')
-        .doc(widget.postId)
-        .collection('comments')
-        .doc(widget.commentId)
-        .collection('reactions')
-        .doc(uid);
-    AddReactionParams params = AddReactionParams(docRef, newReaction);
+    DocumentReference reactionRef = widget.reactionsRef.doc(uid);
+    AddReactionParams params = AddReactionParams(reactionRef, newReaction);
     final result = await commentNotifier.addReaction(params);
     if (!result.success && mounted) {
       showMessenger(context, result: result);
@@ -111,9 +92,7 @@ class _ReactionButtonState extends ConsumerState<ReactionButton> {
 
   @override
   Widget build(BuildContext context) {
-    final reactionsRef = ref.watch(
-      getReactionStream(baseRef.doc(widget.commentId).collection('reactions')),
-    );
+    final reactionsRef = ref.watch(getReactionStream(widget.reactionsRef));
     return reactionsRef.when(
       data: (reactions) {
         String text = '😆';
@@ -148,9 +127,7 @@ class _ReactionButtonState extends ConsumerState<ReactionButton> {
       error: (error, stackTrace) {
         return loader();
       },
-      loading: () {
-        return loader();
-      },
+      loading: loader,
     );
   }
 }

@@ -14,7 +14,9 @@ import 'package:hey_buddy/core/model/media_meta.dart';
 import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/riverpod/upload_progress_provider.dart';
+import 'package:hey_buddy/core/utils/error_state.dart';
 import 'package:hey_buddy/core/utils/file_uploader.dart';
+import 'package:hey_buddy/core/utils/loader.dart';
 import 'package:hey_buddy/core/widgets/image_viewer.dart';
 import 'package:hey_buddy/core/widgets/labeled_icon_button.dart';
 import 'package:hey_buddy/core/utils/messenger.dart';
@@ -246,12 +248,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
           );
         },
-        error: (error, stackTrace) {
-          return const SizedBox.shrink();
-        },
-        loading: () {
-          return const Center(child: CircularProgressIndicator());
-        },
+        error: error,
+        loading: loader,
       ),
       floatingActionButton: _buildSaveButton(editRef),
     );

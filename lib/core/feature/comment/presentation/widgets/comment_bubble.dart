@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
@@ -11,14 +12,25 @@ import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_rep
 import 'package:hey_buddy/core/feature/comment/presentation/widgets/reaction_button.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/widgets/reply_button.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
+import 'package:hey_buddy/core/utils/error_state.dart';
 import 'package:hey_buddy/core/widgets/profile_image.dart';
 import 'package:hey_buddy/features/chat/presentation/riverpod/users_provider.dart';
 import 'package:intl/intl.dart';
 
 class CommentBubble extends StatelessWidget {
-  const CommentBubble({super.key, required this.id, required this.comments});
+  const CommentBubble({
+    super.key,
+    required this.id,
+    required this.comments,
+    required this.commentsRef,
+
+    this.allowReply = true,
+  });
   final String id;
+  final CollectionReference commentsRef;
   final ({Comment? prev, Comment current}) comments;
+
+  final bool allowReply;
 
   @override
   Widget build(BuildContext context) {
@@ -102,14 +114,9 @@ class CommentBubble extends StatelessWidget {
                           comment: comment,
                           userName: isMine ? 'You' : user.details.name,
                         ),
-                        if (!isMine)
-                          ..._buildActions(
-                            CommentReplyTo(
-                              id: id,
-                              comment: comment,
-                              user: user,
-                            ),
-                          ),
+                        ..._buildActions(
+                          CommentReplyTo(id: id, comment: comment, user: user),
+                        ),
                       ],
                     ),
                   ),
@@ -117,7 +124,7 @@ class CommentBubble extends StatelessWidget {
               ],
             );
           },
-          error: (error, stackTrace) => const SizedBox.shrink(),
+          error: error,
           loading: () => Container(
             width: 50,
             height: 50,
@@ -142,9 +149,7 @@ class CommentBubble extends StatelessWidget {
     return Container(
       padding: AppPadding.symmetric(12, 6),
       decoration: BoxDecoration(
-        color: isMine
-            ? colors.neonGreen.withValues(alpha: 0.3)
-            : colors.neonBlue.withValues(alpha: 0.3),
+        color: isMine ? colors.myBubble : colors.otherBubble,
         borderRadius: BorderRadius.only(
           topLeft: const Radius.circular(12),
           topRight: const Radius.circular(12),
@@ -155,14 +160,7 @@ class CommentBubble extends StatelessWidget {
       child: Column(
         crossAxisAlignment: .start,
         children: [
-          Text(
-            userName,
-            style: context.style.b1.copyWith(
-              color: isMine
-                  ? context.colors.neonGreen
-                  : context.colors.neonBlue,
-            ),
-          ),
+          Text(userName, style: context.style.b1),
           AppSpacing.h4,
           Column(
             crossAxisAlignment: .end,
@@ -189,14 +187,20 @@ class CommentBubble extends StatelessWidget {
   }
 
   List<Widget> _buildActions(CommentReplyTo replyTo) {
+    final commentRef = commentsRef.doc(replyTo.comment.id);
     return [
       AppSpacing.h4,
       Row(
         mainAxisSize: .min,
         children: [
-          ReactionButton(postId: id, commentId: replyTo.comment.id),
-          AppSpacing.w8,
-          ReplyButton(replyTo),
+          ReactionButton(reactionsRef: commentRef.collection('reactions')),
+          if (allowReply) ...[
+            AppSpacing.w8,
+            ReplyButton(
+              replyTo: replyTo,
+              replyRef: commentRef.collection('replies'),
+            ),
+          ],
         ],
       ),
       AppSpacing.h4,

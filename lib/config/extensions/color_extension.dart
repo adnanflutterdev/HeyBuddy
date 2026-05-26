@@ -27,5 +27,7 @@ extension ColorExtension on BuildContext {
     onSuccess: _colorScheme.onSecondary,
     neutral: _colorScheme.onPrimaryContainer,
     onNeutral: _colorScheme.onPrimary,
+    myBubble: _colorScheme.primaryContainer,
+    otherBubble: _colorScheme.secondaryContainer,
   );
 }

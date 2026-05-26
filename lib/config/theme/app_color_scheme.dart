@@ -39,6 +39,10 @@ class AppColorScheme {
 
     onPrimaryContainer: AppLightColors.neutral,
     onPrimary: AppLightColors.onNeutral,
+
+    // Chat Bubble Colors
+    primaryContainer: AppLightColors.myBubble,
+    secondaryContainer: AppLightColors.otherBubble,
   );
 
   static ColorScheme dark = const ColorScheme(
@@ -76,5 +80,9 @@ class AppColorScheme {
 
     onPrimaryContainer: AppDarkColors.neutral,
     onPrimary: AppDarkColors.onNeutral,
+
+    // Chat Bubble Colors
+    primaryContainer: AppDarkColors.myBubble,
+    secondaryContainer: AppDarkColors.otherBubble,
   );
 }

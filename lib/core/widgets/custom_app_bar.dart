@@ -9,11 +9,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.title,
     this.actions,
     this.fontSize,
+    this.backgroundColor,
   });
   final Widget? leading;
   final (String, String)? title;
   final List<Widget>? actions;
   final double? fontSize;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +27,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ? TitleText(text: title!, fontSize: fontSize, overflow: .ellipsis)
           : null,
       actions: actions,
+      backgroundColor: backgroundColor,
     );
   }
 

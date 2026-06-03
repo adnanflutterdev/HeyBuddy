@@ -32,6 +32,7 @@ class AppTextField extends StatelessWidget {
     this.iconColor,
     this.disableBorder = false,
     this.validator,
+    this.maxLengths,
   });
   final String? label;
   final double iconSize;
@@ -41,7 +42,7 @@ class AppTextField extends StatelessWidget {
   final IconData? prefixIcon;
   final IconData? suffixIcon;
   final bool isSuffixIconLoading;
-  final Function()? onSuffixIconTapped;
+  final VoidCallback? onSuffixIconTapped;
   final TextEditingController? controller;
   final TextInputType? textInputType;
   final double? iconWidth;
@@ -53,7 +54,8 @@ class AppTextField extends StatelessWidget {
   final bool unfocousOnTapOutside;
   final int? maxLines;
   final int? minLines;
-  final Function()? onTap;
+  final int? maxLengths;
+  final VoidCallback? onTap;
   final Widget? secondaryLabel;
   final bool showOptional;
   final TextInputAction? textInputAction;
@@ -80,7 +82,7 @@ class AppTextField extends StatelessWidget {
               ?secondaryLabel,
             ],
           ),
-          AppSpacing.h4,
+          AppSpacing.h8,
         ],
         TextFormField(
           maxLines: maxLines,
@@ -93,6 +95,7 @@ class AppTextField extends StatelessWidget {
           obscureText: isObscure,
           obscuringCharacter: '●',
           style: textStyle ?? context.style.b2,
+          maxLength: maxLengths,
           decoration: InputDecoration(
             prefixIconConstraints: BoxConstraints(
               maxWidth:

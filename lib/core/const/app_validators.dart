@@ -102,10 +102,6 @@ class AppValidators {
       return 'Bio must be at least 5 characters';
     }
 
-    if (value.trim().length > 200) {
-      return 'Bio must be less than 200 characters';
-    }
-
     return null;
   }
 

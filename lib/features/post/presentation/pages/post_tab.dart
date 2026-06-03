@@ -8,8 +8,8 @@ import 'package:hey_buddy/core/utils/loader.dart';
 import 'package:hey_buddy/features/post/presentation/riverpod/post_provider.dart';
 import 'package:hey_buddy/features/post/presentation/widgets/build_post.dart';
 
-class PostScreen extends ConsumerWidget {
-  const PostScreen({super.key});
+class PostTab extends ConsumerWidget {
+  const PostTab({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

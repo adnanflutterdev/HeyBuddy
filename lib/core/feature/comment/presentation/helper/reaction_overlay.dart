@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
-import 'package:hey_buddy/core/widgets/material_text_button.dart';
+import 'package:hey_buddy/core/widgets/app_material_button.dart';
 
 OverlayEntry openReactionOverlay({
   required TapDownDetails details,
   required BuildContext context,
   required OverlayEntry? overlayEntry,
   required Function(({String reactionName, String reactionEmoji})) addReaction,
-  required Function() removeReactionOverlay,
+  required VoidCallback removeReactionOverlay,
   required String currentReaction,
 }) {
   final Offset offset = details.globalPosition;
@@ -47,8 +47,8 @@ OverlayEntry openReactionOverlay({
               child: Row(
                 children: reactions
                     .map(
-                      (reaction) => MaterialTextButton(
-                        hasCircularBoarder: true,
+                      (reaction) => AppMeterialButton(
+                        hasCircularBorder: true,
                         text: reaction.reactionEmoji,
                         onPressed: () {
                           if (currentReaction != reaction.reactionEmoji) {

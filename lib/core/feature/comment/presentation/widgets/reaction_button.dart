@@ -11,7 +11,7 @@ import 'package:hey_buddy/core/feature/comment/presentation/helper/reaction_over
 import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_providers.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/utils/messenger.dart';
-import 'package:hey_buddy/core/widgets/material_text_button.dart';
+import 'package:hey_buddy/core/widgets/app_material_button.dart';
 import 'package:hey_buddy/core/model/reaction.dart';
 
 class ReactionButton extends ConsumerStatefulWidget {
@@ -34,7 +34,7 @@ class _ReactionButtonState extends ConsumerState<ReactionButton> {
   }
 
   Widget loader() {
-    return MaterialTextButton(text: '😆', style: context.style.b3);
+    return AppMeterialButton(text: '😆', style: context.style.b3);
   }
 
   void removeReactionOverlay() {
@@ -106,14 +106,15 @@ class _ReactionButtonState extends ConsumerState<ReactionButton> {
         }
         return Row(
           children: [
-            MaterialTextButton(
+            AppMeterialButton(
               text: text,
+              // icon: Icons.h_mobiledata,
               onTapDown: showReactionOverlay,
               padding: AppPadding.p4,
               style: context.style.b3.copyWith(letterSpacing: -4),
             ),
             if (reactions.isNotEmpty)
-              MaterialTextButton(
+              AppMeterialButton(
                 text: '(${reactions.length})',
                 style: context.style.bs3,
                 padding: AppPadding.symmetric(2, 2),

@@ -22,7 +22,7 @@ class PrimaryButton extends StatelessWidget {
     this.isLoading = false,
     this.alignment = .start,
   });
-  final Function()? onPressed;
+  final VoidCallback? onPressed;
   final String label;
 
   final IconData? icon;

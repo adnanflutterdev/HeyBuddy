@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/size_extention.dart';
-import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
@@ -16,8 +15,7 @@ import 'package:hey_buddy/core/utils/file_uploader.dart';
 import 'package:hey_buddy/core/utils/messenger.dart';
 import 'package:hey_buddy/core/widgets/app_text_field.dart';
 import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
-import 'package:hey_buddy/core/widgets/material_icon_button.dart';
-import 'package:hey_buddy/core/widgets/primary_button.dart';
+import 'package:hey_buddy/core/widgets/app_material_button.dart';
 import 'package:hey_buddy/features/post/data/models/post_model.dart';
 import 'package:hey_buddy/features/post/presentation/riverpod/post_provider.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
@@ -244,27 +242,12 @@ class _PostUploadScreeenState extends State<PostUploadScreeen> {
         final createPostRef = ref.watch(createPostProvider);
 
         if (createPostRef.isLoading || progress > 0) {
-          return PrimaryButton(
-            onPressed: null,
-            isLoading: true,
-            progress: progress,
-            label: progress < 100 ? '' : 'Uploading',
-            style: context.style.h3.copyWith(
-              color: context.colors.neonGreen,
-              letterSpacing: 2,
-              fontFamily: 'Joti',
-            ),
-          );
+          return AppMeterialButton(text: '$progress %');
         }
-        return PrimaryButton(
+        return AppMeterialButton(
+          text: 'Upload',
+          icon: Icons.upload,
           onPressed: () => uploadPost(ref),
-          label: 'Upload',
-          height: 35,
-          style: context.style.h3.copyWith(
-            color: context.colors.neonGreen,
-            letterSpacing: 2,
-            fontFamily: 'Joti',
-          ),
         );
       },
     );
@@ -278,12 +261,12 @@ class _PostUploadScreeenState extends State<PostUploadScreeen> {
         spacing: 10,
         mainAxisAlignment: .end,
         children: [
-          MaterialIconButton(
+          AppMeterialButton(
             onPressed: replaceImage,
             icon: Icons.repeat_outlined,
           ),
-          MaterialIconButton(onPressed: cropImage, icon: Icons.crop),
-          MaterialIconButton(onPressed: removeImage, icon: Icons.close),
+          AppMeterialButton(onPressed: cropImage, icon: Icons.crop),
+          AppMeterialButton(onPressed: removeImage, icon: Icons.close),
         ],
       ),
     );

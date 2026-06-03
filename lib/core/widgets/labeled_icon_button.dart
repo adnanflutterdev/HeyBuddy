@@ -10,7 +10,7 @@ class LabeledIconButton extends StatelessWidget {
     required this.icon,
     required this.label,
   });
-  final Function() onPressed;
+  final VoidCallback onPressed;
   final IconData icon;
   final String label;
 

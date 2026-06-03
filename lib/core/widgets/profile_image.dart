@@ -14,17 +14,19 @@ class ProfileImage extends StatelessWidget {
     String image =
         imageUrl ??
         'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png';
+
+    Widget placeHolder = Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: .circle,
+        color: context.colors.container,
+      ),
+    );
     return CachedNetworkImage(
       imageUrl: image,
       placeholder: (context, url) {
-        return Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: .circle,
-            color: context.colors.container,
-          ),
-        );
+        return placeHolder;
       },
       imageBuilder: (context, imageProvider) {
         return GestureDetector(
@@ -37,14 +39,12 @@ class ProfileImage extends StatelessWidget {
             decoration: BoxDecoration(
               shape: .circle,
               color: context.colors.container,
-              image: DecorationImage(image: imageProvider, fit: .cover),
+              image: DecorationImage(image: imageProvider, fit: .contain),
             ),
           ),
         );
       },
-      errorWidget: (context, url, error) {
-        return const SizedBox.shrink();
-      },
+      errorWidget: (_, _, _) => placeHolder,
     );
   }
 }

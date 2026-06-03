@@ -3,22 +3,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/app/model/tab_model.dart';
 import 'package:hey_buddy/app/riverpod/tab_provider.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
-import 'package:hey_buddy/config/extensions/name_split_extention.dart';
 import 'package:hey_buddy/config/extensions/size_extention.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
+import 'package:hey_buddy/core/utils/loader.dart';
 import 'package:hey_buddy/core/widgets/labeled_icon_button.dart';
 import 'package:hey_buddy/core/widgets/app_logo.dart';
 import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
-import 'package:hey_buddy/features/chat/presentation/pages/chat_screen.dart';
-import 'package:hey_buddy/features/post/presentation/pages/post_screen.dart';
+import 'package:hey_buddy/core/widgets/logo_image.dart';
+import 'package:hey_buddy/features/chat/presentation/pages/chat_tab.dart';
+import 'package:hey_buddy/features/post/presentation/pages/post_tab.dart';
 import 'package:hey_buddy/features/post/presentation/pages/post_upload_screeen.dart';
-import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
-import 'package:hey_buddy/features/profile/presentation/pages/profile_screen.dart';
+import 'package:hey_buddy/features/profile/presentation/pages/my_profile.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/toggle_edit_provider.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/my_data_provider.dart';
-import 'package:hey_buddy/features/video/presentation/pages/video_screen.dart';
+import 'package:hey_buddy/features/video/presentation/pages/video_tab.dart';
+import 'package:hey_buddy/features/users/presentation/pages/users_tab.dart';
 import 'package:hey_buddy/features/video/presentation/pages/video_upload_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -31,10 +32,10 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final PageController _pageController = PageController();
   final List<Widget> pages = [
-    const PostScreen(),
-    const VideoScreen(),
-    const ChatScreen(),
-    const ProfileScreen(),
+    const PostTab(),
+    const VideoTab(),
+    const ChatTab(),
+    const UsersTab(),
   ];
 
   @override
@@ -106,23 +107,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget? _buildAppbar(int tabIndex) {
-    final userRef = ref.watch(myDataProvider);
     final canEdit = ref.watch(toggleEditProvider);
 
-    UserData? user = userRef.value;
     (String, String) title = ('Hey ', 'Buddy');
-    if (tabIndex == 3) {
-      if (user != null) {
-        title = user.details.name.splitName;
-      }
-    }
+
     if (tabIndex == 1) {
       return null;
     }
     return CustomAppBar(
-      leading: const AppLogo(),
+      leading: _buildUserProfile(),
       title: title,
-      fontSize: (tabIndex == 3 && user != null) ? 20 : null,
       actions: [
         if (tabIndex == 3)
           IconButton(
@@ -138,12 +132,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  Widget _buildUserProfile() {
+    final userRef = ref.watch(myDataProvider);
+    return userRef.when(
+      data: (user) {
+        if (user.profile.profileImage == null) {
+          return const AppLogo();
+        }
+        return LogoImage(
+          image: user.profile.profileImage,
+          size: 40,
+          onPressed: () {
+            AppNavigator.push(const MyProfile());
+          },
+        );
+      },
+      error: (_, _) => const AppLogo(),
+      loading: loader,
+    );
+  }
+
   Widget _buildNavbar(int tabIndex) {
     List<TabModel> tabs = [
       TabModel(label: 'Home', icon: Icons.home_filled),
       TabModel(label: 'Video', icon: Icons.video_collection_rounded),
       TabModel(label: 'Chat', icon: Icons.chat_rounded),
-      TabModel(label: 'Account', icon: Icons.person),
+      TabModel(label: 'Users', icon: Icons.group),
     ];
     final width = context.width / 4;
     return Container(

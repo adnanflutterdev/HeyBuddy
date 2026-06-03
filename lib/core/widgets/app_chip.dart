@@ -16,7 +16,7 @@ class AppChip extends StatelessWidget {
   final String label;
   final IconData? icon;
   final double? radius;
-  final Function()? onPressed;
+  final VoidCallback? onPressed;
   final Color? backgroundColor;
   final Color? foregroundColor;
 

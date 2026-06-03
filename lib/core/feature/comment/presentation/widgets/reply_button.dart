@@ -7,7 +7,7 @@ import 'package:hey_buddy/core/feature/comment/presentation/helper/open_comment_
 import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_providers.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_reply_provider.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/screens/comment_reply_sheet.dart';
-import 'package:hey_buddy/core/widgets/material_text_button.dart';
+import 'package:hey_buddy/core/widgets/app_material_button.dart';
 
 class ReplyButton extends StatelessWidget {
   const ReplyButton({super.key, required this.replyTo, required this.replyRef});
@@ -18,7 +18,7 @@ class ReplyButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        MaterialTextButton(
+        AppMeterialButton(
           text: 'Reply',
           onPressed: () => openCommentSheet(
             context: context,

@@ -16,7 +16,6 @@ import 'package:hey_buddy/features/chat/presentation/pages/chat_tab.dart';
 import 'package:hey_buddy/features/post/presentation/pages/post_tab.dart';
 import 'package:hey_buddy/features/post/presentation/pages/post_upload_screeen.dart';
 import 'package:hey_buddy/features/profile/presentation/pages/my_profile.dart';
-import 'package:hey_buddy/features/profile/presentation/riverpod/toggle_edit_provider.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/my_data_provider.dart';
 import 'package:hey_buddy/features/video/presentation/pages/video_tab.dart';
 import 'package:hey_buddy/features/users/presentation/pages/users_tab.dart';
@@ -107,8 +106,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget? _buildAppbar(int tabIndex) {
-    final canEdit = ref.watch(toggleEditProvider);
-
     (String, String) title = ('Hey ', 'Buddy');
 
     if (tabIndex == 1) {
@@ -118,15 +115,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       leading: _buildUserProfile(),
       title: title,
       actions: [
-        if (tabIndex == 3)
-          IconButton(
-            onPressed: () {
-              ref.read(toggleEditProvider.notifier).toggleEdit();
-            },
-            icon: Icon(canEdit ? Icons.close : Icons.edit),
-          )
-        else
-          IconButton(onPressed: createNew, icon: const Icon(Icons.add)),
+        IconButton(onPressed: createNew, icon: const Icon(Icons.add)),
         IconButton(onPressed: () {}, icon: const Icon(Icons.notifications)),
       ],
     );

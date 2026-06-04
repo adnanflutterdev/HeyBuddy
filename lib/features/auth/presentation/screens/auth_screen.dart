@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
+import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/app_validators.dart';
 import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/utils/messenger.dart';
@@ -32,32 +33,9 @@ class _LoginScreenState extends State<LoginScreen>
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  static const double _begin = 5;
-  static const double _end = 18;
-
-  late AnimationController _animationController;
-  late Animation<double> _blurRadius;
-
   @override
   void initState() {
     super.initState();
-    _initAnimation();
-  }
-
-  void _initAnimation() {
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2500),
-    );
-
-    _blurRadius = Tween<double>(begin: _begin, end: _end).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInCubic),
-    );
-
-    _animationController.repeat(
-      reverse: true,
-      period: const Duration(seconds: 3),
-    );
   }
 
   void _authenticate(WidgetRef ref) async {
@@ -84,15 +62,20 @@ class _LoginScreenState extends State<LoginScreen>
     }
   }
 
+  void _authenticateWithGoogle(WidgetRef ref) async {
+    final result = await ref.read(authProvider.notifier).googleSignin();
+
+    if (!result.success && mounted) {
+      showMessenger(context, result: result);
+    }
+  }
+
   @override
   void dispose() {
     _isObscure.dispose();
-
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-
-    _animationController.dispose();
 
     super.dispose();
   }
@@ -112,6 +95,7 @@ class _LoginScreenState extends State<LoginScreen>
                 children: [
                   _buildTitle(isLoginScreen),
                   _buildFormContainer(isLoginScreen),
+                  _buildGoogleSignin(),
                 ],
               );
             },
@@ -129,28 +113,13 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildFormContainer(bool isLoginScreen) {
-    return AnimatedBuilder(
-      animation: _blurRadius,
-      builder: (context, child) {
-        return Container(
-          padding: AppPadding.p16,
-          decoration: BoxDecoration(
-            color: context.colors.container,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: context.colors.neonGreen,
-                blurRadius: _blurRadius.value,
-              ),
-              BoxShadow(
-                color: context.colors.neonBlue,
-                blurRadius: (_end - _blurRadius.value).abs(),
-              ),
-            ],
-          ),
-          child: child,
-        );
-      },
+    return Container(
+      padding: AppPadding.p16,
+      decoration: BoxDecoration(
+        color: context.colors.container,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(blurRadius: 3, color: context.colors.shadow)],
+      ),
       child: _buildForm(isLoginScreen),
     );
   }
@@ -196,7 +165,8 @@ class _LoginScreenState extends State<LoginScreen>
                   );
                 },
               ),
-              const Text('Forget password?'),
+              AppSpacing.h4,
+              Text('Forget password?', style: context.style.bs2),
             ],
           ),
 
@@ -209,6 +179,7 @@ class _LoginScreenState extends State<LoginScreen>
                 children: [
                   Text(
                     '${isLoginScreen ? 'Don\'t' : 'Already'} have an account? ',
+                    style: context.style.bs2,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -217,11 +188,10 @@ class _LoginScreenState extends State<LoginScreen>
                       });
                     },
                     child: StrokeText(
-                      strokeWidth: 1,
+                      strokeWidth: 0.5,
                       text: isLoginScreen ? 'Signup' : 'Login',
-                      style: context.style.b1.copyWith(
+                      style: context.style.bs1.copyWith(
                         color: context.colors.neonGreen,
-                        letterSpacing: 2,
                       ),
                     ),
                   ),
@@ -231,6 +201,58 @@ class _LoginScreenState extends State<LoginScreen>
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildGoogleSignin() {
+    return Column(
+      children: [
+        const Row(
+          children: [
+            Expanded(child: Divider()),
+            Text(' OR '),
+            Expanded(child: Divider()),
+          ],
+        ),
+        AppSpacing.h20,
+        Consumer(
+          builder: (context, ref, _) {
+            final authRef = ref.watch(authProvider);
+
+            return GestureDetector(
+              onTap: authRef.isLoading
+                  ? null
+                  : () => _authenticateWithGoogle(ref),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: context.colors.container,
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    BoxShadow(blurRadius: 3, color: context.colors.shadow),
+                  ],
+                ),
+
+                padding: AppPadding.v8,
+                child: Row(
+                  mainAxisAlignment: .center,
+                  children: [
+                    Image.asset('assets/images/google.png', height: 30),
+                    AppSpacing.w12,
+                    if (authRef.isLoading)
+                      const SizedBox(
+                        width: 30,
+                        height: 30,
+                        child: CircularProgressIndicator(),
+                      )
+                    else
+                      const Text('Continue with Google'),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 

@@ -4,7 +4,7 @@ class UploadProgressNotifier extends StateNotifier<double> {
   UploadProgressNotifier() : super(0);
 
   void updateProgress(double progress) {
-    state = progress;
+    state = double.tryParse(progress.toStringAsFixed(1)) ?? 0.0;
   }
 }
 

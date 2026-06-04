@@ -16,12 +16,12 @@ class LogoImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CachedNetworkImage(
-      imageUrl: image ?? '',
-      imageBuilder: (context, imageProvider) {
-        return GestureDetector(
-          onTap: onPressed,
-          child: Padding(
+    return GestureDetector(
+      onTap: onPressed,
+      child: CachedNetworkImage(
+        imageUrl: image ?? '',
+        imageBuilder: (context, imageProvider) {
+          return Padding(
             padding: const EdgeInsets.all(6.0),
             child: Container(
               width: size,
@@ -31,23 +31,23 @@ class LogoImage extends StatelessWidget {
                 image: DecorationImage(image: imageProvider),
               ),
             ),
-          ),
-        );
-      },
-      placeholder: (context, url) {
-        return Padding(
-          padding: const EdgeInsets.all(6.0),
-          child: Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: .circle,
-              color: context.colors.container,
+          );
+        },
+        placeholder: (context, url) {
+          return Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                shape: .circle,
+                color: context.colors.container,
+              ),
             ),
-          ),
-        );
-      },
-      errorWidget: (context, url, error) => const AppLogo(),
+          );
+        },
+        errorWidget: (context, url, error) => const AppLogo(),
+      ),
     );
   }
 }

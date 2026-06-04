@@ -36,7 +36,7 @@ class _CollapsibleTextState extends State<CollapsibleText> {
         text: TextSpan(
           style: widget.style ?? context.style.b3,
           children: [
-            TextSpan(text: displayText),
+            TextSpan(text: displayText.isNotEmpty ? displayText : 'N/A'),
             if (isLongText)
               WidgetSpan(
                 alignment: PlaceholderAlignment.middle,

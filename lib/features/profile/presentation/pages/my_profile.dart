@@ -21,6 +21,7 @@ import 'package:hey_buddy/core/widgets/primary_button.dart';
 import 'package:hey_buddy/core/widgets/profile_image.dart';
 import 'package:hey_buddy/core/widgets/stroke_text.dart';
 import 'package:hey_buddy/features/auth/presentation/riverpod/auth_provider.dart';
+import 'package:hey_buddy/features/auth/presentation/screens/auth_state_screen.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 import 'package:hey_buddy/features/profile/presentation/pages/edit_my_profile.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/my_data_provider.dart';
@@ -53,7 +54,7 @@ class _MyProfileState extends State<MyProfile> {
           data: (myData) {
             return Scaffold(
               appBar: CustomAppBar(
-                title: ('My Profile', ''),  
+                title: ('My Profile', ''),
                 actions: [
                   AppMeterialButton(
                     text: 'Edit',
@@ -83,6 +84,8 @@ class _MyProfileState extends State<MyProfile> {
             );
           },
           error: (error, stackTrace) {
+            print(error);
+            print(stackTrace);
             return const Scaffold(
               body: Center(child: Text('Something went wrong')),
             );
@@ -225,7 +228,7 @@ class _MyProfileState extends State<MyProfile> {
             crossAxisAlignment: .start,
             children: [
               _buildInterests(profile.interests ?? []),
-              _buildInfoCol(heading: 'Location', text: profile.location ?? ''),
+              _buildInfoCol(heading: 'Location', text: profile.location),
               _buildInfoCol(heading: 'Website', url: profile.website),
               _buildInfoCol(
                 heading: 'Bio',
@@ -309,13 +312,15 @@ class _MyProfileState extends State<MyProfile> {
         else if (url != null)
           GestureDetector(
             onTap: () {
-              openUrl(url);
+              if (url.isNotEmpty) {
+                openUrl(url);
+              }
             },
             child: Text(
-              url,
+              url.isNotEmpty ? url : 'N/A',
               style: context.style.b2.copyWith(
-                color: colors.neonBlue,
-                decoration: .underline,
+                color: url.isNotEmpty ? colors.neonBlue : null,
+                decoration: url.isNotEmpty ? .underline : .none,
                 decorationColor: colors.neonBlue,
               ),
             ),
@@ -337,7 +342,7 @@ class _MyProfileState extends State<MyProfile> {
         ),
 
         if (interests.isEmpty)
-          Text('N/A', style: context.style.h3)
+          const Text('N/A')
         else
           Wrap(
             spacing: 10,
@@ -357,8 +362,9 @@ class _MyProfileState extends State<MyProfile> {
         return Align(
           alignment: .center,
           child: PrimaryButton(
-            onPressed: () {
-              ref.read(authProvider.notifier).logout();
+            onPressed: () async {
+              await ref.read(authProvider.notifier).logout();
+              AppNavigator.pushAndRemoveAll(const AuthStateScreen());
             },
             label: 'Logout',
             icon: Icons.logout_outlined,

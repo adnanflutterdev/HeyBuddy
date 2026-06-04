@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
+import 'package:hey_buddy/features/auth/domain/usecases/google_signin_usecase.dart';
 import 'package:hey_buddy/features/auth/domain/usecases/login_usecase.dart';
 import 'package:hey_buddy/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:hey_buddy/features/auth/domain/usecases/signup_usecase.dart';
@@ -17,12 +18,15 @@ final authRepositoryProvider = Provider(
   (ref) => AuthRepositoryImpl(ref.read(authRemoteDataSourceProvider)),
 );
 
-final loginProvider = Provider(
-  (ref) => LoginUsecase(ref.watch(authRepositoryProvider)),
-);
-final signupProvider = Provider(
-  (ref) => SignupUsecase(ref.watch(authRepositoryProvider)),
-);
 final logoutProvider = Provider(
   (ref) => LogoutUsecase(ref.watch(authRepositoryProvider)),
+);
+final googleAuthUsecaseProvider = Provider(
+  (ref) => GoogleAuthUsecase(ref.watch(authRepositoryProvider)),
+);
+final loginUsecaseProvider = Provider(
+  (ref) => LoginUsecase(ref.watch(authRepositoryProvider)),
+);
+final signupUsecaseProvider = Provider(
+  (ref) => SignupUsecase(ref.watch(authRepositoryProvider)),
 );

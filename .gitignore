@@ -47,7 +47,8 @@ app.*.map.json
 
 # Files which will not to be pushed on Git hub
 
-/android/app/google-services.json
-/lib/firebase_options.dart
 /firebase.json
 /lib/keys.dart
+/lib/firebase_options.dart
+/android/app/google-services.json
+/lib/features/auth/presentation/screens/gradient_screen.txt

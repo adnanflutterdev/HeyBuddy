@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/typedefs/typedefs.dart';
 import 'package:hey_buddy/core/usecase/usecase.dart';
+import 'package:hey_buddy/features/auth/domain/usecases/google_signin_usecase.dart';
 import 'package:hey_buddy/features/auth/domain/usecases/login_usecase.dart';
 import 'package:hey_buddy/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:hey_buddy/features/auth/domain/usecases/signup_usecase.dart';
@@ -12,9 +13,28 @@ class AuthNotifier extends StateNotifier<AsyncValue<Result?>> {
   final LoginUsecase _loginUsecase;
   final SignupUsecase _signupUsecase;
   final LogoutUsecase _logoutUsecase;
+  final GoogleAuthUsecase _googleAuthUsecase;
 
-  AuthNotifier(this._loginUsecase, this._signupUsecase, this._logoutUsecase)
-    : super(const AsyncData(null));
+  AuthNotifier(
+    this._loginUsecase,
+    this._signupUsecase,
+    this._logoutUsecase,
+    this._googleAuthUsecase,
+  ) : super(const AsyncData(null));
+
+  ResultFuture<void> logout() async {
+    state = const AsyncLoading();
+    final result = await _logoutUsecase(NoParams());
+    state = const AsyncData(null);
+    return result;
+  }
+
+  ResultFuture<void> googleSignin() async {
+    state = const AsyncLoading();
+    final result = await _googleAuthUsecase(NoParams());
+    state = const AsyncData(null);
+    return result;
+  }
 
   ResultFuture<void> login(String email, String password) async {
     state = const AsyncLoading();
@@ -31,19 +51,13 @@ class AuthNotifier extends StateNotifier<AsyncValue<Result?>> {
     state = const AsyncData(null);
     return result;
   }
-
-  ResultFuture<void> logout() async {
-    state = const AsyncLoading();
-    final result = await _logoutUsecase(NoParams());
-    state = const AsyncData(null);
-    return result;
-  }
 }
 
 final authProvider = StateNotifierProvider<AuthNotifier, AsyncValue<Result?>>(
   (ref) => AuthNotifier(
-    ref.read(loginProvider),
-    ref.read(signupProvider),
+    ref.read(loginUsecaseProvider),
+    ref.read(signupUsecaseProvider),
     ref.read(logoutProvider),
+    ref.read(googleAuthUsecaseProvider),
   ),
 );

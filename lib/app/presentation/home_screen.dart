@@ -136,9 +136,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final userRef = ref.watch(myDataProvider);
     return userRef.when(
       data: (user) {
-        if (user.profile.profileImage == null) {
-          return const AppLogo();
-        }
         return LogoImage(
           image: user.profile.profileImage,
           size: 40,

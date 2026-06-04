@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hey_buddy/features/profile/data/models/analytics_model.dart';
 import 'package:hey_buddy/features/profile/data/models/security_model.dart';
 import 'package:hey_buddy/features/profile/data/models/settings_model.dart';
@@ -10,6 +11,28 @@ class AuthRemoteDataSource {
   final FirebaseFirestore firestore;
 
   AuthRemoteDataSource(this.auth, this.firestore);
+
+  Future<({UserCredential credential, bool isNewUser})> googleSignin() async {
+    await GoogleSignIn.instance.initialize();
+    GoogleSignInAccount? googleUser = await GoogleSignIn.instance
+        .authenticate();
+    OAuthCredential oAuthCredential = GoogleAuthProvider.credential(
+      idToken: googleUser.authentication.idToken,
+    );
+
+    UserCredential credential = await auth.signInWithCredential(
+      oAuthCredential,
+    );
+
+    return (
+      credential: credential,
+      isNewUser: await firestore
+          .collection('user')
+          .doc(credential.user?.uid)
+          .get()
+          .then((doc) => !doc.exists),
+    );
+  }
 
   Future<UserCredential> login(String email, String password) async {
     return await auth.signInWithEmailAndPassword(

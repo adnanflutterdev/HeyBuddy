@@ -10,6 +10,44 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this.remote);
 
   @override
+  ResultFuture<void> logout() async {
+    try {
+      await remote.logout();
+      return Future.value(Result.success('You logged out!!!'));
+    } on FirebaseAuthException catch (e) {
+      return Result.failure(e.message ?? 'Falied to login');
+    } catch (_) {
+      return Future.value(Result.failure('Failed to logout!!!'));
+    }
+  }
+
+  @override
+  ResultFuture<void> googleSignin() async {
+    try {
+      ({UserCredential credential, bool isNewUser}) response = await remote
+          .googleSignin();
+
+      if (response.credential.user == null) {
+        return Result.failure('User is null');
+      } else {
+        if (response.isNewUser) {
+          User user = response.credential.user!;
+          await remote.saveUser(
+            user.uid,
+            user.displayName ?? 'Your Name',
+            user.email ?? 'Your Email',
+          );
+        }
+        return Result.success('Login success');
+      }
+    } on FirebaseAuthException catch (e) {
+      return Result.failure(e.message ?? 'Falied to login');
+    } catch (_) {
+      return Result.failure('Something went wrong');
+    }
+  }
+
+  @override
   ResultFuture<void> login(String email, String password) async {
     try {
       final response = await remote.login(email, password);
@@ -47,16 +85,6 @@ class AuthRepositoryImpl implements AuthRepository {
         await response.user?.delete();
       }
       return Result.failure('Something went wrong');
-    }
-  }
-
-  @override
-  ResultFuture<void> logout() async {
-    try {
-      await remote.logout();
-      return Future.value(Result.success('You logged out!!!'));
-    } catch (e) {
-      return Future.value(Result.failure('Failed to logout!!!'));
     }
   }
 }

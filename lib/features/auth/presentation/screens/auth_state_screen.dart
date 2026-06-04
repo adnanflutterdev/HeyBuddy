@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hey_buddy/app/presentation/home_screen.dart';
-import 'package:hey_buddy/features/auth/presentation/screens/login_screen.dart';
+import 'package:hey_buddy/features/auth/presentation/screens/auth_screen.dart';
 
 class AuthStateScreen extends StatelessWidget {
   const AuthStateScreen({super.key});

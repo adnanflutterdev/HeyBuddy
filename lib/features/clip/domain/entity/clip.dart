@@ -1,16 +1,16 @@
 import 'package:hey_buddy/core/model/post_and_clip.dart';
 import 'package:hey_buddy/core/model/timestamps.dart';
 
-abstract class Post {
+abstract class Clip {
   final String id;
   final String userId;
-  final PostContent content;
+  final ClipContent content;
   final Timestamps timestamps;
   final Status status;
   final Location location;
   final Moderation moderation;
   final Shared shared;
-  Post({
+  Clip({
     required this.id,
     required this.userId,
     required this.content,
@@ -22,10 +22,10 @@ abstract class Post {
   });
 }
 
-abstract class PostContent {
-  final String text;
-  final List<Media>? media;
+abstract class ClipContent {
+  final String? text;
+  final Media media;
   final List<String>? tags;
 
-  PostContent({required this.text, required this.media, required this.tags});
+  ClipContent({required this.text, required this.media, required this.tags});
 }

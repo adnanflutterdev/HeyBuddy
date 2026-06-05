@@ -1,7 +1,8 @@
 class MediaMeta {
-  final String url;
   final int width;
   final int height;
+  final String url;
+  final String? thumbnail;
   final double aspectRatio;
 
   MediaMeta({
@@ -9,6 +10,7 @@ class MediaMeta {
     required this.width,
     required this.height,
     required this.aspectRatio,
+    this.thumbnail,
   });
 
   factory MediaMeta.fromFirebase(Map<String, dynamic> imageData) {
@@ -17,6 +19,7 @@ class MediaMeta {
       width: imageData['width'],
       height: imageData['height'],
       aspectRatio: imageData['aspectRatio'],
+      thumbnail: imageData['thumbnail'],
     );
   }
 
@@ -26,6 +29,7 @@ class MediaMeta {
       'width': width,
       'height': height,
       'aspectRatio': aspectRatio,
+      'thumbnail': thumbnail,
     };
   }
 }

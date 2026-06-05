@@ -17,9 +17,9 @@ import 'package:hey_buddy/features/post/presentation/pages/post_tab.dart';
 import 'package:hey_buddy/features/post/presentation/pages/post_upload_screeen.dart';
 import 'package:hey_buddy/features/profile/presentation/pages/my_profile.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/my_data_provider.dart';
-import 'package:hey_buddy/features/video/presentation/pages/video_tab.dart';
+import 'package:hey_buddy/features/clip/presentation/pages/video_tab.dart';
 import 'package:hey_buddy/features/users/presentation/pages/users_tab.dart';
-import 'package:hey_buddy/features/video/presentation/pages/video_upload_screen.dart';
+import 'package:hey_buddy/features/clip/presentation/pages/video_upload_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});

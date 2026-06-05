@@ -1,6 +1,6 @@
 import 'package:hey_buddy/core/feature/comment/data/model/comment_model.dart';
+import 'package:hey_buddy/core/model/post_and_clip.dart';
 import 'package:hey_buddy/core/model/timestamps.dart';
-import 'package:hey_buddy/features/post/data/models/post_model.dart';
 
 class CommentModel extends Comment {
   CommentModel({

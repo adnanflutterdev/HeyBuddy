@@ -1,5 +1,5 @@
+import 'package:hey_buddy/core/model/post_and_clip.dart';
 import 'package:hey_buddy/core/model/timestamps.dart';
-import 'package:hey_buddy/features/post/domain/entity/post.dart';
 
 abstract class Comment {
   final String id;

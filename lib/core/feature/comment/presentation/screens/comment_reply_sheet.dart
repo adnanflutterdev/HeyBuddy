@@ -23,8 +23,13 @@ import 'package:hey_buddy/core/widgets/profile_image.dart';
 import 'package:uuid/uuid.dart';
 
 class CommentsReplySheet extends ConsumerStatefulWidget {
-  const CommentsReplySheet(this.replyTo, {super.key});
+  const CommentsReplySheet({
+    super.key,
+    required this.replyTo,
+    required this.repliesRef,
+  });
   final CommentReplyTo replyTo;
+  final CollectionReference repliesRef;
   @override
   ConsumerState<CommentsReplySheet> createState() => _CommentsReplySheetState();
 }
@@ -32,20 +37,6 @@ class CommentsReplySheet extends ConsumerStatefulWidget {
 class _CommentsReplySheetState extends ConsumerState<CommentsReplySheet> {
   late double _height = (9 / 10) * context.height;
   final TextEditingController _controller = .new();
-  late CollectionReference repliesRef;
-
-  @override
-  initState() {
-    super.initState();
-
-    repliesRef = ref
-        .read(firebaseFirestoreProvider)
-        .collection('post')
-        .doc(widget.replyTo.id)
-        .collection('comments')
-        .doc(widget.replyTo.comment.id)
-        .collection('replies');
-  }
 
   Future<void> addCommentReply() async {
     Comment commentReply = CommentModel(
@@ -57,7 +48,7 @@ class _CommentsReplySheetState extends ConsumerState<CommentsReplySheet> {
 
     Result result = await ref
         .read(commentProvider.notifier)
-        .addComment(repliesRef.doc(commentReply.id), commentReply);
+        .addComment(widget.repliesRef.doc(commentReply.id), commentReply);
 
     if (!result.success) {
       if (mounted) {
@@ -210,7 +201,7 @@ class _CommentsReplySheetState extends ConsumerState<CommentsReplySheet> {
   }
 
   Widget _buildComments() {
-    final commentReplyStream = ref.watch(getCommentStream(repliesRef));
+    final commentReplyStream = ref.watch(getCommentStream(widget.repliesRef));
     return Expanded(
       child: Padding(
         padding: AppPadding.p8,
@@ -220,7 +211,7 @@ class _CommentsReplySheetState extends ConsumerState<CommentsReplySheet> {
               itemBuilder: (context, index) {
                 return CommentBubble(
                   id: widget.replyTo.id,
-                  commentsRef: repliesRef,
+                  commentsRef: widget.repliesRef,
                   comments: (
                     prev: index == 0 ? null : replies[index - 1],
                     current: replies[index],

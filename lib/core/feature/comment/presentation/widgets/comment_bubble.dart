@@ -198,7 +198,7 @@ class CommentBubble extends StatelessWidget {
             AppSpacing.w8,
             ReplyButton(
               replyTo: replyTo,
-              replyRef: commentRef.collection('replies'),
+              repliesRef: commentRef.collection('replies'),
             ),
           ],
         ],

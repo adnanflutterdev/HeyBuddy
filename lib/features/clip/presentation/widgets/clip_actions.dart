@@ -2,59 +2,63 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
-import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/helper/open_comment_sheet.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_providers.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/screens/comments_sheet.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
-import 'package:hey_buddy/features/post/presentation/riverpod/post_provider.dart';
-import 'package:hey_buddy/features/post/presentation/riverpod/post_actions_provider.dart';
+import 'package:hey_buddy/features/clip/presentation/riverpod/clip_actions_provider.dart';
+import 'package:hey_buddy/features/clip/presentation/riverpod/clip_provider.dart';
 
-class PostActions extends ConsumerStatefulWidget {
-  const PostActions({super.key, required this.postId});
-  final String postId;
+class ClipActions extends ConsumerStatefulWidget {
+  const ClipActions({super.key, required this.clipId});
+  final String clipId;
 
   @override
-  ConsumerState<PostActions> createState() => _PostActionsState();
+  ConsumerState<ClipActions> createState() => _ClipActionsState();
 }
 
-class _PostActionsState extends ConsumerState<PostActions> {
+class _ClipActionsState extends ConsumerState<ClipActions> {
   void toggleLike(WidgetRef ref, String uid, bool isLiked) {
-    final notifier = ref.read(postActionProvider.notifier);
-    notifier.togglePostLike(id: widget.postId, uid: uid, isLiked: isLiked);
+    final notifier = ref.read(clipActionProvider.notifier);
+    notifier.toggleClipLike(id: widget.clipId, uid: uid, isLiked: isLiked);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: context.colors.container,
-      padding: AppPadding.p12,
-      child: Row(
-        spacing: 20,
-        children: [
-          _buildLikeButton(),
-          _buildCommentButton(),
-          _buildShareButton(),
-        ],
-      ),
+    return Column(
+      spacing: 20,
+      mainAxisAlignment: .center,
+      children: [
+        _buildLikeButton(),
+        _buildCommentButton(),
+        _buildShareButton(),
+      ],
     );
   }
 
   Widget _buildLikeButton() {
     final uid = ref.read(uidProvider);
-    final likeStream = ref.watch(postLikeStream(widget.postId));
+    final likeStream = ref.watch(clipLikeStream(widget.clipId));
     return likeStream.when(
       data: (likes) {
         bool isLiked = likes.contains(uid);
-        return Row(
+        return Column(
           mainAxisSize: .min,
-          spacing: 8,
           children: [
             GestureDetector(
               onTap: () => toggleLike(ref, uid, isLiked),
               child: Icon(
                 isLiked ? Icons.favorite : Icons.favorite_outline,
                 color: isLiked ? context.colors.error : null,
+                size: 30,
+                shadows: [
+                  Shadow(
+                    blurRadius: 3,
+                    color: isLiked
+                        ? context.colors.primaryText
+                        : context.colors.shadow,
+                  ),
+                ],
               ),
             ),
             Text('${likes.length}', style: context.style.b2),
@@ -87,20 +91,19 @@ class _PostActionsState extends ConsumerState<PostActions> {
   Widget _buildCommentButton() {
     final commentsRef = ref
         .watch(firebaseFirestoreProvider)
-        .collection('post')
-        .doc(widget.postId)
+        .collection('clip')
+        .doc(widget.clipId)
         .collection('comments');
     final commentStream = ref.watch(getCommentStream(commentsRef));
     return GestureDetector(
       onTap: () => openCommentSheet(
         context: context,
-        sheet: CommentsSheet(id: widget.postId, commentsRef: commentsRef),
+        sheet: CommentsSheet(id: widget.clipId, commentsRef: commentsRef),
       ),
-      child: Row(
+      child: Column(
         mainAxisSize: .min,
-        spacing: 8,
         children: [
-          const Icon(Icons.comment),
+          const Icon(Icons.comment, size: 30, shadows: [Shadow(blurRadius: 3)]),
           commentStream.when(
             data: (data) {
               return Text('${data.length}');
@@ -114,10 +117,12 @@ class _PostActionsState extends ConsumerState<PostActions> {
   }
 
   Widget _buildShareButton() {
-    return const Row(
+    return const Column(
       mainAxisSize: .min,
-      spacing: 8,
-      children: [Icon(Icons.share), Text('0')],
+      children: [
+        Icon(Icons.share, size: 30, shadows: [Shadow(blurRadius: 3)]),
+        Text('0'),
+      ],
     );
   }
 }

@@ -20,8 +20,9 @@ import 'package:hey_buddy/core/feature/comment/presentation/widgets/comment_bubb
 import 'package:uuid/uuid.dart';
 
 class CommentsSheet extends ConsumerStatefulWidget {
-  const CommentsSheet({super.key, required this.id});
+  const CommentsSheet({super.key, required this.id, required this.commentsRef});
   final String id;
+  final CollectionReference commentsRef;
 
   @override
   ConsumerState<CommentsSheet> createState() => _CommentsSheetState();
@@ -30,18 +31,6 @@ class CommentsSheet extends ConsumerStatefulWidget {
 class _CommentsSheetState extends ConsumerState<CommentsSheet> {
   late double _height = (9 / 10) * context.height;
   final TextEditingController _controller = .new();
-  late CollectionReference commentsRef;
-
-  @override
-  initState() {
-    super.initState();
-
-    commentsRef = ref
-        .read(firebaseFirestoreProvider)
-        .collection('post')
-        .doc(widget.id)
-        .collection('comments');
-  }
 
   Future<void> addComment() async {
     Comment comment = CommentModel(
@@ -53,7 +42,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
 
     Result result = await ref
         .read(commentProvider.notifier)
-        .addComment(commentsRef.doc(comment.id), comment);
+        .addComment(widget.commentsRef.doc(comment.id), comment);
 
     if (!result.success) {
       if (mounted) {
@@ -159,7 +148,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
   }
 
   Widget _buildComments() {
-    final commentStream = ref.watch(getCommentStream(commentsRef));
+    final commentStream = ref.watch(getCommentStream(widget.commentsRef));
     return Expanded(
       child: Padding(
         padding: AppPadding.p8,
@@ -169,7 +158,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
               itemBuilder: (context, index) {
                 return CommentBubble(
                   id: widget.id,
-                  commentsRef: commentsRef,
+                  commentsRef: widget.commentsRef,
                   comments: (
                     prev: index == 0 ? null : comments[index - 1],
                     current: comments[index],

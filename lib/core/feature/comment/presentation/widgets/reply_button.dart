@@ -10,9 +10,13 @@ import 'package:hey_buddy/core/feature/comment/presentation/screens/comment_repl
 import 'package:hey_buddy/core/widgets/app_material_button.dart';
 
 class ReplyButton extends StatelessWidget {
-  const ReplyButton({super.key, required this.replyTo, required this.replyRef});
+  const ReplyButton({
+    super.key,
+    required this.replyTo,
+    required this.repliesRef,
+  });
   final CommentReplyTo replyTo;
-  final CollectionReference replyRef;
+  final CollectionReference repliesRef;
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +26,13 @@ class ReplyButton extends StatelessWidget {
           text: 'Reply',
           onPressed: () => openCommentSheet(
             context: context,
-            sheet: CommentsReplySheet(replyTo),
+            sheet: CommentsReplySheet(replyTo: replyTo, repliesRef: repliesRef),
           ),
           style: context.style.b3.copyWith(color: context.colors.neonBlue),
         ),
         Consumer(
           builder: (context, ref, _) {
-            final commentReplyStream = ref.watch(getCommentStream(replyRef));
+            final commentReplyStream = ref.watch(getCommentStream(repliesRef));
             return commentReplyStream.when(
               data: (replies) {
                 if (replies.isEmpty) {

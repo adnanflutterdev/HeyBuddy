@@ -13,8 +13,8 @@ class PostTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final postIdsRef = ref.watch(postsProvider);
-    return postIdsRef.when(
+    final postsRef = ref.watch(postsProvider);
+    return postsRef.when(
       data: (posts) {
         return ListView.separated(
           scrollCacheExtent: const ScrollCacheExtent.viewport(3),

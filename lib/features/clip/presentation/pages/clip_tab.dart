@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class VideoTab extends StatelessWidget {
-  const VideoTab({super.key});
+class ClipTab extends StatelessWidget {
+  const ClipTab({super.key});
 
   @override
   Widget build(BuildContext context) {

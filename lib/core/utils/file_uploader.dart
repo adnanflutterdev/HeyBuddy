@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:convert';
 import 'package:hey_buddy/core/model/media_meta.dart';
@@ -68,19 +69,71 @@ class FileUploader {
       for (final r in response) {
         if (r != null && r.rawResponse != null) {
           final uploadData = jsonDecode(r.rawResponse!);
+          int width = uploadData['width'] ?? 0;
+          int height = uploadData['height'] ?? 0;
           urls.add(
             MediaMeta(
               url: uploadData['secure_url'],
-              width: uploadData['width'],
-              height: uploadData['height'],
-              aspectRatio:
-                  ((uploadData['width'] / uploadData['height']) as double)
-                      .clamp(0.5, 1.8),
+              width: width,
+              height: height,
+              aspectRatio: (width / height).clamp(0.5, 1.8),
             ),
           );
         }
       }
       return urls;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<MediaMeta?> uploadVideo({
+    required WidgetRef ref,
+    required String folder,
+    required File video,
+    required String name,
+  }) async {
+    try {
+      final uploadNotifier = ref.read(uploadProgressProvider.notifier);
+      final response = await cloudinary.uploader().upload(
+        video,
+        params: UploadParams(
+          publicId: name,
+          uniqueFilename: false,
+          overwrite: true,
+          folder: folder,
+          useFilename: true,
+          resourceType: 'video',
+        ),
+        progressCallback: (bytesUploaded, totalBytes) {
+          double progress = totalBytes == 0
+              ? 0
+              : (bytesUploaded / totalBytes) * 100;
+          uploadNotifier.updateProgress(progress);
+        },
+      );
+
+      MediaMeta? meta;
+
+      if (response != null && response.rawResponse != null) {
+        final uploadData = jsonDecode(response.rawResponse!);
+        log(uploadData.toString());
+        int width = uploadData['width'] ?? 0;
+        int height = uploadData['height'] ?? 0;
+
+        meta = MediaMeta(
+          url: uploadData['secure_url'],
+          width: width,
+          height: height,
+          aspectRatio: (width > 0 && height > 0)
+              ? (width / height).clamp(0.5, 1.8)
+              : 1,
+          thumbnail:
+              'https://res.cloudinary.com/$cloudinaryCloudName/video/upload/so_1/${uploadData['public_id']}.jpg',
+        );
+      }
+
+      return meta;
     } catch (_) {
       return null;
     }

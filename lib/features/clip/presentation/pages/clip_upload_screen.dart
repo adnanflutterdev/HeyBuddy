@@ -13,7 +13,8 @@ import 'package:hey_buddy/core/utils/messenger.dart';
 import 'package:hey_buddy/core/widgets/app_text_field.dart';
 import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
 import 'package:hey_buddy/core/widgets/app_material_button.dart';
-import 'package:hey_buddy/features/post/data/models/post_model.dart';
+import 'package:hey_buddy/features/clip/data/models/clip_model.dart';
+import 'package:hey_buddy/features/clip/presentation/riverpod/clip_provider.dart';
 import 'package:hey_buddy/features/post/presentation/riverpod/post_provider.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/my_data_provider.dart';
@@ -22,14 +23,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoUploadScreen extends StatefulWidget {
-  const VideoUploadScreen({super.key});
+class ClipUploadScreen extends StatefulWidget {
+  const ClipUploadScreen({super.key});
 
   @override
-  State<VideoUploadScreen> createState() => _VideoUploadScreenState();
+  State<ClipUploadScreen> createState() => _ClipUploadScreenState();
 }
 
-class _VideoUploadScreenState extends State<VideoUploadScreen> {
+class _ClipUploadScreenState extends State<ClipUploadScreen> {
   File? _video;
   VideoPlayerController? _videoPlayerController;
   final TextEditingController _contentController = .new();
@@ -63,7 +64,7 @@ class _VideoUploadScreenState extends State<VideoUploadScreen> {
 
   void uploadPost(WidgetRef ref) async {
     String text = _contentController.text.trim();
-    if (text.isNotEmpty || _video != null) {
+    if (_video != null) {
       String videoId = const Uuid().v4();
       UserData? user = ref.read(myDataProvider).value;
       if (user == null) {
@@ -75,45 +76,42 @@ class _VideoUploadScreenState extends State<VideoUploadScreen> {
         }
         return;
       }
-      List<MediaMeta>? images;
+      MediaMeta? video;
       if (_video != null) {
         String uid = ref.read(uidProvider);
         String name = const Uuid().v4();
-        List<MediaMeta>? uploadedVideo = await FileUploader.uploadFiles(
+        MediaMeta? uploadedVideo = await FileUploader.uploadVideo(
           ref: ref,
-          files: [_video!],
-          names: [name],
-          folder: 'post/$uid/$videoId',
+          video: _video!,
+          name: name,
+          folder: 'clip/$uid/$videoId',
         );
-        if (uploadedVideo == null) {
-          if (mounted) {
-            showMessenger(
-              context,
-              result: Result.failure('Failed to upload video'),
-            );
-          }
+        if (uploadedVideo == null && mounted) {
+          showMessenger(
+            context,
+            result: Result.failure('Failed to upload video'),
+          );
           ref.read(uploadProgressProvider.notifier).updateProgress(0);
           return;
         } else {
-          images = uploadedVideo;
+          video = uploadedVideo;
         }
       }
-      List<MediaModel>? media = images
-          ?.map((imageData) => MediaModel(data: imageData, type: .image))
-          .toList();
-      PostContentModel content = PostContentModel(
+      MediaModel? media = MediaModel(data: video!, type: .video);
+
+      ClipContentModel content = ClipContentModel(
         text: text,
         media: media,
         tags: [],
       );
-      PostModel feedItem = PostModel.setNewPost(
+      ClipModel clip = ClipModel.setNewPost(
         id: videoId,
         userId: user.uid,
         content: content,
       );
       Result result = await ref
-          .read(createPostProvider.notifier)
-          .uploadPost(feedItem);
+          .read(createClipProvider.notifier)
+          .uploadClip(clip);
       if (mounted) {
         showMessenger(context, result: result);
         ref.read(uploadProgressProvider.notifier).updateProgress(0);
@@ -122,10 +120,7 @@ class _VideoUploadScreenState extends State<VideoUploadScreen> {
         });
       }
     } else {
-      showMessenger(
-        context,
-        result: Result.failure('Add images/content to upload post'),
-      );
+      showMessenger(context, result: Result.failure('A video is required'));
     }
   }
 

@@ -84,8 +84,6 @@ class _MyProfileState extends State<MyProfile> {
             );
           },
           error: (error, stackTrace) {
-            print(error);
-            print(stackTrace);
             return const Scaffold(
               body: Center(child: Text('Something went wrong')),
             );

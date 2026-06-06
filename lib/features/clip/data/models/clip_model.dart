@@ -100,6 +100,10 @@ class ClipContentModel extends ClipContent {
   }
 
   Map<String, dynamic> toFirebase() {
-    return {"text": text, "media": media, "tags": tags};
+    return {
+      "text": text,
+      "media": (media as MediaModel).toFirebase(),
+      "tags": tags,
+    };
   }
 }

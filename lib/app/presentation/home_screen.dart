@@ -17,9 +17,9 @@ import 'package:hey_buddy/features/post/presentation/pages/post_tab.dart';
 import 'package:hey_buddy/features/post/presentation/pages/post_upload_screeen.dart';
 import 'package:hey_buddy/features/profile/presentation/pages/my_profile.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/my_data_provider.dart';
-import 'package:hey_buddy/features/clip/presentation/pages/video_tab.dart';
+import 'package:hey_buddy/features/clip/presentation/pages/clip_tab.dart';
 import 'package:hey_buddy/features/users/presentation/pages/users_tab.dart';
-import 'package:hey_buddy/features/clip/presentation/pages/video_upload_screen.dart';
+import 'package:hey_buddy/features/clip/presentation/pages/clip_upload_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -32,7 +32,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final PageController _pageController = PageController();
   final List<Widget> pages = [
     const PostTab(),
-    const VideoTab(),
+    const ClipTab(),
     const ChatTab(),
     const UsersTab(),
   ];
@@ -65,7 +65,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 LabeledIconButton(
                   onPressed: () {
                     AppNavigator.pop();
-                    AppNavigator.push(const VideoUploadScreen());
+                    AppNavigator.push(const ClipUploadScreen());
                   },
                   icon: Icons.movie_sharp,
                   label: 'Upload Video',
@@ -141,7 +141,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildNavbar(int tabIndex) {
     List<TabModel> tabs = [
       TabModel(label: 'Home', icon: Icons.home_filled),
-      TabModel(label: 'Video', icon: Icons.video_collection_rounded),
+      TabModel(label: 'Clip', icon: Icons.video_collection_rounded),
       TabModel(label: 'Chat', icon: Icons.chat_rounded),
       TabModel(label: 'Users', icon: Icons.group),
     ];

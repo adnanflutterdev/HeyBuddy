@@ -17,6 +17,7 @@ class AppMeterialButton extends StatelessWidget {
     this.isTransparent = false,
     this.icon,
     this.iconColor,
+    this.bgColor,
     this.iconSize = 18,
     this.iconAlignment = .start,
     this.borderRadius = 20,
@@ -30,6 +31,7 @@ class AppMeterialButton extends StatelessWidget {
   final bool hasCircularBorder;
   final IconData? icon;
   final Color? iconColor;
+  final Color? bgColor;
   final double? iconSize;
   final IconAlignment iconAlignment;
   final double borderRadius;
@@ -54,7 +56,9 @@ class AppMeterialButton extends StatelessWidget {
     ShapeBorder? getBorder = (hasCircularBorder || text == null)
         ? CircleBorder(
             side: BorderSide(
-              color: isTransparent ? Colors.transparent : colors.border,
+              color: isTransparent
+                  ? Colors.transparent
+                  : (bgColor ?? colors.border),
             ),
           )
         : RoundedRectangleBorder(

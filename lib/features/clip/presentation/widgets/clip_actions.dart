@@ -39,6 +39,7 @@ class _ClipActionsState extends ConsumerState<ClipActions> {
   Widget _buildLikeButton() {
     final uid = ref.read(uidProvider);
     final likeStream = ref.watch(clipLikeStream(widget.clipId));
+
     return likeStream.when(
       data: (likes) {
         bool isLiked = likes.contains(uid);
@@ -49,41 +50,22 @@ class _ClipActionsState extends ConsumerState<ClipActions> {
               onTap: () => toggleLike(ref, uid, isLiked),
               child: Icon(
                 isLiked ? Icons.favorite : Icons.favorite_outline,
-                color: isLiked ? context.colors.error : null,
+                color: isLiked ? context.colors.error : Colors.white,
                 size: 30,
-                shadows: [
-                  Shadow(
-                    blurRadius: 3,
-                    color: isLiked
-                        ? context.colors.primaryText
-                        : context.colors.shadow,
-                  ),
-                ],
               ),
             ),
-            Text('${likes.length}', style: context.style.b2),
+            Text(
+              '${likes.length}',
+              style: context.style.b2.copyWith(color: Colors.white),
+            ),
           ],
         );
       },
       error: (_, _) {
-        return Row(
-          mainAxisSize: .min,
-          spacing: 8,
-          children: [
-            const Icon(Icons.favorite),
-            Text('Like', style: context.style.b2),
-          ],
-        );
+        return const Icon(Icons.favorite, color: Colors.white);
       },
       loading: () {
-        return Row(
-          mainAxisSize: .min,
-          spacing: 8,
-          children: [
-            const Icon(Icons.favorite),
-            Text('Like', style: context.style.b2),
-          ],
-        );
+        return const Icon(Icons.favorite, color: Colors.white);
       },
     );
   }
@@ -103,10 +85,13 @@ class _ClipActionsState extends ConsumerState<ClipActions> {
       child: Column(
         mainAxisSize: .min,
         children: [
-          const Icon(Icons.comment, size: 30, shadows: [Shadow(blurRadius: 3)]),
+          const Icon(Icons.comment, size: 30, color: Colors.white),
           commentStream.when(
             data: (data) {
-              return Text('${data.length}');
+              return Text(
+                '${data.length}',
+                style: context.style.b2.copyWith(color: Colors.white),
+              );
             },
             error: (_, _) => const Text('Comments'),
             loading: () => const Text('Comments'),
@@ -117,11 +102,11 @@ class _ClipActionsState extends ConsumerState<ClipActions> {
   }
 
   Widget _buildShareButton() {
-    return const Column(
+    return Column(
       mainAxisSize: .min,
       children: [
-        Icon(Icons.share, size: 30, shadows: [Shadow(blurRadius: 3)]),
-        Text('0'),
+        const Icon(Icons.share, size: 30, color: Colors.white),
+        Text('0', style: context.style.b2.copyWith(color: Colors.white)),
       ],
     );
   }

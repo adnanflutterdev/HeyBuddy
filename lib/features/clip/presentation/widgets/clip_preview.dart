@@ -4,15 +4,15 @@ import 'package:video_player/video_player.dart';
 import 'package:my_progress_bar/my_progress_bar.dart';
 import 'package:hey_buddy/core/widgets/app_material_button.dart';
 
-class VideoPreview extends StatefulWidget {
-  const VideoPreview({super.key, required this.controller});
+class ClipPreview extends StatefulWidget {
+  const ClipPreview({super.key, required this.controller});
   final VideoPlayerController controller;
 
   @override
-  State<VideoPreview> createState() => _VideoPreviewState();
+  State<ClipPreview> createState() => _ClipPreviewState();
 }
 
-class _VideoPreviewState extends State<VideoPreview> {
+class _ClipPreviewState extends State<ClipPreview> {
   VideoPlayerController get controller => widget.controller;
 
   final ValueNotifier<bool> _isMuted = ValueNotifier(false);
@@ -29,7 +29,7 @@ class _VideoPreviewState extends State<VideoPreview> {
   }
 
   @override
-  void didUpdateWidget(covariant VideoPreview oldWidget) {
+  void didUpdateWidget(covariant ClipPreview oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.controller != widget.controller) {

@@ -30,9 +30,9 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final PageController _pageController = PageController();
-  final List<Widget> pages = [
+  late List<Widget> pages = [
     const PostTab(),
-    const ClipTab(),
+    ClipTab(pageController: _pageController),
     const ChatTab(),
     const UsersTab(),
   ];
@@ -146,6 +146,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       TabModel(label: 'Users', icon: Icons.group),
     ];
     final width = context.width / 4;
+    if (tabIndex == 1) {
+      return const SizedBox.shrink();
+    }
     return Container(
       color: context.colors.appbar,
       child: Row(

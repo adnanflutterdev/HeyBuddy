@@ -18,7 +18,7 @@ import 'package:hey_buddy/features/clip/presentation/riverpod/clip_provider.dart
 import 'package:hey_buddy/features/post/presentation/riverpod/post_provider.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/my_data_provider.dart';
-import 'package:hey_buddy/features/clip/presentation/widgets/video_preview.dart';
+import 'package:hey_buddy/features/clip/presentation/widgets/clip_preview.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
@@ -204,6 +204,6 @@ class _ClipUploadScreenState extends State<ClipUploadScreen> {
   }
 
   Widget _buildVideo() {
-    return Center(child: VideoPreview(controller: _videoPlayerController!));
+    return Center(child: ClipPreview(controller: _videoPlayerController!));
   }
 }

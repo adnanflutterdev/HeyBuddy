@@ -1,31 +1,66 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hey_buddy/config/extensions/color_extension.dart';
+import 'package:hey_buddy/config/extensions/size_extention.dart';
+import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/widgets/app_material_button.dart';
-import 'package:my_progress_bar/my_progress_bar.dart';
+import 'package:hey_buddy/features/clip/presentation/riverpod/clip_actions_provider.dart';
+import 'package:hey_buddy/features/clip/presentation/riverpod/clip_provider.dart';
 import 'package:video_player/video_player.dart';
 
-class ClipPlayer extends StatefulWidget {
-  const ClipPlayer({super.key, required this.controller});
+class ClipPlayer extends ConsumerStatefulWidget {
+  const ClipPlayer({
+    super.key,
+    required this.controller,
+    required this.isMuted,
+    required this.clipId,
+  });
   final VideoPlayerController controller;
+  final ValueNotifier<bool> isMuted;
+  final String clipId;
 
   @override
-  State<ClipPlayer> createState() => _ClipPlayerState();
+  ConsumerState<ClipPlayer> createState() => _ClipPlayerState();
 }
 
-class _ClipPlayerState extends State<ClipPlayer> {
+class _ClipPlayerState extends ConsumerState<ClipPlayer>
+    with SingleTickerProviderStateMixin {
   VideoPlayerController get controller => widget.controller;
+  final ValueNotifier<bool> _isUiVisible = ValueNotifier(false);
+  final ValueNotifier<bool> _isFastForwarded = ValueNotifier(false);
 
-  final ValueNotifier<bool> _isMuted = ValueNotifier(false);
-  final ValueNotifier<bool> _isUiVisible = ValueNotifier(true);
-  final ValueNotifier<double> _currentPosition = ValueNotifier(0.0);
+  late AnimationController _animationController;
+  late Animation<double> _likeAnimation;
+  OverlayEntry? _overlayEntry;
 
-  Timer? uiTimer;
+  Timer? _uiTimer;
 
   @override
   void initState() {
-    controller.addListener(controllerListener);
-    hideUiAfterDelay();
     super.initState();
+    if (widget.isMuted.value) {
+      controller.setVolume(0);
+    }
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+
+    _likeAnimation = Tween<double>(begin: 0.2, end: 1).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
+    );
+
+    _animationController.addStatusListener((status) {
+      if (status == .completed) {
+        _animationController.reset();
+        if (_overlayEntry != null) {
+          _overlayEntry?.remove();
+          _overlayEntry = null;
+        }
+      }
+    });
   }
 
   @override
@@ -33,11 +68,7 @@ class _ClipPlayerState extends State<ClipPlayer> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.controller != widget.controller) {
-      oldWidget.controller.removeListener(controllerListener);
-      widget.controller.addListener(controllerListener);
-      _isMuted.value = false;
       _isUiVisible.value = true;
-      _currentPosition.value = 0.0;
       hideUiAfterDelay();
     }
   }
@@ -48,25 +79,61 @@ class _ClipPlayerState extends State<ClipPlayer> {
   }
 
   void hideUiAfterDelay() {
-    uiTimer?.cancel();
-    uiTimer = Timer(const Duration(seconds: 3), () {
+    _uiTimer?.cancel();
+    _uiTimer = Timer(const Duration(seconds: 3), () {
       _isUiVisible.value = false;
     });
   }
 
-  void controllerListener() {
-    _currentPosition.value = controller.value.position.inSeconds.toDouble();
+  void addLike(TapDownDetails details) {
+    final uid = ref.read(uidProvider);
+    final likeStream = ref.read(clipLikeStream(widget.clipId));
+
+    if (likeStream.value != null && !likeStream.value!.contains(uid)) {
+      ref
+          .read(clipActionProvider.notifier)
+          .toggleClipLike(id: widget.clipId, uid: uid, isLiked: false);
+    }
+
+    final overlay = Overlay.of(context);
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) {
+        return SizedBox(
+          width: context.width,
+          height: context.height,
+          child: Stack(
+            children: [
+              Positioned(
+                left: details.globalPosition.dx - 40,
+                top: details.globalPosition.dy - 40,
+                child: ScaleTransition(
+                  scale: _likeAnimation,
+                  child: Icon(
+                    Icons.favorite,
+                    size: 80,
+                    color: context.colors.error,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (_overlayEntry != null) {
+      overlay.insert(_overlayEntry!);
+      _animationController.forward();
+    }
   }
 
   @override
   void dispose() {
-    _isMuted.dispose();
-    _currentPosition.dispose();
-
-    uiTimer?.cancel();
+    _uiTimer?.cancel();
     _isUiVisible.dispose();
+    _animationController.dispose();
 
-    controller.removeListener(controllerListener);
     super.dispose();
   }
 
@@ -83,110 +150,76 @@ class _ClipPlayerState extends State<ClipPlayer> {
           Positioned.fill(
             child: GestureDetector(
               onTap: () {
-                if (_isUiVisible.value) {
-                  uiTimer?.cancel();
-                  _isUiVisible.value = false;
+                if (controller.value.isPlaying) {
+                  controller.pause();
                 } else {
-                  showUi();
+                  controller.play();
                 }
               },
+
+              onDoubleTapDown: addLike,
+
+              onLongPressStart: (details) async {
+                await controller.setPlaybackSpeed(2);
+                _isFastForwarded.value = true;
+              },
+              onLongPressEnd: (details) async {
+                await controller.setPlaybackSpeed(1);
+                _isFastForwarded.value = false;
+              },
+
               child: VideoPlayer(controller),
             ),
           ),
+          Positioned(
+            top: 10,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: .center,
+              children: [
+                ValueListenableBuilder(
+                  valueListenable: _isFastForwarded,
+                  builder: (context, isFastForwarded, _) {
+                    if (!isFastForwarded) {
+                      return const SizedBox.shrink();
+                    }
+                    return const AppMeterialButton(
+                      text: '2X',
+                      iconAlignment: .end,
+                      icon: Icons.fast_forward,
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
 
-          // Controlls
-          Positioned.fill(
-            child: ValueListenableBuilder(
-              valueListenable: _isUiVisible,
-              builder: (context, isUiVisible, child) {
-                if (isUiVisible) {
-                  return _buildUi();
-                } else {
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Center(
+              child: ValueListenableBuilder<VideoPlayerValue>(
+                valueListenable: controller,
+                builder: (context, value, _) {
+                  if (!value.isPlaying) {
+                    return AppMeterialButton(
+                      onPressed: () {
+                        controller.play();
+                      },
+                      icon: Icons.pause,
+                      iconSize: 30,
+                    );
+                  }
                   return const SizedBox.shrink();
-                }
-              },
+                },
+              ),
             ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildUi() {
-    return Stack(
-      children: [
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          child: Center(
-            child: ValueListenableBuilder<VideoPlayerValue>(
-              valueListenable: controller,
-              builder: (context, value, _) {
-                return AppMeterialButton(
-                  onPressed: () {
-                    showUi();
-                    if (value.isPlaying) {
-                      controller.pause();
-                    } else {
-                      controller.play();
-                    }
-                  },
-                  icon: value.isPlaying ? Icons.pause : Icons.play_arrow,
-                  iconSize: 30,
-                );
-              },
-            ),
-          ),
-        ),
-        Positioned(
-          bottom: 5,
-          left: 5,
-          right: 5,
-          child: Row(
-            children: [
-              Expanded(
-                child: ValueListenableBuilder(
-                  valueListenable: _currentPosition,
-                  builder: (context, currentPosition, _) {
-                    return HorizontalProgressBar(
-                      trackHeight: 5,
-                      maxValue: controller.value.duration.inSeconds.toDouble(),
-                      currentPosition: currentPosition,
-                      onChanged: (value) {
-                        showUi();
-                        controller.seekTo(Duration(seconds: value.toInt()));
-                      },
-                    );
-                  },
-                ),
-              ),
-              ValueListenableBuilder(
-                valueListenable: _isMuted,
-                builder: (context, isMuted, _) {
-                  return AppMeterialButton(
-                    onPressed: () {
-                      showUi();
-                      if (isMuted) {
-                        controller.setVolume(1);
-                      } else {
-                        controller.setVolume(0);
-                      }
-                      _isMuted.value = !isMuted;
-                    },
-                    padding: const EdgeInsets.all(4),
-                    icon: isMuted
-                        ? Icons.volume_off_rounded
-                        : Icons.volume_up_rounded,
-                    iconSize: 30,
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

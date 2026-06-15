@@ -21,6 +21,7 @@ class AppMeterialButton extends StatelessWidget {
     this.iconSize = 18,
     this.iconAlignment = .start,
     this.borderRadius = 20,
+    this.borderColor,
   });
   final VoidCallback? onPressed;
   final Function(TapDownDetails details)? onTapDown;
@@ -35,6 +36,7 @@ class AppMeterialButton extends StatelessWidget {
   final double? iconSize;
   final IconAlignment iconAlignment;
   final double borderRadius;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -53,19 +55,22 @@ class AppMeterialButton extends StatelessWidget {
       ],
     ];
 
+    Color colorOfBorder = isTransparent
+        ? Colors.transparent
+        : (borderColor ?? colors.border);
+
+    Color colorOfBG = isTransparent
+        ? Colors.transparent
+        : (bgColor ?? colors.bg);
+
     ShapeBorder? getBorder = (hasCircularBorder || text == null)
-        ? CircleBorder(
-            side: BorderSide(
-              color: isTransparent
-                  ? Colors.transparent
-                  : (bgColor ?? colors.border),
-            ),
-          )
+        ? CircleBorder(side: BorderSide(color: colorOfBorder))
         : RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
+            side: BorderSide(color: colorOfBorder),
           );
     return Material(
-      color: isTransparent ? Colors.transparent : colors.bg,
+      color: colorOfBG,
       shape: getBorder,
       child: InkWell(
         onTap: onPressed,

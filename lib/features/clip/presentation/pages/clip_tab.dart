@@ -19,6 +19,7 @@ class ClipTab extends ConsumerStatefulWidget {
 }
 
 class _ClipTabState extends ConsumerState<ClipTab> {
+  final ValueNotifier<bool> _isMuted = ValueNotifier(false);
   List<VideoPlayerController?> _controllers = [];
   List<String> _urls = [];
   int currentPage = 0;
@@ -55,6 +56,8 @@ class _ClipTabState extends ConsumerState<ClipTab> {
           Uri.parse(_urls[i]),
         );
         await controller.initialize();
+        await controller.setLooping(true);
+        
 
         _controllers[i] = controller;
       }
@@ -132,6 +135,7 @@ class _ClipTabState extends ConsumerState<ClipTab> {
                 }
                 return BuildClip(
                   clip: clips[index],
+                  isMuted: _isMuted,
                   controller: _controllers[index]!,
                 );
               },
@@ -150,6 +154,31 @@ class _ClipTabState extends ConsumerState<ClipTab> {
                     0,
                     duration: const Duration(milliseconds: 200),
                     curve: Curves.easeIn,
+                  );
+                },
+              ),
+            ),
+
+            Positioned(
+              top: 10,
+              right: 10,
+              child: ValueListenableBuilder(
+                valueListenable: _isMuted,
+                builder: (context, isMuted, _) {
+                  return AppMeterialButton(
+                    onPressed: () {
+                      if (isMuted) {
+                        _controllers[currentPage]?.setVolume(1);
+                      } else {
+                        _controllers[currentPage]?.setVolume(0);
+                      }
+                      _isMuted.value = !isMuted;
+                    },
+                    padding: AppPadding.p4,
+                    icon: isMuted
+                        ? Icons.volume_off_rounded
+                        : Icons.volume_up_rounded,
+                    iconSize: 25,
                   );
                 },
               ),

@@ -14,7 +14,7 @@ import 'package:hey_buddy/core/feature/comment/presentation/widgets/reply_button
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/utils/error_state.dart';
 import 'package:hey_buddy/core/widgets/profile_image.dart';
-import 'package:hey_buddy/features/chat/presentation/riverpod/users_provider.dart';
+import 'package:hey_buddy/features/users/presentation/riverpod/users_provider.dart';
 import 'package:intl/intl.dart';
 
 class CommentBubble extends StatelessWidget {
@@ -85,7 +85,7 @@ class CommentBubble extends StatelessWidget {
         //
         final String myUid = ref.watch(uidProvider);
         final bool isMine = comments.current.userId == myUid;
-        final userRef = ref.watch(usersDataProvider(comment.userId));
+        final userRef = ref.watch(userDataProvider(comment.userId));
 
         final constraints = BoxConstraints(
           maxWidth: ((8.5 / 10) * context.width) - (isMine ? 0 : 50),

@@ -23,15 +23,27 @@ class _ClipActionsState extends ConsumerState<ClipActions> {
     notifier.toggleClipLike(id: widget.clipId, uid: uid, isLiked: isLiked);
   }
 
+  List<Shadow> shadows = [
+    const Shadow(color: Colors.black54, blurRadius: 8, offset: Offset(0, 2)),
+  ];
+
+  late TextStyle style = context.style.b2.copyWith(
+    color: Colors.white,
+    shadows: shadows,
+  );
+
   @override
   Widget build(BuildContext context) {
     return Column(
       spacing: 20,
-      mainAxisAlignment: .center,
+      mainAxisAlignment: .end,
       children: [
         _buildLikeButton(),
         _buildCommentButton(),
         _buildShareButton(),
+        _buildSendButton(),
+        _buildSaveButton(),
+        _buildMoreButton(),
       ],
     );
   }
@@ -52,30 +64,36 @@ class _ClipActionsState extends ConsumerState<ClipActions> {
                 isLiked ? Icons.favorite : Icons.favorite_outline,
                 color: isLiked ? context.colors.error : Colors.white,
                 size: 30,
+                shadows: shadows,
               ),
             ),
+
             Text(
               '${likes.length}',
-              style: context.style.b2.copyWith(color: Colors.white),
+              style: context.style.b2.copyWith(
+                color: Colors.white,
+                shadows: shadows,
+              ),
             ),
           ],
         );
       },
       error: (_, _) {
-        return const Icon(Icons.favorite, color: Colors.white);
+        return Icon(Icons.favorite, color: Colors.white, shadows: shadows);
       },
       loading: () {
-        return const Icon(Icons.favorite, color: Colors.white);
+        return Icon(Icons.favorite, color: Colors.white, shadows: shadows);
       },
     );
   }
 
   Widget _buildCommentButton() {
-    final commentsRef = ref
-        .watch(firebaseFirestoreProvider)
+    final firestore = ref.watch(firebaseFirestoreProvider);
+    final commentsRef = firestore
         .collection('clip')
         .doc(widget.clipId)
         .collection('comments');
+        
     final commentStream = ref.watch(getCommentStream(commentsRef));
     return GestureDetector(
       onTap: () => openCommentSheet(
@@ -85,16 +103,15 @@ class _ClipActionsState extends ConsumerState<ClipActions> {
       child: Column(
         mainAxisSize: .min,
         children: [
-          const Icon(Icons.comment, size: 30, color: Colors.white),
+          Icon(Icons.comment, size: 30, color: Colors.white, shadows: shadows),
           commentStream.when(
             data: (data) {
-              return Text(
-                '${data.length}',
-                style: context.style.b2.copyWith(color: Colors.white),
-              );
+              return Text('${data.length}', style: style);
             },
-            error: (_, _) => const Text('Comments'),
-            loading: () => const Text('Comments'),
+            error: (_, _) =>
+                Icon(Icons.comment, color: Colors.white, shadows: shadows),
+            loading: () =>
+                Icon(Icons.comment, color: Colors.white, shadows: shadows),
           ),
         ],
       ),
@@ -105,9 +122,48 @@ class _ClipActionsState extends ConsumerState<ClipActions> {
     return Column(
       mainAxisSize: .min,
       children: [
-        const Icon(Icons.share, size: 30, color: Colors.white),
-        Text('0', style: context.style.b2.copyWith(color: Colors.white)),
+        Icon(Icons.share, size: 30, color: Colors.white, shadows: shadows),
+        Text('0', style: style),
       ],
+    );
+  }
+
+  Widget _buildSendButton() {
+    return Column(
+      mainAxisSize: .min,
+      children: [
+        Icon(
+          Icons.send_rounded,
+          size: 30,
+          color: Colors.white,
+          shadows: shadows,
+        ),
+        Text('0', style: style),
+      ],
+    );
+  }
+
+  Widget _buildSaveButton() {
+    return Column(
+      mainAxisSize: .min,
+      children: [
+        Icon(
+          Icons.bookmark_outline,
+          size: 30,
+          color: Colors.white,
+          shadows: shadows,
+        ),
+        Text('0', style: style),
+      ],
+    );
+  }
+
+  Widget _buildMoreButton() {
+    return Icon(
+      Icons.more_vert,
+      size: 30,
+      color: Colors.white,
+      shadows: shadows,
     );
   }
 }

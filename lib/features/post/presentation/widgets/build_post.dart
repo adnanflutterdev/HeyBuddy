@@ -9,10 +9,10 @@ import 'package:hey_buddy/core/const/get_color.dart';
 import 'package:hey_buddy/core/utils/error_state.dart';
 import 'package:hey_buddy/core/widgets/app_logo.dart';
 import 'package:hey_buddy/core/widgets/collapsible_text.dart';
-import 'package:hey_buddy/features/chat/presentation/riverpod/users_provider.dart';
 import 'package:hey_buddy/features/post/domain/entity/post.dart';
 import 'package:hey_buddy/features/post/presentation/widgets/post_actions.dart';
 import 'package:hey_buddy/features/post/presentation/widgets/post_images_slider.dart';
+import 'package:hey_buddy/features/users/presentation/riverpod/users_provider.dart';
 import 'package:intl/intl.dart';
 
 class BuildPost extends StatelessWidget {
@@ -54,7 +54,7 @@ class BuildPost extends StatelessWidget {
         DateFormat.yMMMEd().format(createdAt);
     return Consumer(
       builder: (context, ref, child) {
-        final userDataRef = ref.watch(usersDataProvider(post.userId));
+        final userDataRef = ref.watch(userDataProvider(post.userId));
         return userDataRef.when(
           data: (user) {
             return Container(

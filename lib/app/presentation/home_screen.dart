@@ -37,11 +37,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     const UsersTab(),
   ];
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
+  List<TabModel> tabs = [
+    TabModel(label: 'Home', icon: Icons.home_filled),
+    TabModel(label: 'Clip', icon: Icons.video_collection_rounded),
+    TabModel(label: 'Chat', icon: Icons.chat_rounded),
+    TabModel(label: 'Users', icon: Icons.group),
+  ];
+  late double width = context.width / 4;
 
   void createNew() {
     showModalBottomSheet(
@@ -76,6 +78,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -139,13 +147,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildNavbar(int tabIndex) {
-    List<TabModel> tabs = [
-      TabModel(label: 'Home', icon: Icons.home_filled),
-      TabModel(label: 'Clip', icon: Icons.video_collection_rounded),
-      TabModel(label: 'Chat', icon: Icons.chat_rounded),
-      TabModel(label: 'Users', icon: Icons.group),
-    ];
-    final width = context.width / 4;
     if (tabIndex == 1) {
       return const SizedBox.shrink();
     }

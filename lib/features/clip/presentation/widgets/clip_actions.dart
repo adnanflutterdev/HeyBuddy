@@ -1,11 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
-import 'package:hey_buddy/core/feature/comment/presentation/helper/open_comment_sheet.dart';
+import 'package:hey_buddy/core/const/app_icons.dart';
+import 'package:hey_buddy/core/feature/comment/presentation/helper/open_bottom_sheet.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_providers.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/screens/comments_sheet.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
+import 'package:hey_buddy/core/widgets/stroke_text.dart';
 import 'package:hey_buddy/features/clip/presentation/riverpod/clip_actions_provider.dart';
 import 'package:hey_buddy/features/clip/presentation/riverpod/clip_provider.dart';
 
@@ -18,33 +20,53 @@ class ClipActions extends ConsumerStatefulWidget {
 }
 
 class _ClipActionsState extends ConsumerState<ClipActions> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {});
+    });
+  }
+
+  Image getIcon(String icon) {
+    return Image.asset(icon, width: 30);
+  }
+
+  StrokeText getText(String text) {
+    return StrokeText(
+      text: text,
+      style: context.style.b1.copyWith(color: Colors.white),
+    );
+  }
+
   void toggleLike(WidgetRef ref, String uid, bool isLiked) {
     final notifier = ref.read(clipActionProvider.notifier);
     notifier.toggleClipLike(id: widget.clipId, uid: uid, isLiked: isLiked);
   }
 
-  List<Shadow> shadows = [
-    const Shadow(color: Colors.black54, blurRadius: 8, offset: Offset(0, 2)),
-  ];
-
-  late TextStyle style = context.style.b2.copyWith(
-    color: Colors.white,
-    shadows: shadows,
-  );
+  void openCommentSheet(CollectionReference commentsRef) {
+    openBottomSheet(
+      context: context,
+      sheet: CommentsSheet(id: widget.clipId, commentsRef: commentsRef),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      spacing: 20,
-      mainAxisAlignment: .end,
-      children: [
-        _buildLikeButton(),
-        _buildCommentButton(),
-        _buildShareButton(),
-        _buildSendButton(),
-        _buildSaveButton(),
-        _buildMoreButton(),
-      ],
+    return RepaintBoundary(
+      child: Column(
+        spacing: 20,
+        mainAxisAlignment: .end,
+        children: [
+          _buildLikeButton(),
+          _buildCommentButton(),
+          _buildShareButton(),
+          _buildSendButton(),
+          _buildSaveButton(),
+          _buildMoreButton(),
+        ],
+      ),
     );
   }
 
@@ -60,29 +82,19 @@ class _ClipActionsState extends ConsumerState<ClipActions> {
           children: [
             GestureDetector(
               onTap: () => toggleLike(ref, uid, isLiked),
-              child: Icon(
-                isLiked ? Icons.favorite : Icons.favorite_outline,
-                color: isLiked ? context.colors.error : Colors.white,
-                size: 30,
-                shadows: shadows,
+              child: getIcon(
+                isLiked ? AppIcons.heartFilled : AppIcons.heartOutlined,
               ),
             ),
-
-            Text(
-              '${likes.length}',
-              style: context.style.b2.copyWith(
-                color: Colors.white,
-                shadows: shadows,
-              ),
-            ),
+            getText('${likes.length}'),
           ],
         );
       },
       error: (_, _) {
-        return Icon(Icons.favorite, color: Colors.white, shadows: shadows);
+        return getIcon(AppIcons.heartOutlined);
       },
       loading: () {
-        return Icon(Icons.favorite, color: Colors.white, shadows: shadows);
+        return getIcon(AppIcons.heartOutlined);
       },
     );
   }
@@ -93,25 +105,18 @@ class _ClipActionsState extends ConsumerState<ClipActions> {
         .collection('clip')
         .doc(widget.clipId)
         .collection('comments');
-        
+
     final commentStream = ref.watch(getCommentStream(commentsRef));
     return GestureDetector(
-      onTap: () => openCommentSheet(
-        context: context,
-        sheet: CommentsSheet(id: widget.clipId, commentsRef: commentsRef),
-      ),
+      onTap: () => openCommentSheet(commentsRef),
       child: Column(
         mainAxisSize: .min,
         children: [
-          Icon(Icons.comment, size: 30, color: Colors.white, shadows: shadows),
+          getIcon(AppIcons.comment),
           commentStream.when(
-            data: (data) {
-              return Text('${data.length}', style: style);
-            },
-            error: (_, _) =>
-                Icon(Icons.comment, color: Colors.white, shadows: shadows),
-            loading: () =>
-                Icon(Icons.comment, color: Colors.white, shadows: shadows),
+            data: (data) => getText('${data.length}'),
+            error: (_, _) => getIcon(AppIcons.comment),
+            loading: () => getIcon(AppIcons.comment),
           ),
         ],
       ),
@@ -121,49 +126,25 @@ class _ClipActionsState extends ConsumerState<ClipActions> {
   Widget _buildShareButton() {
     return Column(
       mainAxisSize: .min,
-      children: [
-        Icon(Icons.share, size: 30, color: Colors.white, shadows: shadows),
-        Text('0', style: style),
-      ],
+      children: [getIcon(AppIcons.share), getText('0')],
     );
   }
 
   Widget _buildSendButton() {
     return Column(
       mainAxisSize: .min,
-      children: [
-        Icon(
-          Icons.send_rounded,
-          size: 30,
-          color: Colors.white,
-          shadows: shadows,
-        ),
-        Text('0', style: style),
-      ],
+      children: [getIcon(AppIcons.send), getText('0')],
     );
   }
 
   Widget _buildSaveButton() {
     return Column(
       mainAxisSize: .min,
-      children: [
-        Icon(
-          Icons.bookmark_outline,
-          size: 30,
-          color: Colors.white,
-          shadows: shadows,
-        ),
-        Text('0', style: style),
-      ],
+      children: [getIcon(AppIcons.saveOutlined), getText('0')],
     );
   }
 
   Widget _buildMoreButton() {
-    return Icon(
-      Icons.more_vert,
-      size: 30,
-      color: Colors.white,
-      shadows: shadows,
-    );
+    return getIcon(AppIcons.more);
   }
 }

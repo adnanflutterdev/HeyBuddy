@@ -108,7 +108,7 @@ class _ReactionButtonState extends ConsumerState<ReactionButton> {
           children: [
             AppMeterialButton(
               text: text,
-              // icon: Icons.h_mobiledata,
+              isTransparent: true,
               onTapDown: showReactionOverlay,
               padding: AppPadding.p4,
               style: context.style.b3.copyWith(letterSpacing: -4),
@@ -117,6 +117,7 @@ class _ReactionButtonState extends ConsumerState<ReactionButton> {
               AppMeterialButton(
                 text: '(${reactions.length})',
                 style: context.style.bs3,
+                isTransparent: true,
                 padding: AppPadding.symmetric(2, 2),
                 onPressed: () {
                   openReactionDataSheet(reactionData);

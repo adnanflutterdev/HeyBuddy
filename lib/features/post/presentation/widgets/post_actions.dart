@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
-import 'package:hey_buddy/core/feature/comment/presentation/helper/open_comment_sheet.dart';
+import 'package:hey_buddy/core/feature/comment/presentation/helper/open_bottom_sheet.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_providers.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/screens/comments_sheet.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
@@ -92,7 +92,7 @@ class _PostActionsState extends ConsumerState<PostActions> {
         .collection('comments');
     final commentStream = ref.watch(getCommentStream(commentsRef));
     return GestureDetector(
-      onTap: () => openCommentSheet(
+      onTap: () => openBottomSheet(
         context: context,
         sheet: CommentsSheet(id: widget.postId, commentsRef: commentsRef),
       ),

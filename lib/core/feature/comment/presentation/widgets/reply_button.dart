@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
-import 'package:hey_buddy/core/feature/comment/presentation/helper/open_comment_sheet.dart';
+import 'package:hey_buddy/core/feature/comment/presentation/helper/open_bottom_sheet.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_providers.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/riverpod/comment_reply_provider.dart';
 import 'package:hey_buddy/core/feature/comment/presentation/screens/comment_reply_sheet.dart';
@@ -24,7 +24,8 @@ class ReplyButton extends StatelessWidget {
       children: [
         AppMeterialButton(
           text: 'Reply',
-          onPressed: () => openCommentSheet(
+          isTransparent: true,
+          onPressed: () => openBottomSheet(
             context: context,
             sheet: CommentsReplySheet(replyTo: replyTo, repliesRef: repliesRef),
           ),

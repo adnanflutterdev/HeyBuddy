@@ -58,7 +58,6 @@ class _ClipTabState extends ConsumerState<ClipTab> {
         await controller.initialize();
         await controller.setLooping(true);
         
-
         _controllers[i] = controller;
       }
     }

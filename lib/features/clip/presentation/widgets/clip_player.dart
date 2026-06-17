@@ -7,6 +7,7 @@ import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/widgets/app_material_button.dart';
 import 'package:hey_buddy/features/clip/presentation/riverpod/clip_actions_provider.dart';
 import 'package:hey_buddy/features/clip/presentation/riverpod/clip_provider.dart';
+import 'package:hey_buddy/features/clip/presentation/widgets/clip_actions.dart';
 import 'package:video_player/video_player.dart';
 
 class ClipPlayer extends ConsumerStatefulWidget {
@@ -63,29 +64,11 @@ class _ClipPlayerState extends ConsumerState<ClipPlayer>
     });
   }
 
-  @override
-  void didUpdateWidget(covariant ClipPlayer oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (oldWidget.controller != widget.controller) {
-      _isUiVisible.value = true;
-      hideUiAfterDelay();
-    }
-  }
-
-  void showUi() {
-    _isUiVisible.value = true;
-    hideUiAfterDelay();
-  }
-
-  void hideUiAfterDelay() {
-    _uiTimer?.cancel();
-    _uiTimer = Timer(const Duration(seconds: 3), () {
-      _isUiVisible.value = false;
-    });
-  }
-
   void addLike(TapDownDetails details) {
+    if (_overlayEntry != null) {
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+    }
     final uid = ref.read(uidProvider);
     final likeStream = ref.read(clipLikeStream(widget.clipId));
 
@@ -217,6 +200,13 @@ class _ClipPlayerState extends ConsumerState<ClipPlayer>
                 },
               ),
             ),
+          ),
+
+          Positioned(
+            top: 0,
+            right: 10,
+            bottom: 100,
+            child: ClipActions(clipId: widget.clipId),
           ),
         ],
       ),

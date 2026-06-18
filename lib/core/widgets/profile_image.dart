@@ -4,6 +4,7 @@ import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/placeholder_image.dart';
 import 'package:hey_buddy/core/widgets/image_viewer.dart';
+import 'package:uuid/uuid.dart';
 
 class ProfileImage extends StatelessWidget {
   const ProfileImage({
@@ -34,19 +35,22 @@ class ProfileImage extends StatelessWidget {
         return placeHolder;
       },
       imageBuilder: (context, imageProvider) {
-        return GestureDetector(
-          onTap:
-              onTap ??
-              () {
-                AppNavigator.push(ImageViewer(images: [image]));
-              },
-          child: Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: .circle,
-              color: context.colors.container,
-              image: DecorationImage(image: imageProvider, fit: .contain),
+        return Hero(
+          tag: imageUrl == null ? const Uuid().v4() : imageUrl!,
+          child: GestureDetector(
+            onTap:
+                onTap ??
+                () {
+                  AppNavigator.push(ImageViewer(images: [image]));
+                },
+            child: Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                shape: .circle,
+                color: context.colors.container,
+                image: DecorationImage(image: imageProvider, fit: .contain),
+              ),
             ),
           ),
         );

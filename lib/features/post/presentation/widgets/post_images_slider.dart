@@ -44,14 +44,17 @@ class _PostImagesSliderState extends State<PostImagesSlider> {
                   },
                   itemBuilder: (context, index) {
                     Media img = widget.media[index];
-                    return CachedNetworkImage(
-                      imageUrl: img.data.url,
-                      fit: .cover,
-                      placeholder: (context, url) {
-                        return Center(
-                          child: Container(color: context.colors.card),
-                        );
-                      },
+                    return Hero(
+                      tag: img.data.url,
+                      child: CachedNetworkImage(
+                        imageUrl: img.data.url,
+                        fit: .cover,
+                        placeholder: (context, url) {
+                          return Center(
+                            child: Container(color: context.colors.card),
+                          );
+                        },
+                      ),
                     );
                   },
                 ),

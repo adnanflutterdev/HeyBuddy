@@ -92,7 +92,10 @@ class _ImageViewerState extends State<ImageViewer> {
       itemBuilder: (context, index) {
         return InteractiveViewer(
           maxScale: 10,
-          child: CachedNetworkImage(imageUrl: _images[index]),
+          child: Hero(
+            tag: _images[index],
+            child: CachedNetworkImage(imageUrl: _images[index]),
+          ),
         );
       },
     );

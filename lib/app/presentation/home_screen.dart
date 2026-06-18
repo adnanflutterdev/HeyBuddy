@@ -29,7 +29,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  final PageController _pageController = PageController();
+  final PageController _pageController = PageController(initialPage: 3);
   late List<Widget> pages = [
     const PostTab(),
     ClipTab(pageController: _pageController),

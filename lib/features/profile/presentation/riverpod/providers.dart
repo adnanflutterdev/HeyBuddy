@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
+import 'package:hey_buddy/features/profile/domain/usecases/get_friends_usecase.dart';
+import 'package:hey_buddy/features/profile/domain/usecases/get_my_friend_request_usecase.dart';
+import 'package:hey_buddy/features/profile/domain/usecases/get_others_friend_request_usecase.dart';
 import 'package:hey_buddy/features/profile/domain/usecases/update_my_data_usecase.dart';
 import 'package:hey_buddy/features/profile/domain/usecases/get_my_data_usecase.dart';
 import 'package:hey_buddy/features/profile/data/repository/my_data_repository_impl.dart';
@@ -23,4 +26,19 @@ final getMyDataUsecaseProvider = Provider((ref) {
 final updateMyDataUsecaseProvider = Provider((ref) {
   final userRepository = ref.read(myDataRepositoryProvider);
   return UpdateMyDataUsecase(userRepository);
+});
+
+final getFriendsUsecaseProvider = Provider((ref) {
+  final userRepository = ref.read(myDataRepositoryProvider);
+  return GetFriendsUsecase(userRepository);
+});
+
+final getMyFriendRequestsUsecaseProvider = Provider((ref) {
+  final userRepository = ref.read(myDataRepositoryProvider);
+  return GetMyFriendRequestUsecase(userRepository);
+});
+
+final getOthersFriendRequestsUsecaseProvider = Provider((ref) {
+  final userRepository = ref.read(myDataRepositoryProvider);
+  return GetOthersFriendRequestUsecase(userRepository);
 });

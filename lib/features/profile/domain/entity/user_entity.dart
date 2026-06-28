@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 enum AccountType { public, private, friendsOnly }
 
 enum Gender { male, female, others }
@@ -34,18 +32,19 @@ abstract class UserData {
 
 abstract class Details {
   final String name;
+  final String username;
   final String email;
-  final Timestamp? dob;
+  final DateTime? dob;
   final Gender? gender;
-  Details({required this.name, required this.email, this.dob, this.gender});
+  Details({required this.name,required this.username, required this.email, this.dob, this.gender});
 }
 
 abstract class Account {
   final bool isOnline;
   final bool isVerified;
   final AccountType accountType;
-  final Timestamp createdAt;
-  final Timestamp lastActive;
+  final DateTime createdAt;
+  final DateTime lastActive;
   Account({
     required this.isOnline,
     required this.isVerified,

@@ -1,6 +1,30 @@
 class AppValidators {
   AppValidators._();
 
+  static String? username(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'User name is required';
+    }
+
+    final trimmed = value.trim();
+
+    if (trimmed.length < 3) {
+      return 'User name must be at least 3 characters';
+    }
+
+    if (trimmed.length > 20) {
+      return 'User name must be at most 20 characters';
+    }
+
+    final regExp = RegExp(r'^[a-z0-9_\.]+$');
+
+    if (!regExp.hasMatch(trimmed)) {
+      return 'use only a-z, 0-9, "_" and "." these characters';
+    }
+
+    return null;
+  }
+
   static String? name(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Name is required';

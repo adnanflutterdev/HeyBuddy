@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
@@ -7,8 +9,10 @@ import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/utils/error_state.dart';
 import 'package:hey_buddy/core/utils/loader.dart';
+import 'package:hey_buddy/core/widgets/app_text_field.dart';
 import 'package:hey_buddy/core/widgets/profile_image.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
+import 'package:hey_buddy/features/profile/presentation/riverpod/social_interactions_provider.dart';
 import 'package:hey_buddy/features/users/presentation/riverpod/users_provider.dart';
 
 class UsersTab extends ConsumerStatefulWidget {
@@ -19,60 +23,156 @@ class UsersTab extends ConsumerStatefulWidget {
 }
 
 class _UsersTabState extends ConsumerState<UsersTab> {
-  List<String> tabs = ['All Users', 'Friends', 'Requests'];
   int tabIndex = 0;
+  Timer? _queryTimer;
+  bool _isTyping = false;
+  final List<String> tabs = ['Friends', 'Requests'];
+  final TextEditingController _searchController = TextEditingController();
+  final ValueNotifier<String> _searchQuery = ValueNotifier('');
+
+  void resetTimer() {
+    if (_queryTimer != null) {
+      _isTyping = true;
+      setState(() {});
+      _queryTimer?.cancel();
+      _queryTimer = Timer(const Duration(milliseconds: 500), () {
+        _isTyping = false;
+        setState(() {});
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final tabWidth = context.width / 3;
-
     // StreamProviders
-    final allUsersRef = ref.watch(allUsersProvider);
+    final socialInteractionsRef = ref.watch(socialInteractionsProvider);
 
-    return Column(
-      children: [
-        // Tabs
-        Row(
-          children: List.generate(tabs.length, (index) {
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  tabIndex = index;
-                });
+    return socialInteractionsRef.when(
+      data: (socialInteractions) {
+        final List<String> friendsId = socialInteractions.getFriendsId();
+        final List<String> myFriendRequestsId = socialInteractions
+            .getMyFriendRequestsId();
+        final List<String> othersFriendRequestsId = socialInteractions
+            .getOthersFriendRequestsId();
+
+        final List<String> currentUsersId = tabIndex == 0
+            ? friendsId
+            : othersFriendRequestsId;
+        return Column(
+          children: [
+            _buildSearch(),
+            ValueListenableBuilder(
+              valueListenable: _searchQuery,
+              builder: (context, query, _) {
+                if (query.isNotEmpty) {
+                  if (_isTyping) {
+                    return const Expanded(
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  } else {
+                    final searchedUsersRef = ref.watch(
+                      searchUsersProvider(query.trim()),
+                    );
+
+                    return searchedUsersRef.when(
+                      data: (searchedUsers) {
+                        return Expanded(
+                          child: ListView.builder(
+                            itemCount: searchedUsers.length,
+                            itemBuilder: (context, index) {
+                              return _buildUserCard(searchedUsers[index]);
+                            },
+                          ),
+                        );
+                      },
+                      error: error,
+                      loading: loader,
+                    );
+                  }
+                }
+                return Expanded(
+                  child: Column(
+                    children: [_buildTabs(), _buildUsers(currentUsersId)],
+                  ),
+                );
               },
-              child: Container(
-                width: tabWidth,
-                height: 40,
-                color: tabIndex == index
-                    ? context.colors.container
-                    : context.colors.appbar,
-                child: Center(child: Text(tabs[index])),
-              ),
-            );
-          }),
-        ),
-        // Users
-        Expanded(
-          child: allUsersRef.when(
-            data: (allUsers) {
-              List<UserData> users = allUsers;
-
-              if (users.isEmpty) {
-                return const Center(child: Text('No users found'));
-              }
-              return ListView.builder(
-                itemCount: users.length,
-                padding: AppPadding.p12,
-                itemBuilder: (context, index) {
-                  return _buildUserCard(users[index]);
-                },
-              );
-            },
-            error: error,
-            loading: loader,
-          ),
-        ),
-      ],
+            ),
+          ],
+        );
+      },
+      error: error,
+      loading: loader,
     );
+  }
+
+  Widget _buildSearch() {
+    return Container(
+      color: context.colors.appbar,
+      padding: AppPadding.p8,
+      child: AppTextField(
+        controller: _searchController,
+        prefixIcon: Icons.search,
+        suffixIcon: Icons.close,
+        onSuffixIconTapped: () {
+          _searchQuery.value = '';
+          _searchController.clear();
+        },
+
+        onChanged: (value) {
+          _searchQuery.value = value;
+          resetTimer();
+        },
+      ),
+    );
+  }
+
+  Widget _buildTabs() {
+    return Row(
+      children: List.generate(tabs.length, (index) {
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              tabIndex = index;
+            });
+          },
+          child: Container(
+            height: 40,
+            width: context.width / 2,
+            color: tabIndex == index
+                ? context.colors.container
+                : context.colors.appbar,
+            child: Center(child: Text(tabs[index])),
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildUsers(List<String> users) {
+    if (users.isEmpty) {
+      return Expanded(
+        child: Center(
+          child: Text('No Friend${tabIndex == 0 ? 's' : ' Requests'}'),
+        ),
+      );
+    } else {
+      return Expanded(
+        child: ListView.builder(
+          itemCount: users.length,
+          padding: AppPadding.p12,
+          itemBuilder: (context, index) {
+            final userRef = ref.watch(userDataProvider(users[index]));
+            return userRef.when(
+              data: (user) {
+                return _buildUserCard(user);
+              },
+              error: error,
+              loading: loader,
+            );
+          },
+        ),
+      );
+    }
   }
 
   Widget _buildUserCard(UserData user) {

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 
 extension AccountTypeX on AccountType {
@@ -60,6 +61,7 @@ class UserDataModel extends UserData {
   Map<String, dynamic> toFirebase() {
     return {
       'uid': uid,
+      'searchName': details.name.toLowerCase(),
       'profile': (profile as ProfileModel).toFirebase(),
       'account': (account as AccountModel).toFirebase(),
       'details': (details as DetailsModel).toFirebase(),
@@ -70,6 +72,7 @@ class UserDataModel extends UserData {
 class DetailsModel extends Details {
   DetailsModel({
     required super.name,
+    required super.username,
     required super.email,
     required super.dob,
     required super.gender,
@@ -78,6 +81,7 @@ class DetailsModel extends Details {
   factory DetailsModel.fromEntity(Details details) {
     return DetailsModel(
       name: details.name,
+      username: details.username,
       email: details.email,
       dob: details.dob,
       gender: details.gender,
@@ -85,22 +89,45 @@ class DetailsModel extends Details {
   }
 
   factory DetailsModel.setNewUser(String name, String email) {
-    return DetailsModel(name: name, email: email, dob: null, gender: null);
+    return DetailsModel(
+      name: name,
+      username: '',
+      email: email,
+      dob: null,
+      gender: null,
+    );
   }
 
   factory DetailsModel.fromFirebase(Map<String, dynamic> details) {
     return DetailsModel(
       name: details['name'] ?? '',
+      username: details['username'] ?? '',
       email: details['email'] ?? '',
-      dob: details['dob'],
+      dob: (details['dob'] as Timestamp?)?.toDate(),
       gender: details['gender'] != null
           ? GenderX.fromFirebase(details['gender'])
           : null,
     );
   }
 
+  DetailsModel copyWith({String? name, DateTime? dob, Gender? gender}) {
+    return DetailsModel(
+      name: name ?? this.name,
+      username: username,
+      email: email,
+      dob: dob ?? this.dob,
+      gender: gender ?? this.gender,
+    );
+  }
+
   Map<String, dynamic> toFirebase() {
-    return {"name": name, "email": email, "dob": dob, "gender": gender?.name};
+    return {
+      "name": name,
+      "username": username,
+      "email": email,
+      "dob": dob != null ? Timestamp.fromDate(dob!) : null,
+      "gender": gender?.name,
+    };
   }
 }
 
@@ -140,8 +167,8 @@ class AccountModel extends Account {
       accountType: account['accountType'] == null
           ? AccountType.public
           : AccountTypeX.fromFirebase(account['accountType']),
-      createdAt: account['createdAt'] ?? .now(),
-      lastActive: account['lastActive'] ?? .now(),
+      createdAt: (account['createdAt'] as Timestamp).toDate(),
+      lastActive: (account['lastActive'] as Timestamp).toDate(),
     );
   }
 
@@ -149,9 +176,9 @@ class AccountModel extends Account {
     return {
       "isOnline": isOnline,
       "isVerified": isVerified,
-      "createdAt": createdAt,
       "accountType": accountType.name,
-      "lastActive": lastActive,
+      "createdAt": Timestamp.fromDate(createdAt),
+      "lastActive": Timestamp.fromDate(lastActive),
     };
   }
 }

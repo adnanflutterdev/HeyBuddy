@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hey_buddy/app/presentation/splash_screen.dart';
+import 'package:hey_buddy/app/presentation/screens/splash_screen.dart';
 import 'package:hey_buddy/app/riverpod/theme_provider.dart';
 import 'package:hey_buddy/config/theme/app_theme.dart';
 import 'package:hey_buddy/core/const/app_colors.dart';

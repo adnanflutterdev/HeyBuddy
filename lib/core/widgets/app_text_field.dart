@@ -33,6 +33,7 @@ class AppTextField extends StatelessWidget {
     this.disableBorder = false,
     this.validator,
     this.maxLengths,
+    this.forceErrorText,
   });
   final String? label;
   final double iconSize;
@@ -61,6 +62,7 @@ class AppTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final bool disableBorder;
   final FormFieldValidator<String>? validator;
+  final String? forceErrorText;
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +98,7 @@ class AppTextField extends StatelessWidget {
           obscuringCharacter: '●',
           style: textStyle ?? context.style.b2,
           maxLength: maxLengths,
+
           decoration: InputDecoration(
             prefixIconConstraints: BoxConstraints(
               maxWidth:
@@ -117,6 +120,17 @@ class AppTextField extends StatelessWidget {
                     icon: Icon(suffixIcon, size: iconSize, color: iconColor),
                   ),
           ),
+
+          forceErrorText: forceErrorText,
+          errorBuilder: (context, errorText) {
+            return Padding(
+              padding: const EdgeInsets.only(left: 0),
+              child: Text(
+                errorText,
+                style: context.style.bs2.copyWith(color: context.colors.error),
+              ),
+            );
+          },
 
           onTap: onTap,
           onChanged: onChanged,

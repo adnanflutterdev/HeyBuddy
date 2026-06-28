@@ -5,6 +5,7 @@ import 'package:hey_buddy/features/profile/data/models/analytics_model.dart';
 import 'package:hey_buddy/features/profile/data/models/security_model.dart';
 import 'package:hey_buddy/features/profile/data/models/settings_model.dart';
 import 'package:hey_buddy/features/profile/data/models/user_data_model.dart';
+import 'package:hey_buddy/features/profile/data/models/user_name_model.dart';
 
 class AuthRemoteDataSource {
   final FirebaseAuth auth;
@@ -74,5 +75,22 @@ class AuthRemoteDataSource {
     await metaData.doc('settings').set(settings.toFirebase());
     await metaData.doc('security').set(security.toFirebase());
     await metaData.doc('analytics').set(analytics.toFirebase());
+  }
+
+  Future<bool> doesUserExists(String username) async {
+    final doc = await firestore.collection('username').doc(username).get();
+    return doc.exists;
+  }
+
+  Future<void> setUsername({
+    required UsernameModel user,
+    required List<String> searchQueries,
+  }) async {
+    firestore.collection('username').doc(user.username).set(user.toFirebase());
+    DocumentReference ref = firestore.collection('user').doc(user.uid);
+    await ref.update({
+      'details.username': user.username,
+      'searchQueries': searchQueries,
+    });
   }
 }

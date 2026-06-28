@@ -9,7 +9,7 @@ import 'package:hey_buddy/features/users/domain/repository/users_repository.dart
 class UsersRepositoryImpl extends UsersRepository {
   final UsersRemoteDataSource remote;
   UsersRepositoryImpl(this.remote);
-  
+
   @override
   ResultFuture<UserData> getUserData(String id) async {
     final doc = await remote.getUserData(id);
@@ -17,13 +17,13 @@ class UsersRepositoryImpl extends UsersRepository {
   }
 
   @override
-  ResultStream<List<UserData>> getAllUsers() {
+  ResultFuture<List<UserData>> searchUsers(String searchQuery) async {
     try {
-      return remote.getAllUsers();
+      return Result.success('', data: await remote.searchUsers(searchQuery));
     } on FirebaseException catch (e) {
-      return Stream.error(e);
+      return Result.failure(e.message ?? 'Failed to fetch users');
     } catch (e) {
-      return Stream.error(e);
+      return Result.failure(e.toString());
     }
   }
 }

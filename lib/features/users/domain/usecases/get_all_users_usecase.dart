@@ -3,13 +3,19 @@ import 'package:hey_buddy/core/usecase/usecase.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 import 'package:hey_buddy/features/users/domain/repository/users_repository.dart';
 
-class GetAllUsersUsecase extends StreamUsecase<List<UserData>, NoParams> {
+class GetAllUsersUsecase extends FutureUsecase<List<UserData>, QueryParam> {
   final UsersRepository repository;
 
   GetAllUsersUsecase(this.repository);
 
   @override
-  ResultStream<List<UserData>> call(NoParams params) {
-    return repository.getAllUsers();
+  ResultFuture<List<UserData>> call(QueryParam params) {
+    return repository.searchUsers(params.query);
   }
+}
+
+class QueryParam {
+  final String query;
+
+  QueryParam(this.query);
 }

@@ -8,27 +8,27 @@ import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/utils/loader.dart';
-import 'package:hey_buddy/core/widgets/labeled_icon_button.dart';
 import 'package:hey_buddy/core/widgets/app_logo.dart';
 import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
+import 'package:hey_buddy/core/widgets/labeled_icon_button.dart';
 import 'package:hey_buddy/core/widgets/logo_image.dart';
 import 'package:hey_buddy/features/chat/presentation/pages/chat_tab.dart';
+import 'package:hey_buddy/features/clip/presentation/pages/clip_tab.dart';
+import 'package:hey_buddy/features/clip/presentation/pages/clip_upload_screen.dart';
 import 'package:hey_buddy/features/post/presentation/pages/post_tab.dart';
 import 'package:hey_buddy/features/post/presentation/pages/post_upload_screeen.dart';
 import 'package:hey_buddy/features/profile/presentation/pages/my_profile.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/my_data_provider.dart';
-import 'package:hey_buddy/features/clip/presentation/pages/clip_tab.dart';
 import 'package:hey_buddy/features/users/presentation/pages/users_tab.dart';
-import 'package:hey_buddy/features/clip/presentation/pages/clip_upload_screen.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+class BuildHome extends ConsumerStatefulWidget {
+  const BuildHome({super.key});
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<BuildHome> createState() => _BuildHomeState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _BuildHomeState extends ConsumerState<BuildHome> {
   final PageController _pageController = PageController(initialPage: 3);
   late List<Widget> pages = [
     const PostTab(),

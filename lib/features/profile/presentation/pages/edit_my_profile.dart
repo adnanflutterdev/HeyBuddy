@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
@@ -63,7 +62,7 @@ class _EditMyProfileState extends State<EditMyProfile> {
     Details details = widget.myData.details;
     Profile profile = widget.myData.profile;
 
-    dob = details.dob?.toDate();
+    dob = details.dob;
     _nameController = .new(text: details.name);
     _dobController = .new(
       text: dob != null ? DateFormat.yMMMd().format(dob!) : 'DOB',
@@ -129,13 +128,9 @@ class _EditMyProfileState extends State<EditMyProfile> {
           }
         }
       }
-
-      DetailsModel details = DetailsModel(
+      DetailsModel details = DetailsModel.fromEntity(prevDetails).copyWith(
         name: _nameController.text.trim(),
-        email: prevDetails.email,
-        dob: _selectedDob != null
-            ? Timestamp.fromDate(_selectedDob!)
-            : prevDetails.dob,
+        dob: _selectedDob ?? prevDetails.dob,
         gender: _selectedGender ?? prevDetails.gender,
       );
 

@@ -12,13 +12,15 @@ class UsersRemoteDataSource {
     return doc.data();
   }
 
-  Stream<List<UserData>> getAllUsers() {
-    final snapshots = firestore.collection('user').orderBy('details.name').snapshots();
+  Future<List<UserData>> searchUsers(String searchQuery) async {
+    final query = searchQuery.toLowerCase();
+    final snapshots = await firestore
+        .collection('user')
+        .where('searchQueries', arrayContains: query)
+        .get();
 
-    return snapshots.map(
-      (data) => data.docs
-          .map((userData) => UserDataModel.fromFirebase(userData.data()))
-          .toList(),
-    );
+    return snapshots.docs
+        .map((userData) => UserDataModel.fromFirebase(userData.data()))
+        .toList();
   }
 }

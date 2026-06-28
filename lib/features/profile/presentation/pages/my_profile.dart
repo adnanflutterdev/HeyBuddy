@@ -152,7 +152,7 @@ class _MyProfileState extends State<MyProfile> {
 
   Widget _buildUserDetails(Details details) {
     final colors = context.colors;
-    DateTime? dob = details.dob?.toDate();
+    DateTime? dob = details.dob;
     String? dobString = dob != null ? DateFormat.yMMMd().format(dob) : null;
 
     return Column(
@@ -177,6 +177,7 @@ class _MyProfileState extends State<MyProfile> {
             spacing: 12,
             crossAxisAlignment: .start,
             children: [
+              _buildInfoCol(heading: 'Username', text: '@${details.username}'),
               _buildInfoCol(heading: 'Name', text: details.name),
               _buildInfoCol(heading: 'Email', url: details.email),
 
@@ -282,7 +283,7 @@ class _MyProfileState extends State<MyProfile> {
               ),
               _buildInfoCol(
                 heading: 'Created At',
-                text: DateFormat.yMMMEd().format(account.createdAt.toDate()),
+                text: DateFormat.yMMMEd().format(account.createdAt),
               ),
             ],
           ),

@@ -17,11 +17,11 @@ class SocialInteractions {
   }
 
   List<String> _getMyFriendRequestsId() {
-    return myFriendRequests.map((request) => request.requestId).toList();
+    return myFriendRequests.map((request) => request.userId).toList();
   }
 
   List<String> _getOthersFriendRequestsId() {
-    return othersFriendRequests.map((request) => request.requestId).toList();
+    return othersFriendRequests.map((request) => request.userId).toList();
   }
 
   Relations getRelations() {

@@ -103,6 +103,14 @@ class AppTextField extends StatelessWidget {
 
           decoration: InputDecoration(
             hintText: hintText,
+            prefixIconConstraints: BoxConstraints(
+              maxWidth:
+                  iconWidth ?? (prefixIcon != null ? (iconSize + 20) : 16),
+            ),
+            suffixIconConstraints: BoxConstraints(
+              maxWidth:
+                  iconWidth ?? (suffixIcon != null ? (iconSize + 20) : 16),
+            ),
             prefixIcon: IconButton(
               onPressed: () {},
               icon: Icon(prefixIcon, size: iconSize, color: iconColor),

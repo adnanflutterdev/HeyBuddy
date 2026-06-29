@@ -34,7 +34,7 @@ class MyDataRemoteSource {
     final snaphots = firestore
         .collection('user')
         .doc(uid)
-        .collection('my_friend_requests')
+        .collection('friend_requests_sent')
         .snapshots();
 
     return snaphots.map(
@@ -48,7 +48,7 @@ class MyDataRemoteSource {
     final snaphots = firestore
         .collection('user')
         .doc(uid)
-        .collection('others_friend_requests')
+        .collection('friend_requests')
         .snapshots();
 
     return snaphots.map(
@@ -67,5 +67,104 @@ class MyDataRemoteSource {
       'details': details.toFirebase(),
       'profile': profile.toFirebase(),
     });
+  }
+
+  Future<void> addFriendRequest(
+    FriendRequestModel mySide,
+    FriendRequestModel userSide,
+  ) async {
+    // My Side
+    await firestore
+        .collection('user')
+        .doc(userSide.userId)
+        .collection('friend_requests_sent')
+        .doc(mySide.userId)
+        .set(mySide.toFirebase());
+
+    // User's Side
+    await firestore
+        .collection('user')
+        .doc(mySide.userId)
+        .collection('friend_requests')
+        .doc(userSide.userId)
+        .set(userSide.toFirebase());
+  }
+
+  Future<void> acceptFriendRequest(
+    FriendModel mySide,
+    FriendModel friendSide,
+  ) async {
+    // My Side
+    final myDoc = firestore.collection('user').doc(friendSide.friendId);
+    await myDoc
+        .collection('friends')
+        .doc(mySide.friendId)
+        .set(mySide.toFirebase());
+    await myDoc.collection('friend_requests').doc(mySide.friendId).delete();
+
+    // Friend's Side
+    final friendsDoc = firestore.collection('user').doc(mySide.friendId);
+    await friendsDoc
+        .collection('friends')
+        .doc(friendSide.friendId)
+        .set(friendSide.toFirebase());
+    await friendsDoc
+        .collection('friend_requests_sent')
+        .doc(friendSide.friendId)
+        .delete();
+  }
+
+  Future<void> rejectFriendRequest(String myId, String friendId) async {
+    // My Side
+    await firestore
+        .collection('user')
+        .doc(myId)
+        .collection('friend_requests')
+        .doc(friendId)
+        .delete();
+
+    // User's Side
+    await firestore
+        .collection('user')
+        .doc(friendId)
+        .collection('friend_requests_sent')
+        .doc(myId)
+        .delete();
+  }
+
+  Future<void> removeFriend(String myId, String friendId) async {
+    // My Side
+    await firestore
+        .collection('user')
+        .doc(myId)
+        .collection('friends')
+        .doc(friendId)
+        .delete();
+
+    // Friend's Side
+    await firestore
+        .collection('user')
+        .doc(friendId)
+        .collection('friends')
+        .doc(myId)
+        .delete();
+  }
+
+  Future<void> withdrawRequest(String myId, String userId) async {
+    // My Side
+    await firestore
+        .collection('user')
+        .doc(myId)
+        .collection('friend_requests_sent')
+        .doc(userId)
+        .delete();
+
+    // User's Side
+    await firestore
+        .collection('user')
+        .doc(userId)
+        .collection('friend_requests')
+        .doc(myId)
+        .delete();
   }
 }

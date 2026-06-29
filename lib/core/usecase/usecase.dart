@@ -17,6 +17,13 @@ class IdParam {
   IdParam(this.id);
 }
 
+class DualIdParam {
+  final String first;
+  final String second;
+
+  DualIdParam({required this.first, required this.second});
+}
+
 class DocumentReferenceParam {
   final DocumentReference ref;
 

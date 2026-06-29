@@ -1,6 +1,11 @@
+
+
 abstract class FriendRequest {
-  final String requestId;
+  final String userId;
   final DateTime requestDate;
 
-  FriendRequest({required this.requestId, required this.requestDate});
+  FriendRequest({
+    required this.userId,
+    required this.requestDate,
+  });
 }

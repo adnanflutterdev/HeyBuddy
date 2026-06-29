@@ -20,11 +20,14 @@ class BuildUserWithRelation extends ConsumerStatefulWidget {
 
 class _BuildUserWithRelationState extends ConsumerState<BuildUserWithRelation> {
   int tabIndex = 0;
-  final List<String> tabs = ['Friends', 'Requests', 'My Requests'];
+  final List<String> tabs = ['Friends', 'Requests', 'Requests Sent'];
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Column(children: [_buildTabs(), _buildUsers(widget.relations)]),
+      child: Column(
+        spacing: 20,
+        children: [_buildTabs(), _buildUsers(widget.relations)],
+      ),
     );
   }
 
@@ -55,8 +58,8 @@ class _BuildUserWithRelationState extends ConsumerState<BuildUserWithRelation> {
   Widget _buildUsers(Relations relations) {
     List<String> users = switch (tabIndex) {
       0 => relations.friends,
-      1 => relations.myRequests,
-      2 => relations.othersRequests,
+      1 => relations.othersRequests,
+      2 => relations.myRequests,
       _ => [],
     };
     String emptyMessage = switch (tabIndex) {

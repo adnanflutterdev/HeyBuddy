@@ -8,6 +8,14 @@ class FriendModel extends Friend {
     required super.friendSince,
   });
 
+  factory FriendModel.fromEntity(Friend friend) {
+    return FriendModel(
+      friendId: friend.friendId,
+      chatId: friend.chatId,
+      friendSince: friend.friendSince,
+    );
+  }
+
   factory FriendModel.fromFirebase(Map<String, dynamic> friend) {
     return FriendModel(
       friendId: friend['friendId'],

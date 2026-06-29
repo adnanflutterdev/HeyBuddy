@@ -83,6 +83,7 @@ class _UsersTabState extends ConsumerState<UsersTab> {
       ),
       padding: AppPadding.p8,
       child: AppTextField(
+        hintText: 'Search by username',
         controller: _searchController,
         prefixIcon: Icons.search,
         iconColor: context.colors.primaryText,

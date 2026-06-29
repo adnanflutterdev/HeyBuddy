@@ -51,7 +51,7 @@ class AppTheme {
       suffixIconColor: AppDarkColors.neonGreen,
       fillColor: AppDarkColors.card,
       focusedErrorBorder: outlinedBorder(color: AppDarkColors.error),
-      enabledBorder: outlinedBorder(color: AppDarkColors.bg),
+      enabledBorder: outlinedBorder(color: AppDarkColors.border),
       focusedBorder: outlinedBorder(color: AppDarkColors.neonBlue, width: 1),
       hintStyle: textTheme.bodySmall?.copyWith(
         color: AppDarkColors.secondaryText,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
+import 'package:hey_buddy/core/widgets/stroke_text.dart';
 
 class AppChip extends StatelessWidget {
   const AppChip({
@@ -12,6 +13,7 @@ class AppChip extends StatelessWidget {
     this.onPressed,
     this.backgroundColor,
     this.foregroundColor,
+    this.strokeWidth = 0,
   });
   final String label;
   final IconData? icon;
@@ -19,12 +21,13 @@ class AppChip extends StatelessWidget {
   final VoidCallback? onPressed;
   final Color? backgroundColor;
   final Color? foregroundColor;
+  final double strokeWidth;
 
   @override
   Widget build(BuildContext context) {
     final shape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(radius ?? 12),
-      side: BorderSide(color: context.colors.tertiaryText),
+      side: BorderSide(color: foregroundColor ?? context.colors.tertiaryText),
     );
     return Material(
       color: backgroundColor ?? context.colors.bg,
@@ -40,9 +43,10 @@ class AppChip extends StatelessWidget {
             spacing: 8,
             children: [
               Flexible(
-                child: Text(
-                  label,
-                  style: context.style.bs1.copyWith(color: foregroundColor),
+                child: StrokeText(
+                  text: label,
+                  strokeWidth: strokeWidth,
+                  style: context.style.b3.copyWith(color: foregroundColor),
                 ),
               ),
               if (icon != null) Icon(icon, size: 18, color: foregroundColor),

@@ -34,6 +34,7 @@ class AppTextField extends StatelessWidget {
     this.validator,
     this.maxLengths,
     this.forceErrorText,
+    this.suffixWidget,
   });
   final String? label;
   final double iconSize;
@@ -63,6 +64,7 @@ class AppTextField extends StatelessWidget {
   final bool disableBorder;
   final FormFieldValidator<String>? validator;
   final String? forceErrorText;
+  final Widget? suffixWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -100,14 +102,6 @@ class AppTextField extends StatelessWidget {
           maxLength: maxLengths,
 
           decoration: InputDecoration(
-            prefixIconConstraints: BoxConstraints(
-              maxWidth:
-                  iconWidth ?? (prefixIcon != null ? (iconSize + 20) : 16),
-            ),
-            suffixIconConstraints: BoxConstraints(
-              maxWidth:
-                  iconWidth ?? (suffixIcon != null ? (iconSize + 20) : 16),
-            ),
             hintText: hintText,
             prefixIcon: IconButton(
               onPressed: () {},
@@ -115,20 +109,22 @@ class AppTextField extends StatelessWidget {
             ),
             suffixIcon: isSuffixIconLoading
                 ? const CircularProgressIndicator()
-                : IconButton(
-                    onPressed: onSuffixIconTapped,
-                    icon: Icon(suffixIcon, size: iconSize, color: iconColor),
-                  ),
+                : suffixWidget ??
+                      IconButton(
+                        onPressed: onSuffixIconTapped,
+                        icon: Icon(
+                          suffixIcon,
+                          size: iconSize,
+                          color: iconColor,
+                        ),
+                      ),
           ),
 
           forceErrorText: forceErrorText,
           errorBuilder: (context, errorText) {
-            return Padding(
-              padding: const EdgeInsets.only(left: 0),
-              child: Text(
-                errorText,
-                style: context.style.bs2.copyWith(color: context.colors.error),
-              ),
+            return Text(
+              errorText,
+              style: context.style.bs2.copyWith(color: context.colors.error),
             );
           },
 

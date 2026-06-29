@@ -15,8 +15,8 @@ class AppLightColors {
 
   // Structural Colors
   static const Color divider = Color(0xff6B7280);
-  static const Color border = Color(0xffD1D5DB);
-  static const Color shadow = Color(0xff6B7280);
+  static const Color border = Color(0xff3F3F3F);
+  static const Color shadow = Color(0x99000000);
 
   static const Color disabledBg = Color(0xffE5E7EB);
   static const Color overlay = Color(0x66000000);
@@ -57,8 +57,8 @@ class AppDarkColors {
 
   // Structural Colors
   static const Color divider = Color(0xff1F2937);
-  static const Color border = Color(0xff3F3F3F);
-  static const Color shadow = Color(0x20808080);
+  static const Color border = Color(0xffD1D5DB);
+  static const Color shadow = Color(0xff000000);
 
   static const Color disabledBg = Color(0xff2A2A2A);
   static const Color overlay = Color(0x99000000); // For dialogs
@@ -83,4 +83,3 @@ class AppDarkColors {
   static const myBubble = Color(0xFF3B82F6);
   static const otherBubble = Color(0xFF3C3F45);
 }
-

@@ -544,7 +544,8 @@ class _EditMyProfileState extends State<EditMyProfile> {
                   },
                   icon: contains ? Icons.check : Icons.add,
                   radius: contains ? 15 : null,
-                  foregroundColor: (contains) ? context.colors.neonGreen : null,
+                  foregroundColor: contains ? context.colors.neonBlue : null,
+                  strokeWidth: contains ? 1 : 0,
                 );
               }).toList(),
             );

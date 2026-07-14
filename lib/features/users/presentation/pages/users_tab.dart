@@ -82,26 +82,21 @@ class _UsersTabState extends ConsumerState<UsersTab> {
         ],
       ),
       padding: AppPadding.p8,
-      child: AppTextField(
-        hintText: 'Search by username',
-        controller: _searchController,
-        prefixIcon: Icons.search,
-        iconColor: context.colors.primaryText,
-        suffixWidget: ValueListenableBuilder(
-          valueListenable: _searchQuery,
-          builder: (context, searchQuery, _) {
-            if (searchQuery.isNotEmpty) {
-              return IconButton(
-                onPressed: clear,
-                icon: Icon(Icons.close, color: context.colors.primaryText),
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
-          },
-        ),
-
-        onChanged: autoSearch,
+      child: ValueListenableBuilder(
+        valueListenable: _searchQuery,
+        builder: (context, searchQuery, _) {
+          bool isNotEmpty = searchQuery.isNotEmpty;
+          return AppTextField(
+            hintText: 'Search by username',
+            controller: _searchController,
+            prefixIcon: Icons.search,
+            iconColor: context.colors.primaryText,
+            suffixIcon: isNotEmpty ? Icons.close : null,
+            onSuffixIconTapped: isNotEmpty ? clear : null,
+            onChanged: autoSearch,
+            unfocousOnTapOutside: true,
+          );
+        },
       ),
     );
   }

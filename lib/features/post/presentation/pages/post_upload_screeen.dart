@@ -127,70 +127,82 @@ class _PostUploadScreeenState extends State<PostUploadScreeen> {
   }
 
   void uploadPost(WidgetRef ref) async {
-    String text = _contentController.text.trim();
-    if (text.isNotEmpty || _images.isNotEmpty) {
-      String postId = const Uuid().v4();
-      UserData? user = ref.read(myDataProvider).value;
-      if (user == null) {
-        if (mounted) {
-          showMessenger(
-            context,
-            result: Result.failure('Failed to fetch your data'),
-          );
-        }
-        return;
-      }
-      List<MediaMeta>? images;
-      if (_images.isNotEmpty) {
-        String uid = ref.read(uidProvider);
-        List<String> names = _images.map((file) => const Uuid().v4()).toList();
-        List<MediaMeta>? uploadedImages = await FileUploader.uploadFiles(
-          ref: ref,
-          files: _images,
-          names: names,
-          folder: 'post/$uid/$postId',
-        );
-        if (uploadedImages == null) {
+    try {
+      String text = _contentController.text.trim();
+      if (text.isNotEmpty || _images.isNotEmpty) {
+        String postId = const Uuid().v4();
+        UserData? user = ref.read(myDataProvider).value;
+        if (user == null) {
           if (mounted) {
             showMessenger(
               context,
-              result: Result.failure('Failed to upload images'),
+              result: Result.failure('Failed to fetch your data'),
             );
           }
-          ref.read(uploadProgressProvider.notifier).updateProgress(0);
           return;
-        } else {
-          images = uploadedImages;
         }
+        List<MediaMeta>? images;
+        if (_images.isNotEmpty) {
+          String uid = ref.read(uidProvider);
+          List<String> names = _images
+              .map((file) => const Uuid().v4())
+              .toList();
+          List<MediaMeta>? uploadedImages = await FileUploader.uploadFiles(
+            ref: ref,
+            files: _images,
+            names: names,
+            folder: 'post/$uid/$postId',
+          );
+          if (uploadedImages == null) {
+            if (mounted) {
+              showMessenger(
+                context,
+                result: Result.failure('Failed to upload images'),
+              );
+            }
+            ref.read(uploadProgressProvider.notifier).updateProgress(0);
+            return;
+          } else {
+            images = uploadedImages;
+          }
+        }
+        List<MediaModel>? media = images
+            ?.map((imageData) => MediaModel(data: imageData, type: .image))
+            .toList();
+        PostContentModel content = PostContentModel(
+          text: text,
+          media: media,
+          tags: [],
+        );
+        PostModel feedItem = PostModel.setNewPost(
+          id: postId,
+          userId: user.uid,
+          content: content,
+        );
+        Result result = await ref
+            .read(createPostProvider.notifier)
+            .uploadPost(feedItem);
+        if (mounted) {
+          showMessenger(context, result: result);
+          ref.read(uploadProgressProvider.notifier).updateProgress(0);
+          Future.delayed(const Duration(milliseconds: 200), () {
+            AppNavigator.pop();
+          });
+        }
+      } else {
+        showMessenger(
+          context,
+          result: Result.failure('Add images/content to upload post'),
+        );
       }
-      List<MediaModel>? media = images
-          ?.map((imageData) => MediaModel(data: imageData, type: .image))
-          .toList();
-      PostContentModel content = PostContentModel(
-        text: text,
-        media: media,
-        tags: [],
-      );
-      PostModel feedItem = PostModel.setNewPost(
-        id: postId,
-        userId: user.uid,
-        content: content,
-      );
-      Result result = await ref
-          .read(createPostProvider.notifier)
-          .uploadPost(feedItem);
+    } catch (e) {
       if (mounted) {
-        showMessenger(context, result: result);
+        showMessenger(
+          context,
+          result: Result.failure('Error occured while uploading post'),
+        );
         ref.read(uploadProgressProvider.notifier).updateProgress(0);
-        Future.delayed(const Duration(milliseconds: 200), () {
-          AppNavigator.pop();
-        });
       }
-    } else {
-      showMessenger(
-        context,
-        result: Result.failure('Add images/content to upload post'),
-      );
     }
   }
 

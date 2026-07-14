@@ -7,11 +7,10 @@ import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/placeholder_image.dart';
 import 'package:hey_buddy/core/utils/error_state.dart';
 import 'package:hey_buddy/core/utils/loader.dart';
-import 'package:hey_buddy/core/widgets/app_material_button.dart';
 import 'package:hey_buddy/core/widgets/image_viewer.dart';
-import 'package:hey_buddy/core/widgets/profile_image.dart';
-import 'package:hey_buddy/core/widgets/stroke_text.dart';
+import 'package:hey_buddy/features/profile/presentation/riverpod/social_interactions_provider.dart';
 import 'package:hey_buddy/features/users/presentation/riverpod/users_provider.dart';
+import 'package:hey_buddy/features/users/presentation/widgets/user_card.dart';
 import 'package:my_progress_bar/my_progress_bar.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -31,14 +30,6 @@ class BuildClip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void openProfile(String? imageUrl) async {
-      controller.pause();
-      await AppNavigator.push(
-        ImageViewer(images: [imageUrl ?? placeholderImage]),
-      );
-      controller.play();
-    }
-
     return Stack(
       children: [
         if (!controller.value.isInitialized)
@@ -52,9 +43,10 @@ class BuildClip extends StatelessWidget {
             child: ColoredBox(
               color: Colors.black,
               child: ClipPlayer(
-                controller: controller,
-                isMuted: isMuted,
                 clipId: clip.id,
+                isMuted: isMuted,
+                controller: controller,
+                aspectRatio: clip.content.media.data.aspectRatio,
               ),
             ),
           ),
@@ -63,95 +55,16 @@ class BuildClip extends StatelessWidget {
           right: 0,
           bottom: 0,
           child: Container(
-            // color: Colors.black12,
             padding: AppPadding.h12,
             child: Consumer(
               builder: (context, ref, _) {
-                final userRef = ref.watch(userDataProvider(clip.userId));
                 return Column(
                   crossAxisAlignment: .start,
                   children: [
                     AppSpacing.h8,
-                    Row(
-                      children: [
-                        userRef.when(
-                          data: (user) {
-                            return Expanded(
-                              child: Row(
-                                mainAxisSize: .min,
-                                spacing: 10,
-                                children: [
-                                  ProfileImage(
-                                    imageUrl: user.profile.profileImage,
-                                    onTap: () =>
-                                        openProfile(user.profile.profileImage),
-                                  ),
-                                  StrokeText(
-                                    text: user.details.name,
-                                    overflow: .ellipsis,
-                                    strokeWidth: 1,
-                                    style: context.style.b1.copyWith(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                          error: error,
-                          loading: loader,
-                        ),
-                        Builder(
-                          builder: (context) {
-                            return AppMeterialButton(
-                              borderRadius: 8,
-                              onPressed: () {},
-                              text: 'Add Friend',
-                              bgColor: Colors.black12,
-                              style: context.style.bs1.copyWith(
-                                color: Colors.white,
-                              ),
-                              padding: AppPadding.symmetric(8, 4),
-                              borderColor: Colors.white,
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    if (clip.content.text != null &&
-                        clip.content.text!.isNotEmpty) ...[
-                      AppSpacing.h4,
-                      GestureDetector(
-                        onTap: () {},
-                        child: Text(
-                          clip.content.text!,
-                          overflow: .ellipsis,
-                          maxLines: 1,
-                          style: context.style.b2.copyWith(color: Colors.white),
-                        ),
-                      ),
-                    ] else
-                      const SizedBox.shrink(),
-                    ValueListenableBuilder(
-                      valueListenable: controller,
-                      builder: (context, value, _) {
-                        return HorizontalProgressBar(
-                          trackHeight: 3,
-                          thumbDiameter: 10,
-                          maxValue: value.duration.inSeconds.toDouble(),
-                          bufferedPosition: value.buffered.isNotEmpty
-                              ? value.buffered.last.end.inSeconds.toDouble()
-                              : null,
-                          currentPosition: value.position.inSeconds.toDouble(),
-                          onChanged: (value) async {
-                            await controller.seekTo(
-                              Duration(seconds: value.toInt()),
-                            );
-                            controller.play();
-                          },
-                        );
-                      },
-                    ),
+                    _buildUser(),
+                    _buildContent(context, clip.content),
+                    _buildProgressBar(),
                   ],
                 );
               },
@@ -159,6 +72,127 @@ class BuildClip extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildUser() {
+    //
+    void openProfile(String? imageUrl) async {
+      controller.pause();
+      await AppNavigator.push(
+        ImageViewer(images: [imageUrl ?? placeholderImage]),
+      );
+      controller.play();
+    }
+
+    return Consumer(
+      builder: (context, ref, child) {
+        final userRef = ref.watch(userDataProvider(clip.userId));
+        final socialInteractionsRef = ref.watch(socialInteractionsProvider);
+        return userRef.when(
+          data: (user) {
+            return socialInteractionsRef.when(
+              data: (socialInteractions) {
+                return UserCard(
+                  user: user,
+                  status: socialInteractions.getRelations().getRelationStatus(
+                    user.uid,
+                  ),
+                  isOnUsersTab: false,
+                  onPressed: () {
+                    openProfile(user.profile.profileImage);
+                  },
+                );
+              },
+              error: error,
+              loading: loader,
+            );
+            // return Expanded(
+            //   child: Row(
+            //     mainAxisSize: .min,
+            //     spacing: 10,
+            //     children: [
+            //       ProfileImage(
+            //         imageUrl: user.profile.profileImage,
+            //         onTap: () => openProfile(user.profile.profileImage),
+            //       ),
+            //       StrokeText(
+            //         text: user.details.name,
+            //         overflow: .ellipsis,
+            //         strokeWidth: 1,
+            //         style: context.style.b1.copyWith(color: Colors.white),
+            //       ),
+            //       socialInteractionsRef.when(
+            //         data: (socialInteractions) {
+            //           List<String> friends = socialInteractions
+            //               .getRelations()
+            //               .friends;
+            //           print(friends);
+            //           bool isFriend = friends.contains(user.uid);
+
+            //           if(isFriend){
+            //             return AppMeterialButton(
+            //             text: 'Friends',
+            //             icon: Icons.person,
+            //             iconAlignment: .end,
+            //             iconColor: context.colors.neonBlue,
+            //             onPressed: ,
+            //           );
+            //           }
+            //         },
+            //         error: error,
+            //         loading: loader,
+            //       ),
+            //     ],
+            //   ),
+            // );
+          },
+          error: error,
+          loading: loader,
+        );
+      },
+    );
+  }
+
+  Widget _buildContent(BuildContext context, ClipContent content) {
+    if (clip.content.text != null && clip.content.text!.isNotEmpty) {
+      return Column(
+        children: [
+          AppSpacing.h4,
+          GestureDetector(
+            onTap: () {},
+            child: Text(
+              clip.content.text!,
+              overflow: .ellipsis,
+              maxLines: 1,
+              style: context.style.b2.copyWith(color: Colors.white),
+            ),
+          ),
+        ],
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildProgressBar() {
+    return ValueListenableBuilder(
+      valueListenable: controller,
+      builder: (context, value, _) {
+        return HorizontalProgressBar(
+          trackHeight: 3,
+          thumbDiameter: 10,
+          maxValue: value.duration.inSeconds.toDouble(),
+          bufferedPosition: value.buffered.isNotEmpty
+              ? value.buffered.last.end.inSeconds.toDouble()
+              : null,
+          currentPosition: value.position.inSeconds.toDouble(),
+          onChanged: (value) async {
+            await controller.seekTo(Duration(seconds: value.toInt()));
+            controller.play();
+          },
+        );
+      },
     );
   }
 }

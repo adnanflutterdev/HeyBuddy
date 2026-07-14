@@ -34,7 +34,6 @@ class AppTextField extends StatelessWidget {
     this.validator,
     this.maxLengths,
     this.forceErrorText,
-    this.suffixWidget,
   });
   final String? label;
   final double iconSize;
@@ -64,7 +63,6 @@ class AppTextField extends StatelessWidget {
   final bool disableBorder;
   final FormFieldValidator<String>? validator;
   final String? forceErrorText;
-  final Widget? suffixWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -117,15 +115,10 @@ class AppTextField extends StatelessWidget {
             ),
             suffixIcon: isSuffixIconLoading
                 ? const CircularProgressIndicator()
-                : suffixWidget ??
-                      IconButton(
-                        onPressed: onSuffixIconTapped,
-                        icon: Icon(
-                          suffixIcon,
-                          size: iconSize,
-                          color: iconColor,
-                        ),
-                      ),
+                : IconButton(
+                    onPressed: onSuffixIconTapped,
+                    icon: Icon(suffixIcon, size: iconSize, color: iconColor),
+                  ),
           ),
 
           forceErrorText: forceErrorText,

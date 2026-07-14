@@ -16,10 +16,12 @@ class ClipPlayer extends ConsumerStatefulWidget {
     required this.controller,
     required this.isMuted,
     required this.clipId,
+    required this.aspectRatio,
   });
   final VideoPlayerController controller;
   final ValueNotifier<bool> isMuted;
   final String clipId;
+  final double aspectRatio;
 
   @override
   ConsumerState<ClipPlayer> createState() => _ClipPlayerState();
@@ -126,7 +128,7 @@ class _ClipPlayerState extends ConsumerState<ClipPlayer>
       return const Center(child: CircularProgressIndicator());
     }
     return AspectRatio(
-      aspectRatio: controller.value.aspectRatio,
+      aspectRatio: widget.aspectRatio,
       child: Stack(
         children: [
           // Video

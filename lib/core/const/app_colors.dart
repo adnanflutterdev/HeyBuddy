@@ -58,7 +58,7 @@ class AppDarkColors {
   // Structural Colors
   static const Color divider = Color(0xff1F2937);
   static const Color border = Color(0xffD1D5DB);
-  static const Color shadow = Color(0xff000000);
+  static const Color shadow = Color(0x00000000);
 
   static const Color disabledBg = Color(0xff2A2A2A);
   static const Color overlay = Color(0x99000000); // For dialogs

@@ -1,12 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/size_extention.dart';
-import 'package:hey_buddy/core/const/app_padding.dart';
+import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/get_color.dart';
+import 'package:hey_buddy/core/widgets/app_material_button.dart';
 import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
-import 'package:hey_buddy/core/widgets/title_text.dart';
 
 class ImageViewer extends StatefulWidget {
   const ImageViewer({super.key, required this.images, this.pageIndex = 0});
@@ -26,10 +27,16 @@ class _ImageViewerState extends State<ImageViewer> {
   );
   final ScrollController _scrollController = .new();
 
+  bool isFullScreenMode = false;
+
   @override
   void dispose() {
     _pageController.dispose();
     _scrollController.dispose();
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    );
     super.dispose();
   }
 
@@ -56,23 +63,75 @@ class _ImageViewerState extends State<ImageViewer> {
     );
   }
 
+  void toggleFullScreenMode() {
+    if (isFullScreenMode) {
+      SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.manual,
+        overlays: SystemUiOverlay.values,
+      );
+    } else {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    }
+    isFullScreenMode = !isFullScreenMode;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        actions: [
-          if (_images.length > 1)
-            TitleText(text: ('${_pageIndex + 1}', '/${_images.length}')),
-        ],
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: AppPadding.p4,
-          child: Column(
-            spacing: 10,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          return;
+        } else {
+          SystemChrome.setEnabledSystemUIMode(
+            SystemUiMode.manual,
+            overlays: SystemUiOverlay.values,
+          );
+          AppNavigator.pop();
+        }
+      },
+      child: Scaffold(
+        appBar: isFullScreenMode
+            ? null
+            : CustomAppBar(
+                title: _images.length > 1
+                    ? ('${_pageIndex + 1}', '/${_images.length}')
+                    : null,
+                actions: [
+                  AppMeterialButton(
+                    icon: Icons.fullscreen,
+                    iconSize: 30,
+                    isTransparent: true,
+                    onPressed: toggleFullScreenMode,
+                  ),
+                ],
+              ),
+        body: SafeArea(
+          top: false,
+          child: Stack(
             children: [
-              Expanded(child: _buildImages()),
-              if (_images.length > 1) _buildImagesPreview(),
+              Positioned.fill(
+                child: Column(
+                  children: [
+                    Expanded(child: _buildImages()),
+                    if (_images.length > 1 && !isFullScreenMode) ...[
+                      AppSpacing.h12,
+                      _buildImagesPreview(),
+                      AppSpacing.h12,
+                    ],
+                  ],
+                ),
+              ),
+              if (isFullScreenMode)
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: AppMeterialButton(
+                    icon: Icons.fullscreen_exit,
+                    onPressed: toggleFullScreenMode,
+                  ),
+                ),
             ],
           ),
         ),

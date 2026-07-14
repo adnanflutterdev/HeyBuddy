@@ -39,16 +39,27 @@ class _BuildUserWithRelationState extends ConsumerState<BuildUserWithRelation> {
         spacing: 15,
         children: List.generate(tabs.length, (index) {
           bool isSelected = tabIndex == index;
-          return AppChip(
-            onPressed: () {
-              setState(() {
-                tabIndex = index;
-              });
-            },
-            label: tabs[index],
-            radius: 20,
-            foregroundColor: isSelected ? colors.neonBlue : colors.primaryText,
-            backgroundColor: colors.card,
+          int requestCount = index == 1
+              ? widget.relations.othersRequests.length
+              : index == 2
+              ? widget.relations.myRequests.length
+              : 0;
+          return Badge(
+            label: requestCount > 0 ? Text('$requestCount') : null,
+            smallSize: 0,
+            child: AppChip(
+              onPressed: () {
+                setState(() {
+                  tabIndex = index;
+                });
+              },
+              label: tabs[index],
+              radius: 20,
+              foregroundColor: isSelected
+                  ? colors.neonBlue
+                  : colors.primaryText,
+              backgroundColor: colors.card,
+            ),
           );
         }),
       ),

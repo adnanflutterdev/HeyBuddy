@@ -63,64 +63,74 @@ class _ClipUploadScreenState extends State<ClipUploadScreen> {
   }
 
   void uploadPost(WidgetRef ref) async {
-    String text = _contentController.text.trim();
-    if (_video != null) {
-      String videoId = const Uuid().v4();
-      UserData? user = ref.read(myDataProvider).value;
-      if (user == null) {
-        if (mounted) {
-          showMessenger(
-            context,
-            result: Result.failure('Failed to fetch your data'),
-          );
-        }
-        return;
-      }
-      MediaMeta? video;
+    try {
+      String text = _contentController.text.trim();
       if (_video != null) {
-        String uid = ref.read(uidProvider);
-        String name = const Uuid().v4();
-        MediaMeta? uploadedVideo = await FileUploader.uploadVideo(
-          ref: ref,
-          video: _video!,
-          name: name,
-          folder: 'clip/$uid/$videoId',
-        );
-        if (uploadedVideo == null && mounted) {
-          showMessenger(
-            context,
-            result: Result.failure('Failed to upload video'),
-          );
-          ref.read(uploadProgressProvider.notifier).updateProgress(0);
+        String videoId = const Uuid().v4();
+        UserData? user = ref.read(myDataProvider).value;
+        if (user == null) {
+          if (mounted) {
+            showMessenger(
+              context,
+              result: Result.failure('Failed to fetch your data'),
+            );
+          }
           return;
-        } else {
-          video = uploadedVideo;
         }
-      }
-      MediaModel? media = MediaModel(data: video!, type: .video);
+        MediaMeta? video;
+        if (_video != null) {
+          String uid = ref.read(uidProvider);
+          String name = const Uuid().v4();
+          MediaMeta? uploadedVideo = await FileUploader.uploadVideo(
+            ref: ref,
+            video: _video!,
+            name: name,
+            folder: 'clip/$uid/$videoId',
+          );
+          if (uploadedVideo == null && mounted) {
+            showMessenger(
+              context,
+              result: Result.failure('Failed to upload video'),
+            );
+            ref.read(uploadProgressProvider.notifier).updateProgress(0);
+            return;
+          } else {
+            video = uploadedVideo;
+          }
+        }
+        MediaModel? media = MediaModel(data: video!, type: .video);
 
-      ClipContentModel content = ClipContentModel(
-        text: text,
-        media: media,
-        tags: [],
-      );
-      ClipModel clip = ClipModel.setNewPost(
-        id: videoId,
-        userId: user.uid,
-        content: content,
-      );
-      Result result = await ref
-          .read(createClipProvider.notifier)
-          .uploadClip(clip);
-      if (mounted) {
-        showMessenger(context, result: result);
-        ref.read(uploadProgressProvider.notifier).updateProgress(0);
-        Future.delayed(const Duration(milliseconds: 200), () {
-          AppNavigator.pop();
-        });
+        ClipContentModel content = ClipContentModel(
+          text: text,
+          media: media,
+          tags: [],
+        );
+        ClipModel clip = ClipModel.setNewPost(
+          id: videoId,
+          userId: user.uid,
+          content: content,
+        );
+        Result result = await ref
+            .read(createClipProvider.notifier)
+            .uploadClip(clip);
+        if (mounted) {
+          showMessenger(context, result: result);
+          ref.read(uploadProgressProvider.notifier).updateProgress(0);
+          Future.delayed(const Duration(milliseconds: 200), () {
+            AppNavigator.pop();
+          });
+        }
+      } else {
+        showMessenger(context, result: Result.failure('A video is required'));
       }
-    } else {
-      showMessenger(context, result: Result.failure('A video is required'));
+    } catch (e) {
+      if (mounted) {
+        showMessenger(
+          context,
+          result: Result.failure('Error occured while uploading video'),
+        );
+        ref.read(uploadProgressProvider.notifier).updateProgress(0);
+      }
     }
   }
 
@@ -128,7 +138,7 @@ class _ClipUploadScreenState extends State<ClipUploadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: ('New', ' Post'),
+        title: ('New', ' Clip'),
         actions: [_buildUploadButton()],
       ),
       body: SafeArea(
@@ -156,7 +166,6 @@ class _ClipUploadScreenState extends State<ClipUploadScreen> {
                     children: [_buildVideo(), _buildImageActionButtons()],
                   ),
                 ),
-              // _buildImagesPreview(),
               AppTextField(
                 hintText: 'Write something',
                 controller: _contentController,

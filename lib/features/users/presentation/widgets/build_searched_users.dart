@@ -21,6 +21,9 @@ class BuildSearchedUsers extends ConsumerWidget {
 
     return searchedUsersRef.when(
       data: (searchedUsers) {
+        if (searchedUsers.isEmpty) {
+          return const Expanded(child: Center(child: Text('No user found!')));
+        }
         return Expanded(
           child: ListView.builder(
             itemCount: searchedUsers.length,

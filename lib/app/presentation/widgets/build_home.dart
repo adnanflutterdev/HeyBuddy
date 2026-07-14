@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/app/model/tab_model.dart';
 import 'package:hey_buddy/app/riverpod/tab_provider.dart';
@@ -9,6 +10,7 @@ import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/utils/loader.dart';
 import 'package:hey_buddy/core/widgets/app_logo.dart';
+import 'package:hey_buddy/core/widgets/app_material_button.dart';
 import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
 import 'package:hey_buddy/core/widgets/labeled_icon_button.dart';
 import 'package:hey_buddy/core/widgets/logo_image.dart';
@@ -70,11 +72,40 @@ class _BuildHomeState extends ConsumerState<BuildHome> {
                     AppNavigator.push(const ClipUploadScreen());
                   },
                   icon: Icons.movie_sharp,
-                  label: 'Upload Video',
+                  label: 'Upload Clip',
                 ),
               ],
             ),
           ),
+        );
+      },
+    );
+  }
+
+  void exitApp() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Exit Hey Buddy'),
+          content: const Text('Are you sure to exit'),
+          actions: [
+            AppMeterialButton(
+              text: 'Cancel',
+              onPressed: () {
+                AppNavigator.pop();
+              },
+            ),
+            AppMeterialButton(
+              text: 'Exit',
+              borderColor: context.colors.error,
+              bgColor: context.colors.onError,
+              style: context.style.b2.copyWith(color: context.colors.error),
+              onPressed: () {
+                SystemNavigator.pop();
+              },
+            ),
+          ],
         );
       },
     );
@@ -89,25 +120,39 @@ class _BuildHomeState extends ConsumerState<BuildHome> {
   @override
   Widget build(BuildContext context) {
     final tabIndex = ref.watch(tabProvider);
-    return Scaffold(
-      appBar: _buildAppbar(tabIndex) as PreferredSizeWidget?,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: PageView.builder(
-                itemCount: pages.length,
-                controller: _pageController,
-                onPageChanged: (value) {
-                  ref.read(tabProvider.notifier).changeTab(value);
-                },
-                itemBuilder: (context, index) {
-                  return pages[index];
-                },
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          return;
+        } else {
+          if (tabIndex == 0) {
+            exitApp();
+          } else {
+            _pageController.jumpToPage(0);
+          }
+        }
+      },
+      child: Scaffold(
+        appBar: _buildAppbar(tabIndex) as PreferredSizeWidget?,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: PageView.builder(
+                  itemCount: pages.length,
+                  controller: _pageController,
+                  onPageChanged: (value) {
+                    ref.read(tabProvider.notifier).changeTab(value);
+                  },
+                  itemBuilder: (context, index) {
+                    return pages[index];
+                  },
+                ),
               ),
-            ),
-            _buildNavbar(tabIndex),
-          ],
+              _buildNavbar(tabIndex),
+            ],
+          ),
         ),
       ),
     );

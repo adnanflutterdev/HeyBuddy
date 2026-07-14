@@ -22,9 +22,18 @@ import 'package:hey_buddy/features/profile/presentation/riverpod/social_actions_
 import 'package:uuid/uuid.dart';
 
 class UserCard extends ConsumerWidget {
-  const UserCard({super.key, required this.user, required this.status});
+  const UserCard({
+    super.key,
+    required this.user,
+    required this.status,
+    this.onPressed,
+    this.isOnUsersTab = true,
+  });
   final UserData user;
   final RelationStatus status;
+  final bool isOnUsersTab;
+
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -122,27 +131,39 @@ class UserCard extends ConsumerWidget {
       children: [
         GestureDetector(
           child: Padding(
-            padding: AppPadding.h12,
+            padding: isOnUsersTab ? AppPadding.h12 : AppPadding.p0,
             child: Row(
               mainAxisAlignment: .center,
               children: [
-                ProfileImage(imageUrl: user.profile.profileImage, size: 50),
+                ProfileImage(
+                  imageUrl: user.profile.profileImage,
+                  size: isOnUsersTab ? 50 : 40,
+                  onTap: onPressed,
+                ),
                 AppSpacing.w12,
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      Text(
-                        '@${user.details.username}',
-                        style: context.style.b1,
-                      ),
-                      Text(
-                        user.details.name,
-                        maxLines: 2,
-                        overflow: .ellipsis,
-                        style: context.style.bs1,
-                      ),
-                    ],
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: Column(
+                      crossAxisAlignment: .start,
+                      children: [
+                        Text(
+                          '@${user.details.username}',
+                          style: context.style.b1.copyWith(
+                            color: isOnUsersTab ? null : Colors.white,
+                          ),
+                        ),
+
+                        Text(
+                          user.details.name,
+                          maxLines: 2,
+                          overflow: .ellipsis,
+                          style: context.style.bs1.copyWith(
+                            color: isOnUsersTab ? null : Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 socialActionsRef.when(
@@ -153,8 +174,6 @@ class UserCard extends ConsumerWidget {
                         height: 20,
                         child: CircularProgressIndicator(),
                       );
-                    } else if (myUid == user.uid) {
-                      return const Text('Me');
                     } else if (status.isInOthersRequests) {
                       return Row(
                         children: [
@@ -166,6 +185,8 @@ class UserCard extends ConsumerWidget {
                             borderRadius: 8,
                             iconAlignment: .end,
                             iconColor: context.colors.success,
+                            bgColor: !isOnUsersTab ? Colors.transparent : null,
+                            borderColor: !isOnUsersTab ? Colors.white : null,
                           ),
                           AppSpacing.w8,
                           AppMeterialButton(
@@ -174,6 +195,8 @@ class UserCard extends ConsumerWidget {
                             icon: Icons.close,
                             iconAlignment: .end,
                             iconColor: context.colors.error,
+                            bgColor: !isOnUsersTab ? Colors.transparent : null,
+                            borderColor: !isOnUsersTab ? Colors.white : null,
                           ),
                         ],
                       );
@@ -183,8 +206,14 @@ class UserCard extends ConsumerWidget {
                         text: 'Withdraw',
                         icon: Icons.person_remove,
                         iconAlignment: .end,
+                        iconColor: !isOnUsersTab ? Colors.white : null,
+                        style: !isOnUsersTab
+                            ? context.style.b2.copyWith(color: Colors.white)
+                            : null,
+                        bgColor: !isOnUsersTab ? Colors.transparent : null,
+                        borderColor: !isOnUsersTab ? Colors.white : null,
                       );
-                    } else {
+                    } else if (user.uid != myUid) {
                       return AppMeterialButton(
                         onPressed: status.isFriend
                             ? removeFriend
@@ -194,18 +223,25 @@ class UserCard extends ConsumerWidget {
                             ? Icons.person
                             : Icons.person_add_alt_1,
                         iconAlignment: .end,
-                        style: status.isFriend
-                            ? context.style.b2.copyWith(
-                                color: context.colors.neonBlue,
-                              )
-                            : null,
+                        style: context.style.b2.copyWith(
+                          color: status.isFriend
+                              ? context.colors.neonBlue
+                              : !isOnUsersTab
+                              ? Colors.white
+                              : null,
+                        ),
                         iconColor: status.isFriend
                             ? context.colors.neonBlue
+                            : !isOnUsersTab
+                            ? Colors.white
                             : null,
                         borderRadius: 8,
                         padding: AppPadding.symmetric(10, 6),
+                        bgColor: !isOnUsersTab ? Colors.transparent : null,
+                        borderColor: !isOnUsersTab ? Colors.white : null,
                       );
                     }
+                    return const SizedBox.shrink();
                   },
 
                   error: error,
@@ -215,10 +251,11 @@ class UserCard extends ConsumerWidget {
             ),
           ),
         ),
-        Padding(
-          padding: AppPadding.symmetric(4, 8),
-          child: const Divider(thickness: 0.5),
-        ),
+        if (isOnUsersTab)
+          Padding(
+            padding: AppPadding.symmetric(4, 8),
+            child: const Divider(thickness: 0.5),
+          ),
       ],
     );
   }

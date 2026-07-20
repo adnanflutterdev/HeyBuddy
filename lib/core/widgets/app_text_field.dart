@@ -20,7 +20,7 @@ class AppTextField extends StatelessWidget {
     this.isObscure = false,
     this.isReadOnly = false,
     this.isSuffixIconLoading = false,
-    this.unfocousOnTapOutside = false,
+    this.unfocusOnTapOutside = false,
     this.onSubmitted,
     this.maxLines = 1,
     this.minLines,
@@ -52,7 +52,7 @@ class AppTextField extends StatelessWidget {
   final Function(String? value)? onSubmitted;
   final FocusNode? focusNode;
   final bool isReadOnly;
-  final bool unfocousOnTapOutside;
+  final bool unfocusOnTapOutside;
   final int? maxLines;
   final int? minLines;
   final int? maxLengths;
@@ -134,7 +134,7 @@ class AppTextField extends StatelessWidget {
           validator: validator,
           onFieldSubmitted: onSubmitted,
           onTapOutside: (event) {
-            if (unfocousOnTapOutside) {
+            if (unfocusOnTapOutside) {
               FocusScope.of(context).unfocus();
             }
           },

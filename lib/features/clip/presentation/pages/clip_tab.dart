@@ -142,7 +142,7 @@ class _ClipTabState extends ConsumerState<ClipTab> {
             Positioned(
               top: 10,
               left: 10,
-              child: AppMeterialButton(
+              child: AppMaterialButton(
                 icon: Icons.arrow_back,
                 iconColor: context.colors.neonBlue,
                 padding: AppPadding.p4,
@@ -164,7 +164,7 @@ class _ClipTabState extends ConsumerState<ClipTab> {
               child: ValueListenableBuilder(
                 valueListenable: _isMuted,
                 builder: (context, isMuted, _) {
-                  return AppMeterialButton(
+                  return AppMaterialButton(
                     onPressed: () {
                       if (isMuted) {
                         _controllers[currentPage]?.setVolume(1);

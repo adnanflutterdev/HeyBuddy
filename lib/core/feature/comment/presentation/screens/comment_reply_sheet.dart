@@ -192,7 +192,7 @@ class _CommentsReplySheetState extends ConsumerState<CommentsReplySheet> {
             hintText: 'Write your comment reply',
             suffixIcon: Icons.send,
             controller: _controller,
-            unfocousOnTapOutside: true,
+            unfocusOnTapOutside: true,
             onSuffixIconTapped: addCommentReply,
           );
         },

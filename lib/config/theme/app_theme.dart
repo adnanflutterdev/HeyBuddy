@@ -21,8 +21,6 @@ class AppTheme {
     inputDecorationTheme: InputDecorationThemeData(
       filled: true,
       errorBorder: outlinedBorder(color: AppLightColors.error),
-      prefixIconColor: AppLightColors.neonGreen,
-      suffixIconColor: AppLightColors.neonGreen,
       fillColor: AppLightColors.card,
       focusedErrorBorder: outlinedBorder(color: AppLightColors.error),
       enabledBorder: outlinedBorder(color: AppLightColors.border),
@@ -47,8 +45,6 @@ class AppTheme {
     inputDecorationTheme: InputDecorationThemeData(
       filled: true,
       errorBorder: outlinedBorder(color: AppDarkColors.error),
-      prefixIconColor: AppDarkColors.neonGreen,
-      suffixIconColor: AppDarkColors.neonGreen,
       fillColor: AppDarkColors.card,
       focusedErrorBorder: outlinedBorder(color: AppDarkColors.error),
       enabledBorder: outlinedBorder(color: AppDarkColors.border),

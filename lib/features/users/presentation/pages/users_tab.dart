@@ -22,13 +22,11 @@ class _UsersTabState extends ConsumerState<UsersTab> {
   Timer? _queryTimer;
   bool _isTyping = false;
 
-  final ValueNotifier<String> _searchQuery = ValueNotifier('');
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void dispose() {
     _queryTimer?.cancel();
-    _searchQuery.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -54,12 +52,10 @@ class _UsersTabState extends ConsumerState<UsersTab> {
 
   Widget _buildSearch() {
     void clear() {
-      _searchQuery.value = '';
       _searchController.clear();
     }
 
     void autoSearch(String value) async {
-      _searchQuery.value = value;
       _isTyping = true;
       setState(() {});
       _queryTimer?.cancel();
@@ -83,9 +79,9 @@ class _UsersTabState extends ConsumerState<UsersTab> {
       ),
       padding: AppPadding.p8,
       child: ValueListenableBuilder(
-        valueListenable: _searchQuery,
+        valueListenable: _searchController,
         builder: (context, searchQuery, _) {
-          bool isNotEmpty = searchQuery.isNotEmpty;
+          bool isNotEmpty = searchQuery.text.trim().isNotEmpty;
           return AppTextField(
             hintText: 'Search by username',
             controller: _searchController,
@@ -94,7 +90,7 @@ class _UsersTabState extends ConsumerState<UsersTab> {
             suffixIcon: isNotEmpty ? Icons.close : null,
             onSuffixIconTapped: isNotEmpty ? clear : null,
             onChanged: autoSearch,
-            unfocousOnTapOutside: true,
+            unfocusOnTapOutside: true,
           );
         },
       ),
@@ -103,12 +99,12 @@ class _UsersTabState extends ConsumerState<UsersTab> {
 
   Widget _buildBody(Relations relations) {
     return ValueListenableBuilder(
-      valueListenable: _searchQuery,
+      valueListenable: _searchController,
       builder: (context, query, _) {
         //
-        if (query.isNotEmpty) {
+        if (query.text.trim().isNotEmpty) {
           //
-          if (query.trim().length < 3) {
+          if (query.text.trim().length < 3) {
             return const Expanded(
               child: Center(child: Text('Type minimum 3 characters')),
             );
@@ -118,7 +114,10 @@ class _UsersTabState extends ConsumerState<UsersTab> {
               child: Center(child: CircularProgressIndicator()),
             );
           }
-          return BuildSearchedUsers(query: query, relations: relations);
+          return BuildSearchedUsers(
+            query: query.text.trim(),
+            relations: relations,
+          );
         }
         return BuildUserWithRelation(relations: relations);
       },

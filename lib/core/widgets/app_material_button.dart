@@ -5,8 +5,8 @@ import 'package:hey_buddy/core/const/app_padding.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
 import 'package:hey_buddy/core/const/get_color.dart';
 
-class AppMeterialButton extends StatelessWidget {
-  const AppMeterialButton({
+class AppMaterialButton extends StatelessWidget {
+  const AppMaterialButton({
     super.key,
     this.style,
     this.padding,

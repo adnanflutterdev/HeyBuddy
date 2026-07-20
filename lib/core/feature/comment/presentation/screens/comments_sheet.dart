@@ -139,7 +139,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
             hintText: 'Write your comment',
             suffixIcon: Icons.send,
             controller: _controller,
-            unfocousOnTapOutside: true,
+            unfocusOnTapOutside: true,
             onSuffixIconTapped: addComment,
           );
         },

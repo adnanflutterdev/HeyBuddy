@@ -34,7 +34,7 @@ class _ReactionButtonState extends ConsumerState<ReactionButton> {
   }
 
   Widget loader() {
-    return AppMeterialButton(text: '😆', style: context.style.b3);
+    return AppMaterialButton(text: '😆', style: context.style.b3);
   }
 
   void removeReactionOverlay() {
@@ -106,7 +106,7 @@ class _ReactionButtonState extends ConsumerState<ReactionButton> {
         }
         return Row(
           children: [
-            AppMeterialButton(
+            AppMaterialButton(
               text: text,
               isTransparent: true,
               onTapDown: showReactionOverlay,
@@ -114,7 +114,7 @@ class _ReactionButtonState extends ConsumerState<ReactionButton> {
               style: context.style.b3.copyWith(letterSpacing: -4),
             ),
             if (reactions.isNotEmpty)
-              AppMeterialButton(
+              AppMaterialButton(
                 text: '(${reactions.length})',
                 style: context.style.bs3,
                 isTransparent: true,

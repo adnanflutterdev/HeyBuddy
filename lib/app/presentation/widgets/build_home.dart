@@ -31,7 +31,7 @@ class BuildHome extends ConsumerStatefulWidget {
 }
 
 class _BuildHomeState extends ConsumerState<BuildHome> {
-  final PageController _pageController = PageController(initialPage: 3);
+  final PageController _pageController = PageController(initialPage: 2);
   late List<Widget> pages = [
     const PostTab(),
     ClipTab(pageController: _pageController),
@@ -90,13 +90,13 @@ class _BuildHomeState extends ConsumerState<BuildHome> {
           title: const Text('Exit Hey Buddy'),
           content: const Text('Are you sure to exit'),
           actions: [
-            AppMeterialButton(
+            AppMaterialButton(
               text: 'Cancel',
               onPressed: () {
                 AppNavigator.pop();
               },
             ),
-            AppMeterialButton(
+            AppMaterialButton(
               text: 'Exit',
               borderColor: context.colors.error,
               bgColor: context.colors.onError,

@@ -5,7 +5,7 @@ enum Visibility { public, private, friendsOnly }
 
 enum ModerationStatus { pending, approved, declined }
 
-enum MediaType { image, video }
+enum MediaType { image, video,audio }
 
 extension VisibilityX on Visibility {
   static Visibility fromFirebase(String visibility) {

@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/legacy.dart';
 
 class TabNotifier extends StateNotifier<int> {
-  TabNotifier() : super(3);
+  TabNotifier() : super(2);
 
   void changeTab(int i) {
     state = i;

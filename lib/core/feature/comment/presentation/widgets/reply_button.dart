@@ -22,7 +22,7 @@ class ReplyButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        AppMeterialButton(
+        AppMaterialButton(
           text: 'Reply',
           isTransparent: true,
           onPressed: () => openBottomSheet(

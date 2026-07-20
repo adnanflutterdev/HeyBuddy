@@ -124,7 +124,7 @@ class _ClipPreviewState extends State<ClipPreview> {
             child: ValueListenableBuilder<VideoPlayerValue>(
               valueListenable: controller,
               builder: (context, value, _) {
-                return AppMeterialButton(
+                return AppMaterialButton(
                   onPressed: () {
                     showUi();
                     if (value.isPlaying) {
@@ -165,7 +165,7 @@ class _ClipPreviewState extends State<ClipPreview> {
               ValueListenableBuilder(
                 valueListenable: _isMuted,
                 builder: (context, isMuted, _) {
-                  return AppMeterialButton(
+                  return AppMaterialButton(
                     onPressed: () {
                       showUi();
                       if (isMuted) {

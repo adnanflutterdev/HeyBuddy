@@ -170,9 +170,9 @@ class _EditMyProfileState extends State<EditMyProfile> {
               final progress = ref.watch(uploadProgressProvider);
 
               if (updateRef.isLoading || progress > 0) {
-                return AppMeterialButton(text: '$progress %');
+                return AppMaterialButton(text: '$progress %');
               } else {
-                return AppMeterialButton(
+                return AppMaterialButton(
                   text: 'Save',
                   icon: Icons.save,
                   onPressed: () => updateUserData(ref),
@@ -249,7 +249,7 @@ class _EditMyProfileState extends State<EditMyProfile> {
             child: ValueListenableBuilder(
               valueListenable: _coverImage,
               builder: (context, coverImage, child) {
-                return AppMeterialButton(
+                return AppMaterialButton(
                   onPressed: () async {
                     final newImage =
                         await ImagePickerHelper.showSelectionImageSource(
@@ -294,7 +294,7 @@ class _EditMyProfileState extends State<EditMyProfile> {
                       Positioned(
                         left: (context.width / 2),
                         bottom: 0,
-                        child: AppMeterialButton(
+                        child: AppMaterialButton(
                           onPressed: () async {
                             final newImage =
                                 await ImagePickerHelper.showSelectionImageSource(

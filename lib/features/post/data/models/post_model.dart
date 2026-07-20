@@ -86,7 +86,7 @@ class PostContentModel extends PostContent {
   factory PostContentModel.fromEntity(PostContent content) {
     return PostContentModel(
       text: content.text,
-      media: content.media,
+      media: content.media?.map((m) => MediaModel.fromEntity(m)).toList(),
       tags: content.tags,
     );
   }

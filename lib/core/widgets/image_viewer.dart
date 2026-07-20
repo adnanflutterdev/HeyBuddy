@@ -99,7 +99,7 @@ class _ImageViewerState extends State<ImageViewer> {
                     ? ('${_pageIndex + 1}', '/${_images.length}')
                     : null,
                 actions: [
-                  AppMeterialButton(
+                  AppMaterialButton(
                     icon: Icons.fullscreen,
                     iconSize: 30,
                     isTransparent: true,
@@ -127,7 +127,7 @@ class _ImageViewerState extends State<ImageViewer> {
                 Positioned(
                   top: 10,
                   right: 10,
-                  child: AppMeterialButton(
+                  child: AppMaterialButton(
                     icon: Icons.fullscreen_exit,
                     onPressed: toggleFullScreenMode,
                   ),

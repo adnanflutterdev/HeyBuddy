@@ -56,7 +56,7 @@ class _MyProfileState extends State<MyProfile> {
               appBar: CustomAppBar(
                 title: ('My Profile', ''),
                 actions: [
-                  AppMeterialButton(
+                  AppMaterialButton(
                     text: 'Edit',
                     icon: Icons.edit,
                     onPressed: () {

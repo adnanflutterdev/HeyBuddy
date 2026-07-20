@@ -47,7 +47,7 @@ OverlayEntry openReactionOverlay({
               child: Row(
                 children: reactions
                     .map(
-                      (reaction) => AppMeterialButton(
+                      (reaction) => AppMaterialButton(
                         hasCircularBorder: true,
                         text: reaction.reactionEmoji,
                         onPressed: () {

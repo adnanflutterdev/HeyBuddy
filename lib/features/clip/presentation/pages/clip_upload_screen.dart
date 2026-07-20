@@ -186,9 +186,9 @@ class _ClipUploadScreenState extends State<ClipUploadScreen> {
         final createPostRef = ref.watch(createPostProvider);
 
         if (createPostRef.isLoading || progress > 0) {
-          return AppMeterialButton(text: '$progress %');
+          return AppMaterialButton(text: '$progress %');
         }
-        return AppMeterialButton(
+        return AppMaterialButton(
           text: 'Upload',
           icon: Icons.upload,
           onPressed: () => uploadPost(ref),
@@ -205,8 +205,8 @@ class _ClipUploadScreenState extends State<ClipUploadScreen> {
         spacing: 10,
         mainAxisAlignment: .end,
         children: [
-          AppMeterialButton(onPressed: pickVideo, icon: Icons.repeat_outlined),
-          AppMeterialButton(onPressed: removeImage, icon: Icons.close),
+          AppMaterialButton(onPressed: pickVideo, icon: Icons.repeat_outlined),
+          AppMaterialButton(onPressed: removeImage, icon: Icons.close),
         ],
       ),
     );

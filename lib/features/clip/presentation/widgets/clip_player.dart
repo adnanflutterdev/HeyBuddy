@@ -169,7 +169,7 @@ class _ClipPlayerState extends ConsumerState<ClipPlayer>
                     if (!isFastForwarded) {
                       return const SizedBox.shrink();
                     }
-                    return const AppMeterialButton(
+                    return const AppMaterialButton(
                       text: '2X',
                       iconAlignment: .end,
                       icon: Icons.fast_forward,
@@ -190,7 +190,7 @@ class _ClipPlayerState extends ConsumerState<ClipPlayer>
                 valueListenable: controller,
                 builder: (context, value, _) {
                   if (!value.isPlaying) {
-                    return AppMeterialButton(
+                    return AppMaterialButton(
                       onPressed: () {
                         controller.play();
                       },

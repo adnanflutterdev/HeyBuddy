@@ -88,13 +88,13 @@ class UserCard extends ConsumerWidget {
               'Are you sure to remove @${user.details.username} from friends',
             ),
             actions: [
-              AppMeterialButton(
+              AppMaterialButton(
                 text: 'Cancel',
                 onPressed: () {
                   AppNavigator.pop();
                 },
               ),
-              AppMeterialButton(
+              AppMaterialButton(
                 text: 'Remove',
                 borderColor: context.colors.error,
                 bgColor: context.colors.onError,
@@ -178,7 +178,7 @@ class UserCard extends ConsumerWidget {
                       return Row(
                         children: [
                           AppSpacing.w8,
-                          AppMeterialButton(
+                          AppMaterialButton(
                             onPressed: acceptFriendRequest,
                             text: 'Accept',
                             icon: Icons.check,
@@ -189,7 +189,7 @@ class UserCard extends ConsumerWidget {
                             borderColor: !isOnUsersTab ? Colors.white : null,
                           ),
                           AppSpacing.w8,
-                          AppMeterialButton(
+                          AppMaterialButton(
                             onPressed: rejectFriendRequest,
                             borderRadius: 8,
                             icon: Icons.close,
@@ -201,7 +201,7 @@ class UserCard extends ConsumerWidget {
                         ],
                       );
                     } else if (status.isInMyRequests) {
-                      return AppMeterialButton(
+                      return AppMaterialButton(
                         onPressed: withdrawRequest,
                         text: 'Withdraw',
                         icon: Icons.person_remove,
@@ -214,7 +214,7 @@ class UserCard extends ConsumerWidget {
                         borderColor: !isOnUsersTab ? Colors.white : null,
                       );
                     } else if (user.uid != myUid) {
-                      return AppMeterialButton(
+                      return AppMaterialButton(
                         onPressed: status.isFriend
                             ? removeFriend
                             : addFriendRequest,

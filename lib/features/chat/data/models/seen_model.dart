@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hey_buddy/features/chat/domain/entity/seen.dart';
 
 class SeenModel extends Seen {
-  SeenModel({required super.isSeen, required super.seenAt});
+  SeenModel({required super.isSeen, super.seenAt});
 
   factory SeenModel.fromEntity(Seen seen) {
     return SeenModel(isSeen: seen.isSeen, seenAt: seen.seenAt);
@@ -16,6 +16,9 @@ class SeenModel extends Seen {
   }
 
   Map<String, dynamic> toFirebase() {
-    return {'isSeen': isSeen, 'seenAt': Timestamp.fromDate(seenAt)};
+    return {
+      'isSeen': isSeen,
+      'seenAt': seenAt != null ? Timestamp.fromDate(seenAt!) : null,
+    };
   }
 }

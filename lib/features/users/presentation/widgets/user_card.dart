@@ -47,10 +47,10 @@ class UserCard extends ConsumerWidget {
       AcceptFriendRequestParams params = AcceptFriendRequestParams(
         first: FriendModel(
           friendId: user.uid,
-          chatId: chatId,
+          chatsDocId: chatId,
           friendSince: now,
         ),
-        second: FriendModel(friendId: myUid, chatId: chatId, friendSince: now),
+        second: FriendModel(friendId: myUid, chatsDocId: chatId, friendSince: now),
       );
       final result = await socialActionsNotifier.acceptFriendRequest(params);
       if (context.mounted) {

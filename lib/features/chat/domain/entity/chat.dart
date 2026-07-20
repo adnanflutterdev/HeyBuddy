@@ -22,6 +22,6 @@ abstract class Chat {
     required this.type,
     required this.seen,
     required this.isEdited,
-    required this.media,
+    this.media,
   });
 }

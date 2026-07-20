@@ -1,11 +1,11 @@
 abstract class Friend {
   final String friendId;
-  final String chatId;
+  final String chatsDocId;
   final DateTime friendSince;
 
   Friend({
     required this.friendId,
-    required this.chatId,
+    required this.chatsDocId,
     required this.friendSince,
   });
 }

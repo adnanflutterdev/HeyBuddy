@@ -1,25 +1,72 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
+import 'package:hey_buddy/core/model/result.dart';
+import 'package:hey_buddy/core/model/timestamps.dart';
+import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
+import 'package:hey_buddy/core/utils/encryption.dart';
+import 'package:hey_buddy/core/utils/messenger.dart';
 import 'package:hey_buddy/core/widgets/app_material_button.dart';
 import 'package:hey_buddy/core/widgets/app_text_field.dart';
 import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
 import 'package:hey_buddy/core/widgets/profile_image.dart';
+import 'package:hey_buddy/features/chat/data/models/chat_model.dart';
+import 'package:hey_buddy/features/chat/data/models/seen_model.dart';
+import 'package:hey_buddy/features/chat/domain/entity/chat.dart';
+import 'package:hey_buddy/features/chat/domain/entity/seen.dart';
+import 'package:hey_buddy/features/chat/domain/usecase/send_chat_usecase.dart';
+import 'package:hey_buddy/features/chat/presentation/riverpod/chat_provider.dart';
 import 'package:hey_buddy/features/profile/domain/entity/friend.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
+import 'package:uuid/uuid.dart';
 
-class ChatScreen extends StatefulWidget {
+class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key, required this.fData, required this.friend});
   final UserData fData;
   final Friend friend;
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends ConsumerState<ChatScreen> {
   final TextEditingController messageController = TextEditingController();
+
+  void sendChat() async {
+    final uid = ref.read(uidProvider);
+    TimestampsModel timestamps = TimestampsModel(createdAt: DateTime.now());
+    Seen seen = SeenModel(isSeen: false);
+    String message = Encryption.encrypt(
+      encryptionKey: widget.friend.chatsDocId,
+      encryptionValue: timestamps.createdAt.toIso8601String(),
+      message: messageController.text.trim(),
+    );
+    messageController.clear();
+    ChatModel chat = ChatModel(
+      uid: uid,
+      message: message,
+      timestamps: timestamps,
+      type: MessageType.text,
+      seen: seen,
+      isEdited: false,
+      media: null,
+      chatId: const Uuid().v4(),
+    );
+    SendChatParams params = SendChatParams(
+      myUid: uid,
+      fUid: widget.friend.friendId,
+      chatsDocId: widget.friend.chatsDocId,
+      chat: chat,
+    );
+    Result result = await ref.read(chatProvider.notifier).sendChat(params);
+
+    if (!result.success && mounted) {
+      showMessenger(context, result: result);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,12 +148,13 @@ class _ChatScreenState extends State<ChatScreen> {
             valueListenable: messageController,
             builder: (context, message, _) {
               if (message.text.trim().isNotEmpty) {
+                final chatRef = ref.watch(chatProvider);
                 return AppMaterialButton(
                   icon: Icons.send,
                   isTransparent: true,
                   iconSize: 25,
                   padding: AppPadding.p8,
-                  onPressed: () {},
+                  onPressed: chatRef.isLoading ? null : sendChat,
                 );
               }
               return const SizedBox.shrink();

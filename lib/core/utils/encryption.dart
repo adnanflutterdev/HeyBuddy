@@ -1,4 +1,5 @@
 import 'package:encrypt/encrypt.dart' as en;
+import 'package:uuid/uuid.dart';
 
 class Encryption {
   // Encryption
@@ -7,8 +8,9 @@ class Encryption {
     required String encryptionValue,
     required String message,
   }) {
-    final key = en.Key.fromUtf8(encryptionKey);
-    final iv = en.IV.fromUtf8(encryptionValue);
+    const Uuid().v4();
+    final key = en.Key.fromUtf8(encryptionKey.substring(0, 32));
+    final iv = en.IV.fromUtf8(encryptionValue.substring(0, 16));
     final encrypter = en.Encrypter(en.AES(key, mode: en.AESMode.cbc));
     final encrypted = encrypter.encrypt(message, iv: iv);
     return encrypted.base64;
@@ -20,8 +22,8 @@ class Encryption {
     required String encryptionValue,
     required String message,
   }) {
-    final key = en.Key.fromUtf8(encryptionKey);
-    final iv = en.IV.fromUtf8(encryptionValue);
+    final key = en.Key.fromUtf8(encryptionKey.substring(0, 32));
+    final iv = en.IV.fromUtf8(encryptionValue.substring(0, 16));
     final encrypter = en.Encrypter(
       en.AES(key, mode: en.AESMode.cbc, padding: 'PKCS7'),
     );

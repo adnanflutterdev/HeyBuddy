@@ -4,14 +4,14 @@ import 'package:hey_buddy/features/profile/domain/entity/friend.dart';
 class FriendModel extends Friend {
   FriendModel({
     required super.friendId,
-    required super.chatId,
+    required super.chatsDocId,
     required super.friendSince,
   });
 
   factory FriendModel.fromEntity(Friend friend) {
     return FriendModel(
       friendId: friend.friendId,
-      chatId: friend.chatId,
+      chatsDocId: friend.chatsDocId,
       friendSince: friend.friendSince,
     );
   }
@@ -19,7 +19,7 @@ class FriendModel extends Friend {
   factory FriendModel.fromFirebase(Map<String, dynamic> friend) {
     return FriendModel(
       friendId: friend['friendId'],
-      chatId: friend['chatId'],
+      chatsDocId: friend['chatId'],
       friendSince: (friend['friendSince'] as Timestamp).toDate(),
     );
   }
@@ -27,7 +27,7 @@ class FriendModel extends Friend {
   Map<String, dynamic> toFirebase() {
     return {
       'friendId': friendId,
-      'chatId': chatId,
+      'chatId': chatsDocId,
       'friendSince': Timestamp.fromDate(friendSince),
     };
   }

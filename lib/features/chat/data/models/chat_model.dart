@@ -17,7 +17,7 @@ class ChatModel extends Chat {
     required super.type,
     required super.seen,
     required super.isEdited,
-    required super.media,
+    super.media,
     required super.chatId,
   });
 

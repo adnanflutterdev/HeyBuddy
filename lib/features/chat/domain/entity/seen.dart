@@ -1,6 +1,6 @@
 abstract class Seen {
   final bool isSeen;
-  final DateTime seenAt;
+  final DateTime? seenAt;
 
-  Seen({required this.isSeen, required this.seenAt});
+  Seen({required this.isSeen, this.seenAt});
 }

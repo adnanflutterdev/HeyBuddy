@@ -18,10 +18,12 @@ class ChatModel extends Chat {
     required super.seen,
     required super.isEdited,
     required super.media,
+    required super.chatId,
   });
 
   factory ChatModel.fromEntity(Chat chat) {
     return ChatModel(
+      chatId: chat.chatId,
       uid: chat.uid,
       message: chat.message,
       timestamps: TimestampsModel.fromEntity(chat.timestamps),
@@ -34,6 +36,7 @@ class ChatModel extends Chat {
 
   factory ChatModel.fromFirebase(Map<String, dynamic> chat) {
     return ChatModel(
+      chatId: chat['chatId'],
       uid: chat['uid'],
       message: chat['message'],
       timestamps: TimestampsModel.fromFirebase(chat['timestamps']),
@@ -48,13 +51,14 @@ class ChatModel extends Chat {
 
   Map<String, dynamic> toFirebase() {
     return {
+      'chatId': chatId,
       'uid': uid,
       'message': message,
       'timestamps': (timestamps as TimestampsModel).toFirebase(),
       'type': type.name,
-      'seen':(seen as SeenModel).toFirebase(),
-      'isEdited':isEdited,
-      'media':media?.map((m)=> (m as MediaModel).toFirebase()).toList()
+      'seen': (seen as SeenModel).toFirebase(),
+      'isEdited': isEdited,
+      'media': media?.map((m) => (m as MediaModel).toFirebase()).toList(),
     };
   }
 }

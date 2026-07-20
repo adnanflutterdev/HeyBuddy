@@ -5,6 +5,7 @@ import 'package:hey_buddy/features/chat/domain/entity/seen.dart';
 enum MessageType { text, image, video, audio }
 
 abstract class Chat {
+  final String chatId;
   final String uid;
   final String message;
   final Timestamps timestamps;
@@ -14,6 +15,7 @@ abstract class Chat {
   final List<Media>? media;
 
   Chat({
+    required this.chatId,
     required this.uid,
     required this.message,
     required this.timestamps,

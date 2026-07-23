@@ -66,7 +66,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       fUid: widget.friend.friendId,
       chatsDocId: widget.friend.chatsDocId,
       chat: chat,
-      chatDocExisits: widget.conversation != null
+      chatDocExisits: widget.conversation != null,
     );
     Result result = await ref.read(chatProvider.notifier).sendChat(params);
 
@@ -134,7 +134,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   Widget _buildTextField() {
     return Padding(
-      padding: AppPadding.h8,
+      padding: AppPadding.symmetric(8, 4),
       child: Row(
         spacing: 4,
         children: [

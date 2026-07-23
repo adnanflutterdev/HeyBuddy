@@ -3,6 +3,7 @@ import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
+import 'package:hey_buddy/core/utils/datetime_format.dart';
 import 'package:hey_buddy/core/widgets/profile_image.dart';
 import 'package:hey_buddy/features/chat/domain/entity/conversation.dart';
 import 'package:hey_buddy/features/chat/presentation/pages/chat_screen.dart';
@@ -70,6 +71,8 @@ class FriendCard extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (lastChat != null)
+                  Text(DatetimeFormat.format(lastChat.timestamps.createdAt)),
               ],
             ),
           ),

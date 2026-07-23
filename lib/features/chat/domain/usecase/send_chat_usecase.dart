@@ -15,6 +15,7 @@ class SendChatUsecase extends FutureUsecase<void, SendChatParams> {
       fUid: param.fUid,
       chatsDocId: param.chatsDocId,
       chat: param.chat,
+      chatDocExisits: param.chatDocExisits,
     );
   }
 }
@@ -24,11 +25,13 @@ class SendChatParams {
   final String fUid;
   final String chatsDocId;
   final Chat chat;
+  final bool chatDocExisits;
 
   SendChatParams({
     required this.myUid,
     required this.fUid,
     required this.chatsDocId,
     required this.chat,
+    required this.chatDocExisits,
   });
 }

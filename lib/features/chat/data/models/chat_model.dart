@@ -43,9 +43,11 @@ class ChatModel extends Chat {
       type: MessageTypeX.fromFirebase(chat['type']),
       seen: SeenModel.fromFirebase(chat['seen']),
       isEdited: chat['isEdited'],
-      media: (chat['media'] as List<dynamic>)
-          .map((m) => MediaModel.fromFirebase(m))
-          .toList(),
+      media: chat['media'] != null
+          ? (chat['media'] as List<dynamic>)
+                .map((m) => MediaModel.fromFirebase(m))
+                .toList()
+          : null,
     );
   }
 

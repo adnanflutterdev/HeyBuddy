@@ -11,7 +11,9 @@ class SeenModel extends Seen {
   factory SeenModel.fromFirebase(Map<String, dynamic> seen) {
     return SeenModel(
       isSeen: seen['isSeen'],
-      seenAt: (seen['seenAt'] as Timestamp).toDate(),
+      seenAt: seen['seenAt'] != null
+          ? (seen['seenAt'] as Timestamp).toDate()
+          : null,
     );
   }
 

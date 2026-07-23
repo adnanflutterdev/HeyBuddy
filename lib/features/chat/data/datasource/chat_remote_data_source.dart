@@ -6,26 +6,33 @@ class ChatRemoteDataSource {
   final FirebaseFirestore firestore;
   ChatRemoteDataSource(this.firestore);
 
+  Stream<List<ConversationModel?>> getConversation(String myUid) {
+    return firestore
+        .collection('user')
+        .doc(myUid)
+        .collection('conversations')
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs.map((doc) {
+            return ConversationModel.fromFirebase(doc.data());
+          }).toList();
+        });
+  }
+
   Future<void> sendChat({
     required String myUid,
     required String fUid,
     required String chatsDocId,
     required ChatModel chat,
+    required bool chatDocExisits,
   }) async {
     final user = firestore.collection('user');
     final myChat = user.doc(myUid).collection('conversations').doc(chatsDocId);
     final fChat = user.doc(fUid).collection('conversations').doc(chatsDocId);
 
-    final myChatGet = await myChat.get();
-    final fChatGet = await myChat.get();
-
-    ConversationModel conversation = ConversationModel();
-    if (!myChatGet.exists) {
-      myChat.set(conversation.toFirebase());
-    }
-
-    if (!fChatGet.exists) {
-      fChat.set(conversation.toFirebase());
+    if (!chatDocExisits) {
+      myChat.set(ConversationModel(id: chatsDocId, fUid: fUid).toFirebase());
+      fChat.set(ConversationModel(id: chatsDocId, fUid: myUid).toFirebase());
     }
 
     await myChat.collection('chats').doc(chat.chatId).set(chat.toFirebase());

@@ -15,6 +15,7 @@ import 'package:hey_buddy/core/widgets/profile_image.dart';
 import 'package:hey_buddy/features/chat/data/models/chat_model.dart';
 import 'package:hey_buddy/features/chat/data/models/seen_model.dart';
 import 'package:hey_buddy/features/chat/domain/entity/chat.dart';
+import 'package:hey_buddy/features/chat/domain/entity/conversation.dart';
 import 'package:hey_buddy/features/chat/domain/entity/seen.dart';
 import 'package:hey_buddy/features/chat/domain/usecase/send_chat_usecase.dart';
 import 'package:hey_buddy/features/chat/presentation/riverpod/chat_provider.dart';
@@ -23,9 +24,15 @@ import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 import 'package:uuid/uuid.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
-  const ChatScreen({super.key, required this.fData, required this.friend});
+  const ChatScreen({
+    super.key,
+    required this.fData,
+    required this.friend,
+    required this.conversation,
+  });
   final UserData fData;
   final Friend friend;
+  final Conversation? conversation;
 
   @override
   ConsumerState<ChatScreen> createState() => _ChatScreenState();
@@ -59,6 +66,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       fUid: widget.friend.friendId,
       chatsDocId: widget.friend.chatsDocId,
       chat: chat,
+      chatDocExisits: widget.conversation != null
     );
     Result result = await ref.read(chatProvider.notifier).sendChat(params);
 

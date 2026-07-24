@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/features/chat/data/datasource/chat_remote_data_source.dart';
 import 'package:hey_buddy/features/chat/data/repository/chat_repository_impl.dart';
+import 'package:hey_buddy/features/chat/domain/usecase/get_chat_stream_usecase.dart';
 import 'package:hey_buddy/features/chat/domain/usecase/get_conversations_usecase.dart';
 import 'package:hey_buddy/features/chat/domain/usecase/send_chat_usecase.dart';
 
@@ -23,4 +24,9 @@ final sendChatUsecaseProvider = Provider((ref) {
 final getConversationUsecaseProvider = Provider((ref) {
   final chatRepository = ref.read(chatRepositoryProvider);
   return GetConversationsUsecase(chatRepository);
+});
+
+final getChatStreamUsecaseProvider = Provider((ref) {
+  final chatRepository = ref.read(chatRepositoryProvider);
+  return GetChatStreamUsecase(chatRepository);
 });

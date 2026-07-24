@@ -47,4 +47,19 @@ class ChatRemoteDataSource {
       'updatedAt': Timestamp.fromDate(chat.timestamps.createdAt),
     });
   }
+
+  Stream<List<ChatModel>> getChatStream(String uid, String chatDocId) {
+    final chats = firestore
+        .collection('user')
+        .doc(uid)
+        .collection('conversations')
+        .doc(chatDocId)
+        .collection('chats').orderBy('timestamps.createdAt');
+
+    return chats.snapshots().map(
+      (querySnaps) => querySnaps.docs
+          .map((chat) => ChatModel.fromFirebase(chat.data()))
+          .toList(),
+    );
+  }
 }

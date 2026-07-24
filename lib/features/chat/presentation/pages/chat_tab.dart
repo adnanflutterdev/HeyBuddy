@@ -89,7 +89,6 @@ class _ChatTabState extends ConsumerState<ChatTab> {
       child: conversationRef.when(
         data: (conversations) {
           final List<Conversation> myConversations = conversations
-              .where((conversation) => conversation != null)
               .whereType<Conversation>()
               .toList();
           final myFriends = myFriendsRef.value ?? [];
@@ -136,52 +135,55 @@ class _ChatTabState extends ConsumerState<ChatTab> {
         final myUid = ref.watch(uidProvider);
         final myFriendsRef = ref.watch(getFriendsProvider(myUid));
         final conversationRef = ref.watch(getConversationsProvider(myUid));
-        if (conversationRef.isLoading) {
-          return loader();
-        }
-        final myConversations = (conversationRef.value ?? [])
-            .map((conversation) => conversation != null)
-            .whereType<Conversation>()
-            .toList();
-        final fConversations = myConversations
-            .map((conversation) => conversation.fUid)
-            .toList();
 
-        return myFriendsRef.when(
-          data: (friends) {
-            return Expanded(
-              child: ListView.builder(
-                itemCount: friends.length,
-                padding: AppPadding.symmetric(10, 15),
-                itemBuilder: (context, index) {
-                  final friendDataRef = ref.watch(
-                    userDataProvider(friends[index].friendId),
-                  );
-                  return friendDataRef.when(
-                    data: (fData) {
-                      final query = searchQuery.text.trim().toLowerCase();
-                      final name = fData.details.name.toLowerCase();
-                      final username = fData.details.username.toLowerCase();
-                      if (name.contains(query) || username.contains(query)) {
-                        return FriendCard(
-                          fData: fData,
-                          friend: friends[index],
-                          conversation: fConversations.contains(fData.uid)
-                              ? myConversations.firstWhere(
-                                  (conversation) =>
-                                      conversation.fUid == fData.uid,
-                                )
-                              : null,
-                        );
-                      } else {
-                        return const SizedBox.shrink();
-                      }
+        return conversationRef.when(
+          data: (data) {
+            final myConversations = data.whereType<Conversation>().toList();
+
+            final fConversations = myConversations
+                .map((conversation) => conversation.fUid)
+                .toList();
+
+            return myFriendsRef.when(
+              data: (friends) {
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: friends.length,
+                    padding: AppPadding.symmetric(10, 15),
+                    itemBuilder: (context, index) {
+                      final friendDataRef = ref.watch(
+                        userDataProvider(friends[index].friendId),
+                      );
+                      return friendDataRef.when(
+                        data: (fData) {
+                          final query = searchQuery.text.trim().toLowerCase();
+                          final name = fData.details.name.toLowerCase();
+                          final username = fData.details.username.toLowerCase();
+                          if (name.contains(query) ||
+                              username.contains(query)) {
+                            return FriendCard(
+                              fData: fData,
+                              friend: friends[index],
+                              conversation: fConversations.contains(fData.uid)
+                                  ? myConversations.firstWhere(
+                                      (conversation) =>
+                                          conversation.fUid == fData.uid,
+                                    )
+                                  : null,
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        },
+                        error: error,
+                        loading: loader,
+                      );
                     },
-                    error: error,
-                    loading: loader,
-                  );
-                },
-              ),
+                  ),
+                );
+              },
+              error: error,
+              loading: loader,
             );
           },
           error: error,

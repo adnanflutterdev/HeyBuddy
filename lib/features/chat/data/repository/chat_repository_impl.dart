@@ -45,4 +45,15 @@ class ChatRepositoryImpl extends ChatRepository {
       return Result.failure('Failed to send chat');
     }
   }
+
+  @override
+  ResultStream<List<Chat>> getChatStream(String uid, String chatDocId) {
+    try {
+      return remote.getChatStream(uid, chatDocId);
+    } on FirebaseException catch (e) {
+      return Stream.error(e.message ?? 'Failed to send chat');
+    } catch (e) {
+      return Stream.error('Failed to send chat');
+    }
+  }
 }

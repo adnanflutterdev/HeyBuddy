@@ -7,6 +7,8 @@ import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/model/timestamps.dart';
 import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/utils/encryption.dart';
+import 'package:hey_buddy/core/utils/error_state.dart';
+import 'package:hey_buddy/core/utils/loader.dart';
 import 'package:hey_buddy/core/utils/messenger.dart';
 import 'package:hey_buddy/core/widgets/app_material_button.dart';
 import 'package:hey_buddy/core/widgets/app_text_field.dart';
@@ -19,6 +21,7 @@ import 'package:hey_buddy/features/chat/domain/entity/conversation.dart';
 import 'package:hey_buddy/features/chat/domain/entity/seen.dart';
 import 'package:hey_buddy/features/chat/domain/usecase/send_chat_usecase.dart';
 import 'package:hey_buddy/features/chat/presentation/riverpod/chat_provider.dart';
+import 'package:hey_buddy/features/chat/presentation/widgets/build_chats.dart';
 import 'package:hey_buddy/features/profile/domain/entity/friend.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 import 'package:uuid/uuid.dart';
@@ -61,6 +64,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       media: null,
       chatId: const Uuid().v4(),
     );
+
     SendChatParams params = SendChatParams(
       myUid: uid,
       fUid: widget.friend.friendId,
@@ -94,10 +98,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
       body: SafeArea(
         child: Column(
-          children: [
-            Expanded(child: Container()),
-            _buildTextField(),
-          ],
+          spacing: 10,
+          children: [_buildChats(), _buildTextField()],
         ),
       ),
     );
@@ -129,6 +131,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildChats() {
+    final uid = ref.watch(uidProvider);
+    final chatsRef = ref.watch(
+      getChatStreamProvider((uid, widget.friend.chatsDocId)),
+    );
+    return chatsRef.when(
+      data: (chats) {
+        return BuildChats(chats: chats, friend: widget.friend);
+      },
+      error: error,
+      loading: loader,
     );
   }
 

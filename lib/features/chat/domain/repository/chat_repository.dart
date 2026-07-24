@@ -11,4 +11,5 @@ abstract class ChatRepository {
     required Chat chat,
     required bool chatDocExisits,
   });
+  ResultStream<List<Chat>> getChatStream(String uid, String chatDocId);
 }

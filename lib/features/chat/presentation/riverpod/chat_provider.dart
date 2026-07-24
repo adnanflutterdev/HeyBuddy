@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:hey_buddy/core/typedefs/typedefs.dart';
 import 'package:hey_buddy/core/usecase/usecase.dart';
+import 'package:hey_buddy/features/chat/domain/entity/chat.dart';
 import 'package:hey_buddy/features/chat/domain/entity/conversation.dart';
 import 'package:hey_buddy/features/chat/domain/usecase/send_chat_usecase.dart';
 import 'package:hey_buddy/features/chat/presentation/riverpod/providers.dart';
@@ -28,4 +29,12 @@ final getConversationsProvider =
     StreamProvider.family<List<Conversation?>, String>((ref, myUid) {
       final getConversationUsecase = ref.read(getConversationUsecaseProvider);
       return getConversationUsecase(IdParam(myUid));
+    });
+
+final getChatStreamProvider =
+    StreamProvider.family<List<Chat>, (String, String)>((ref, params) {
+      final getChatStreamUsecase = ref.read(getChatStreamUsecaseProvider);
+      return getChatStreamUsecase(
+        DualIdParam(first: params.$1, second: params.$2),
+      );
     });

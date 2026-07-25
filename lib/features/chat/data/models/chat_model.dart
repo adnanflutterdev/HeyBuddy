@@ -1,5 +1,6 @@
 import 'package:hey_buddy/core/model/post_and_clip.dart';
 import 'package:hey_buddy/core/model/timestamps.dart';
+import 'package:hey_buddy/features/chat/data/models/reply_to_model.dart';
 import 'package:hey_buddy/features/chat/data/models/seen_model.dart';
 import 'package:hey_buddy/features/chat/domain/entity/chat.dart';
 
@@ -17,8 +18,9 @@ class ChatModel extends Chat {
     required super.type,
     required super.seen,
     required super.isEdited,
-    super.media,
     required super.chatId,
+    super.media,
+    super.replyTo,
   });
 
   factory ChatModel.fromEntity(Chat chat) {
@@ -31,6 +33,9 @@ class ChatModel extends Chat {
       seen: SeenModel.fromEntity(chat.seen),
       isEdited: chat.isEdited,
       media: chat.media?.map((m) => MediaModel.fromEntity(m)).toList(),
+      replyTo: chat.replyTo != null
+          ? ReplyToModel.fromEntity(chat.replyTo!)
+          : null,
     );
   }
 
@@ -48,6 +53,9 @@ class ChatModel extends Chat {
                 .map((m) => MediaModel.fromFirebase(m))
                 .toList()
           : null,
+      replyTo: chat['replyTo'] != null
+          ? ReplyToModel.fromFirebase(chat['replyTo'])
+          : null,
     );
   }
 
@@ -61,6 +69,9 @@ class ChatModel extends Chat {
       'seen': (seen as SeenModel).toFirebase(),
       'isEdited': isEdited,
       'media': media?.map((m) => (m as MediaModel).toFirebase()).toList(),
+      'replyTo': replyTo != null
+          ? (replyTo as ReplyToModel).toFirebase()
+          : null,
     };
   }
 }

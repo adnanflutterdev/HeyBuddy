@@ -31,10 +31,10 @@ final getConversationsProvider =
       return getConversationUsecase(IdParam(myUid));
     });
 
-final getChatStreamProvider =
+final getChatsProvider =
     StreamProvider.family<List<Chat>, (String, String)>((ref, params) {
-      final getChatStreamUsecase = ref.read(getChatStreamUsecaseProvider);
-      return getChatStreamUsecase(
+      final getChatsUsecase = ref.read(getChatsUsecaseProvider);
+      return getChatsUsecase(
         DualIdParam(first: params.$1, second: params.$2),
       );
     });

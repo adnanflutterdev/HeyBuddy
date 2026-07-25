@@ -10,7 +10,7 @@ class ChatRemoteDataSource {
     return firestore
         .collection('user')
         .doc(myUid)
-        .collection('conversations')
+        .collection('conversations').orderBy('updatedAt',descending: true)
         .snapshots()
         .map((snapshot) {
           return snapshot.docs.map((doc) {
@@ -48,7 +48,7 @@ class ChatRemoteDataSource {
     });
   }
 
-  Stream<List<ChatModel>> getChatStream(String uid, String chatDocId) {
+  Stream<List<ChatModel>> getChats(String uid, String chatDocId) {
     final chats = firestore
         .collection('user')
         .doc(uid)

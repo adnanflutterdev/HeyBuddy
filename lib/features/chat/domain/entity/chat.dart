@@ -1,5 +1,6 @@
 import 'package:hey_buddy/core/model/post_and_clip.dart';
 import 'package:hey_buddy/core/model/timestamps.dart';
+import 'package:hey_buddy/features/chat/domain/entity/reply_to.dart';
 import 'package:hey_buddy/features/chat/domain/entity/seen.dart';
 
 enum MessageType { text, image, video, audio }
@@ -13,6 +14,7 @@ abstract class Chat {
   final Seen seen;
   final bool isEdited;
   final List<Media>? media;
+  final ReplyTo? replyTo;
 
   Chat({
     required this.chatId,
@@ -23,5 +25,6 @@ abstract class Chat {
     required this.seen,
     required this.isEdited,
     this.media,
+    this.replyTo,
   });
 }

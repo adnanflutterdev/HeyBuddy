@@ -137,7 +137,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Widget _buildChats() {
     final uid = ref.watch(uidProvider);
     final chatsRef = ref.watch(
-      getChatStreamProvider((uid, widget.friend.chatsDocId)),
+      getChatsProvider((uid, widget.friend.chatsDocId)),
     );
     return chatsRef.when(
       data: (chats) {

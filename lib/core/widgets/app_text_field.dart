@@ -34,6 +34,7 @@ class AppTextField extends StatelessWidget {
     this.validator,
     this.maxLengths,
     this.forceErrorText,
+    this.header,
   });
   final String? label;
   final double iconSize;
@@ -63,6 +64,7 @@ class AppTextField extends StatelessWidget {
   final bool disableBorder;
   final FormFieldValidator<String>? validator;
   final String? forceErrorText;
+  final Widget? header;
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +88,7 @@ class AppTextField extends StatelessWidget {
           ),
           AppSpacing.h8,
         ],
+
         TextFormField(
           maxLines: maxLines,
           minLines: minLines,
@@ -135,7 +138,7 @@ class AppTextField extends StatelessWidget {
           onFieldSubmitted: onSubmitted,
           onTapOutside: (event) {
             if (unfocusOnTapOutside) {
-              FocusScope.of(context).unfocus();
+              focusNode?.unfocus();
             }
           },
         ),

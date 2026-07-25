@@ -20,8 +20,8 @@ class AppTheme {
     scaffoldBackgroundColor: AppLightColors.bg,
     inputDecorationTheme: InputDecorationThemeData(
       filled: true,
-      errorBorder: outlinedBorder(color: AppLightColors.error),
       fillColor: AppLightColors.card,
+      errorBorder: outlinedBorder(color: AppLightColors.error),
       focusedErrorBorder: outlinedBorder(color: AppLightColors.error),
       enabledBorder: outlinedBorder(color: AppLightColors.border),
       focusedBorder: outlinedBorder(color: AppLightColors.neonBlue, width: 1),
@@ -44,8 +44,8 @@ class AppTheme {
     scaffoldBackgroundColor: AppDarkColors.bg,
     inputDecorationTheme: InputDecorationThemeData(
       filled: true,
-      errorBorder: outlinedBorder(color: AppDarkColors.error),
       fillColor: AppDarkColors.card,
+      errorBorder: outlinedBorder(color: AppDarkColors.error),
       focusedErrorBorder: outlinedBorder(color: AppDarkColors.error),
       enabledBorder: outlinedBorder(color: AppDarkColors.border),
       focusedBorder: outlinedBorder(color: AppDarkColors.neonBlue, width: 1),

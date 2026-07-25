@@ -65,7 +65,7 @@ class AppDarkColors {
 
   // Text Colors
   static const Color primaryText = Color(0xffFFFFFF);
-  static const Color secondaryText = Color(0xffB3B3B3);
+  static const Color secondaryText = Color(0xffE5E5E5);
   static const Color tertiaryText = Color(0xff808080);
   static const Color disabledText = Color(0xFF4D4D4D);
 

@@ -37,6 +37,7 @@ class CommentsReplySheet extends ConsumerStatefulWidget {
 class _CommentsReplySheetState extends ConsumerState<CommentsReplySheet> {
   late double _height = (9 / 10) * context.height;
   final TextEditingController _controller = .new();
+  final FocusNode _focusNode = FocusNode();
 
   Future<void> addCommentReply() async {
     Comment commentReply = CommentModel(
@@ -192,6 +193,7 @@ class _CommentsReplySheetState extends ConsumerState<CommentsReplySheet> {
             hintText: 'Write your comment reply',
             suffixIcon: Icons.send,
             controller: _controller,
+            focusNode: _focusNode,
             unfocusOnTapOutside: true,
             onSuffixIconTapped: addCommentReply,
           );

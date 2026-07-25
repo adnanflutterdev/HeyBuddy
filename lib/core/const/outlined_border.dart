@@ -5,3 +5,7 @@ OutlineInputBorder outlinedBorder({required Color color, double width = 0.5}) =>
       borderRadius: .circular(12),
       borderSide: BorderSide(width: width, color: color),
     );
+
+OutlineInputBorder none() {
+  return const OutlineInputBorder(borderSide: BorderSide.none);
+}

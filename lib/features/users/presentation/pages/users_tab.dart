@@ -22,6 +22,7 @@ class _UsersTabState extends ConsumerState<UsersTab> {
   Timer? _queryTimer;
   bool _isTyping = false;
 
+  final FocusNode _focusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -90,6 +91,7 @@ class _UsersTabState extends ConsumerState<UsersTab> {
             suffixIcon: isNotEmpty ? Icons.close : null,
             onSuffixIconTapped: isNotEmpty ? clear : null,
             onChanged: autoSearch,
+            focusNode: _focusNode,
             unfocusOnTapOutside: true,
           );
         },

@@ -21,6 +21,7 @@ class ChatTab extends ConsumerStatefulWidget {
 
 class _ChatTabState extends ConsumerState<ChatTab> {
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void dispose() {
@@ -63,6 +64,7 @@ class _ChatTabState extends ConsumerState<ChatTab> {
         builder: (context, searchQuery, _) {
           return AppTextField(
             prefixIcon: Icons.search,
+            focusNode: _focusNode,
             unfocusOnTapOutside: true,
             controller: _searchController,
             hintText: 'Search Friends by Username or Name',

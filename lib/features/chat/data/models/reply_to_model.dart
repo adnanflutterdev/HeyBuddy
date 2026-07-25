@@ -8,7 +8,7 @@ class ReplyToModel extends ReplyTo {
     required super.chatId,
     required super.uid,
     required super.timestamps,
-    required super.media,
+    super.media,
     required super.message,
     required super.type,
   });
@@ -18,7 +18,9 @@ class ReplyToModel extends ReplyTo {
       chatId: replyTo.chatId,
       uid: replyTo.uid,
       timestamps: TimestampsModel.fromEntity(replyTo.timestamps),
-      media: MediaModel.fromEntity(replyTo.media),
+      media: replyTo.media != null
+          ? MediaModel.fromEntity(replyTo.media!)
+          : null,
       message: replyTo.message,
       type: replyTo.type,
     );
@@ -29,7 +31,9 @@ class ReplyToModel extends ReplyTo {
       chatId: replyTo['chatId'],
       uid: replyTo['uid'],
       timestamps: TimestampsModel.fromFirebase(replyTo['timestamps']),
-      media: MediaModel.fromFirebase(replyTo['media']),
+      media: replyTo['media'] != null
+          ? MediaModel.fromFirebase(replyTo['media'])
+          : null,
       message: replyTo['message'],
       type: MessageTypeX.fromFirebase(replyTo['type']),
     );
@@ -40,7 +44,7 @@ class ReplyToModel extends ReplyTo {
       'chatId': chatId,
       'uid': uid,
       'timestamps': (timestamps as TimestampsModel).toFirebase(),
-      'media': (media as MediaModel).toFirebase(),
+      'media': media != null ? (media as MediaModel).toFirebase() : null,
       'message': message,
       'type': type.name,
     };

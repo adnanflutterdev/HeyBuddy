@@ -31,6 +31,7 @@ class CommentsSheet extends ConsumerStatefulWidget {
 class _CommentsSheetState extends ConsumerState<CommentsSheet> {
   late double _height = (9 / 10) * context.height;
   final TextEditingController _controller = .new();
+  final FocusNode _focusNode = FocusNode();
 
   Future<void> addComment() async {
     Comment comment = CommentModel(
@@ -139,6 +140,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
             hintText: 'Write your comment',
             suffixIcon: Icons.send,
             controller: _controller,
+            focusNode: _focusNode,
             unfocusOnTapOutside: true,
             onSuffixIconTapped: addComment,
           );

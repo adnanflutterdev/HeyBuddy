@@ -28,7 +28,7 @@ class ConversationModel extends Conversation {
       'id': id,
       'fUid': fUid,
       'lastChat': lastChat,
-      'lastIndex': lastIndex ?? -1,
+      'lastIndex': lastIndex ?? 0,
       'isFriendActive': isFriendActive ?? false,
       'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
     };

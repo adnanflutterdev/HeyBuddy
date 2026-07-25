@@ -6,7 +6,7 @@ abstract class ReplyTo {
   final String chatId;
   final String uid;
   final Timestamps timestamps;
-  final Media media;
+  final Media? media;
   final String message;
   final MessageType type;
 
@@ -14,8 +14,8 @@ abstract class ReplyTo {
     required this.chatId,
     required this.uid,
     required this.timestamps,
-    required this.media,
     required this.message,
     required this.type,
+    this.media,
   });
 }

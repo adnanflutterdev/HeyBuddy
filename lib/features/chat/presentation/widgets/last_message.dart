@@ -3,7 +3,11 @@ import 'package:hey_buddy/core/utils/encryption.dart';
 import 'package:hey_buddy/features/chat/domain/entity/chat.dart';
 
 class LastMessage extends StatelessWidget {
-  const LastMessage({super.key, required this.lastChat,required this.chatsDocId});
+  const LastMessage({
+    super.key,
+    required this.lastChat,
+    required this.chatsDocId,
+  });
   final Chat lastChat;
   final String chatsDocId;
 
@@ -15,6 +19,6 @@ class LastMessage extends StatelessWidget {
       message: lastChat.message,
     );
 
-    return Text(message);
+    return Text(message, maxLines: 1, overflow: .ellipsis);
   }
 }

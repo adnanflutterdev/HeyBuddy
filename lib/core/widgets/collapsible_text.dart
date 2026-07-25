@@ -6,11 +6,13 @@ class CollapsibleText extends StatefulWidget {
     super.key,
     required this.text,
     this.style,
+    this.togglerStyle,
     this.maxLength = 100,
   });
 
   final String text;
   final TextStyle? style;
+  final TextStyle? togglerStyle;
   final int maxLength;
 
   @override
@@ -48,10 +50,12 @@ class _CollapsibleTextState extends State<CollapsibleText> {
                   },
                   child: Text(
                     _isCollapsed ? " ...more" : " less",
-                    style: context.style.b3.copyWith(
-                      color: Colors.blue,
-                      fontWeight: .bold,
-                    ),
+                    style:
+                        widget.togglerStyle ??
+                        context.style.b3.copyWith(
+                          color: Colors.blue,
+                          fontWeight: .bold,
+                        ),
                   ),
                 ),
               ),

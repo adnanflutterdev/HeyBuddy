@@ -34,7 +34,6 @@ class FriendCard extends StatelessWidget {
               ChatScreen(
                 fData: fData,
                 friend: friend,
-                conversation: conversation,
               ),
             );
           },
@@ -57,7 +56,12 @@ class FriendCard extends StatelessWidget {
                                 color: context.colors.neonBlue,
                               ),
                             ),
-                            TextSpan(text: fData.details.username),
+                            TextSpan(
+                              text: fData.details.username,
+                              style: context.style.b2.copyWith(
+                                color: context.colors.primaryText,
+                              ),
+                            ),
                           ],
                         ),
                       ),

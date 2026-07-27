@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
@@ -13,6 +15,7 @@ import 'package:hey_buddy/core/widgets/collapsible_text.dart';
 import 'package:hey_buddy/features/chat/data/models/reply_to_model.dart';
 import 'package:hey_buddy/features/chat/domain/entity/chat_holder.dart';
 import 'package:hey_buddy/features/chat/domain/entity/reply_to.dart';
+import 'package:hey_buddy/features/chat/presentation/riverpod/chat_bubble_blinker_provider.dart';
 import 'package:hey_buddy/features/chat/presentation/riverpod/chat_reply_provider.dart';
 import 'package:hey_buddy/features/profile/domain/entity/friend.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
@@ -32,37 +35,58 @@ class ChatBubble extends ConsumerStatefulWidget {
   ConsumerState<ChatBubble> createState() => _ChatBubbleState();
 }
 
-class _ChatBubbleState extends ConsumerState<ChatBubble> {
+class _ChatBubbleState extends ConsumerState<ChatBubble>
+    with TickerProviderStateMixin {
   //
-  late List<String> cDateTime;
-  late List<String>? pDateTime;
-  late String message;
-  late String myUid;
-  late bool isMine;
+  late bool isMessageUnseen;
+  late AnimationController _newMessageController;
+  late Animation<double> _newMessageAnimation;
+  late AnimationController _blinkController;
+  late Animation<double> _blinkAnimation;
+  bool hideNewMessageIndicator = false;
 
   @override
   void initState() {
     super.initState();
 
-    cDateTime = DatetimeFormat.format(
-      widget.chat.current.timestamps.createdAt,
-    ).split(', ');
+    isMessageUnseen = widget.chat.chatIndex == widget.chat.unSeenIndex;
 
-    pDateTime = widget.chat.prev != null
-        ? DatetimeFormat.format(
-            widget.chat.prev!.timestamps.createdAt,
-          ).split(', ')
-        : null;
+    initializeAnimations();
 
-    message = Encryption.decrypt(
-      encryptionKey: widget.friend.chatsDocId,
-      encryptionValue: widget.chat.current.timestamps.createdAt
-          .toIso8601String(),
-      message: widget.chat.current.message,
+    if (isMessageUnseen) {
+      _newMessageController.repeat();
+
+      Timer(const Duration(seconds: 2), () {
+        if (mounted) {
+          _newMessageController.stop();
+        }
+      });
+
+      Timer(const Duration(seconds: 10), () {
+        if (mounted) {
+          setState(() {
+            hideNewMessageIndicator = true;
+          });
+        }
+      });
+    }
+  }
+
+  void initializeAnimations() {
+    _newMessageController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
     );
+    _newMessageAnimation = Tween<double>(
+      begin: 1,
+      end: 0,
+    ).animate(_newMessageController);
 
-    myUid = ref.read(uidProvider);
-    isMine = myUid == widget.chat.current.uid;
+    _blinkController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _blinkAnimation = Tween<double>(begin: 1, end: 0).animate(_blinkController);
   }
 
   void startReply() {
@@ -81,60 +105,125 @@ class _ChatBubbleState extends ConsumerState<ChatBubble> {
   }
 
   @override
+  void dispose() {
+    _newMessageController.dispose();
+    _blinkController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final chatBlinkerProvider = ref.watch(chatBubbleBlinkerProvider);
+    bool canBlink = chatBlinkerProvider == widget.chat.current.chatId;
+
+    if (canBlink) {
+      _blinkController.repeat();
+
+      Timer(const Duration(seconds: 2), () {
+        if (mounted) {
+          ref.read(chatBubbleBlinkerProvider.notifier).stopBlink();
+        }
+      });
+    }
+    List<String> cDateTime = DatetimeFormat.format(
+      widget.chat.current.timestamps.createdAt,
+    ).split(', ');
+    List<String>? pDateTime = widget.chat.prev != null
+        ? DatetimeFormat.format(
+            widget.chat.prev!.timestamps.createdAt,
+          ).split(', ')
+        : null;
+
     return Column(
       children: [
-        if (pDateTime == null || pDateTime!.first != cDateTime.first) ...[
+        //
+        // Date section
+        if (pDateTime == null || pDateTime.first != cDateTime.first) ...[
           Container(
             decoration: BoxDecoration(
               color: context.colors.appbar,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                const BoxShadow(blurRadius: 3, color: Colors.black26),
+              ],
             ),
             padding: AppPadding.symmetric(8, 4),
             child: Text(cDateTime.first, style: context.style.bs2),
           ),
           AppSpacing.h8,
         ],
-        // Chat Bubble Here
-        Container(
-          alignment: isMine ? .centerRight : .centerLeft,
-          padding: AppPadding.v4,
-          child: Dismissible(
-            key: Key(widget.chat.current.chatId),
-            direction: .startToEnd,
-            dismissThresholds: {DismissDirection.startToEnd: 0.2},
-            onDismissed: (direction) {},
-            confirmDismiss: (direction) async {
-              startReply();
-              return false;
-            },
-            child: Row(
-              spacing: 4,
-              crossAxisAlignment: .end,
-              mainAxisAlignment: isMine ? .end : .start,
-              children: [
-                if (isMine) _buildReplyButton(),
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: (4 / 5) * context.width,
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: isMine
-                          ? context.colors.myBubble
-                          : context.colors.otherBubble,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    padding: AppPadding.symmetric(10, 4),
-                    child: _buildChatContent(),
-                  ),
-                ),
-                if (!isMine) _buildReplyButton(),
-              ],
+        //
+        // New message indicator
+        if (isMessageUnseen && !hideNewMessageIndicator) ...[
+          FadeTransition(
+            opacity: _newMessageAnimation,
+            child: Container(
+              color: context.colors.myBubble,
+              padding: AppPadding.v4,
+              child: const Center(child: Text('new message')),
             ),
           ),
-        ),
+          AppSpacing.h8,
+        ],
+
+        //
+        // Chat Bubble Here
+        if (canBlink)
+          FadeTransition(
+            opacity: _blinkAnimation,
+            child: _buildBubble(cDateTime, context.colors.card),
+          )
+        else
+          _buildBubble(cDateTime),
       ],
+    );
+  }
+
+  Widget _buildBubble(List<String> cDateTime, [Color? color]) {
+    String message = Encryption.decrypt(
+      encryptionKey: widget.friend.chatsDocId,
+      encryptionValue: widget.chat.current.timestamps.createdAt
+          .toIso8601String(),
+      message: widget.chat.current.message,
+    );
+    String myUid = ref.read(uidProvider);
+    bool isMine = myUid == widget.chat.current.uid;
+    return Container(
+      color: color,
+      alignment: isMine ? .centerRight : .centerLeft,
+      padding: AppPadding.v4,
+      child: Dismissible(
+        key: Key(widget.chat.current.chatId),
+        direction: .startToEnd,
+        dismissThresholds: {DismissDirection.startToEnd: 0.2},
+        onDismissed: (direction) {},
+        confirmDismiss: (direction) async {
+          startReply();
+          return false;
+        },
+        child: Row(
+          spacing: 4,
+          crossAxisAlignment: .end,
+          mainAxisAlignment: isMine ? .end : .start,
+          children: [
+            if (isMine) _buildReplyButton(),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: (4 / 5) * context.width),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isMine
+                      ? context.colors.myBubble
+                      : context.colors.otherBubble,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: AppPadding.symmetric(10, 4),
+                child: _buildChatContent(myUid, isMine, message, cDateTime),
+              ),
+            ),
+            if (!isMine) _buildReplyButton(),
+          ],
+        ),
+      ),
     );
   }
 
@@ -148,7 +237,12 @@ class _ChatBubbleState extends ConsumerState<ChatBubble> {
     );
   }
 
-  Widget _buildChatContent() {
+  Widget _buildChatContent(
+    String myUid,
+    bool isMine,
+    String message,
+    List<String> cDateTime,
+  ) {
     ReplyTo? replyTo = widget.chat.current.replyTo;
     String replyMessage = replyTo != null
         ? Encryption.decrypt(
@@ -166,7 +260,9 @@ class _ChatBubbleState extends ConsumerState<ChatBubble> {
               constraints: BoxConstraints(maxWidth: (7 / 10) * context.width),
               child: Container(
                 decoration: BoxDecoration(
-                  color: context.colors.appbar,
+                  color: isMine
+                      ? context.colors.appbar
+                      : context.colors.neutral,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 padding: AppPadding.symmetric(10, 6),
@@ -194,7 +290,7 @@ class _ChatBubbleState extends ConsumerState<ChatBubble> {
             ),
         ],
         AppSpacing.h4,
-        _buildTextMessage(),
+        _buildTextMessage(message),
         Text(
           cDateTime.last,
           style: context.style.bs3.copyWith(
@@ -205,7 +301,7 @@ class _ChatBubbleState extends ConsumerState<ChatBubble> {
     );
   }
 
-  Widget _buildTextMessage() {
+  Widget _buildTextMessage(String message) {
     return CollapsibleText(
       text: message,
       maxLength: 200,

@@ -9,8 +9,8 @@ class SendChatUsecase extends FutureUsecase<void, SendChatParams> {
   SendChatUsecase(this.repository);
 
   @override
-  ResultFuture<void> call(SendChatParams param) async {
-    return await repository.sendChat(
+  ResultFuture<void> call(SendChatParams param) {
+    return repository.sendChat(
       myUid: param.myUid,
       fUid: param.fUid,
       chatsDocId: param.chatsDocId,

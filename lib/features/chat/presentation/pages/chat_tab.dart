@@ -80,7 +80,7 @@ class _ChatTabState extends ConsumerState<ChatTab> {
 
   Widget _buildConversations() {
     final myUid = ref.watch(uidProvider);
-    final conversationRef = ref.watch(getConversationsProvider(myUid));
+    final conversationRef = ref.watch(getAllConversationsProvider(myUid));
     final myFriendsRef = ref.watch(getFriendsProvider(myUid));
 
     if (myFriendsRef.isLoading) {
@@ -136,7 +136,7 @@ class _ChatTabState extends ConsumerState<ChatTab> {
         }
         final myUid = ref.watch(uidProvider);
         final myFriendsRef = ref.watch(getFriendsProvider(myUid));
-        final conversationRef = ref.watch(getConversationsProvider(myUid));
+        final conversationRef = ref.watch(getAllConversationsProvider(myUid));
 
         return conversationRef.when(
           data: (data) {

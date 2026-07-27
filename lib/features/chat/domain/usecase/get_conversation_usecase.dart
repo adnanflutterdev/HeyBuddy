@@ -3,13 +3,13 @@ import 'package:hey_buddy/core/usecase/usecase.dart';
 import 'package:hey_buddy/features/chat/domain/entity/conversation.dart';
 import 'package:hey_buddy/features/chat/domain/repository/chat_repository.dart';
 
-class GetConversationsUsecase extends StreamUsecase<List<Conversation?>, IdParam> {
+class GetConversationUsecase extends StreamUsecase<Conversation?, DualIdParam> {
   final ChatRepository repository;
 
-  GetConversationsUsecase(this.repository);
+  GetConversationUsecase(this.repository);
 
   @override
-  ResultStream<List<Conversation?>> call(IdParam param) {
-    return repository.getConversation(param.id);
+  ResultStream<Conversation?> call(DualIdParam param) {
+    return repository.getConversation(param.first, param.second);
   }
 }

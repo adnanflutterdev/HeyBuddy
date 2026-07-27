@@ -101,26 +101,31 @@ class _MyProfileState extends State<MyProfile> {
       child: Stack(
         children: [
           // Cover Image
-          CachedNetworkImage(
-            imageUrl: profile.coverImage ?? '',
-            placeholder: (context, url) {
-              return _buildCoverImage();
-            },
-            imageBuilder: (context, imageProvider) {
-              return GestureDetector(
-                onTap: () {
-                  AppNavigator.push(ImageViewer(images: [profile.coverImage!]));
-                },
-                child: _buildCoverImage(
-                  image: DecorationImage(image: imageProvider, fit: .cover),
-                ),
-              );
-            },
-            errorWidget: (context, url, error) {
-              return _buildCoverImage(
-                child: const Center(child: Text('No Cover Image Added')),
-              );
-            },
+          Hero(
+            tag: profile.coverImage ?? '',
+            child: CachedNetworkImage(
+              imageUrl: profile.coverImage ?? '',
+              placeholder: (context, url) {
+                return _buildCoverImage();
+              },
+              imageBuilder: (context, imageProvider) {
+                return GestureDetector(
+                  onTap: () {
+                    AppNavigator.push(
+                      ImageViewer(images: [profile.coverImage!]),
+                    );
+                  },
+                  child: _buildCoverImage(
+                    image: DecorationImage(image: imageProvider, fit: .cover),
+                  ),
+                );
+              },
+              errorWidget: (context, url, error) {
+                return _buildCoverImage(
+                  child: const Center(child: Text('No Cover Image Added')),
+                );
+              },
+            ),
           ),
 
           // Profile Image

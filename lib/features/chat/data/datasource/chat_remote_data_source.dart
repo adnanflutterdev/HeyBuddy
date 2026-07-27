@@ -1,22 +1,38 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hey_buddy/features/chat/data/models/chat_model.dart';
 import 'package:hey_buddy/features/chat/data/models/conversation_model.dart';
+import 'package:hey_buddy/features/chat/data/models/online_status_model.dart';
 
 class ChatRemoteDataSource {
   final FirebaseFirestore firestore;
   ChatRemoteDataSource(this.firestore);
 
-  Stream<List<ConversationModel?>> getConversation(String myUid) {
+  Stream<List<ConversationModel?>> getAllConversations(String myUid) {
     return firestore
         .collection('user')
         .doc(myUid)
-        .collection('conversations').orderBy('updatedAt',descending: true)
+        .collection('conversations')
+        .orderBy('updatedAt', descending: true)
         .snapshots()
         .map((snapshot) {
           return snapshot.docs.map((doc) {
             return ConversationModel.fromFirebase(doc.data());
           }).toList();
         });
+  }
+
+  Stream<ConversationModel?> getConversation(String myUid, String chatDocId) {
+    return firestore
+        .collection('user')
+        .doc(myUid)
+        .collection('conversations')
+        .doc(chatDocId)
+        .snapshots()
+        .map(
+          (data) => data.data() != null
+              ? ConversationModel.fromFirebase(data.data()!)
+              : null,
+        );
   }
 
   Future<void> sendChat({
@@ -54,12 +70,39 @@ class ChatRemoteDataSource {
         .doc(uid)
         .collection('conversations')
         .doc(chatDocId)
-        .collection('chats').orderBy('timestamps.createdAt');
+        .collection('chats')
+        .orderBy('timestamps.createdAt');
 
     return chats.snapshots().map(
       (querySnaps) => querySnaps.docs
           .map((chat) => ChatModel.fromFirebase(chat.data()))
           .toList(),
     );
+  }
+
+  Future<void> updateLastIndex({
+    required String uid,
+    required String chatDocId,
+    required int newIndex,
+  }) async {
+    await firestore
+        .collection('user')
+        .doc(uid)
+        .collection('conversations')
+        .doc(chatDocId)
+        .update({'lastIndex': newIndex});
+  }
+
+  Future<void> updateActiveStatus({
+    required String fUid,
+    required String chatDocId,
+    required OnlineStatusModel onlineStatus,
+  }) async {
+    await firestore
+        .collection('user')
+        .doc(fUid)
+        .collection('conversations')
+        .doc(chatDocId)
+        .update({'onlineStatus': onlineStatus.toFirebase()});
   }
 }

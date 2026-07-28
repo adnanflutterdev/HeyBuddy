@@ -7,9 +7,19 @@ class UsersRemoteDataSource {
 
   UsersRemoteDataSource(this.firestore);
 
-  Future<Map<String, dynamic>?> getUserData(String id) async {
+  Future<UserDataModel?> getUserData(String id) async {
     final doc = await firestore.collection('user').doc(id).get();
-    return doc.data();
+    return doc.data() != null ? UserDataModel.fromFirebase(doc.data()!) : null;
+  }
+
+  Stream<UserDataModel?> getUserDataStream(String id) {
+    final snapshots = firestore.collection('user').doc(id).snapshots();
+    return snapshots.map((data) {
+      if (data.data() == null) {
+        return null;
+      }
+      return UserDataModel.fromFirebase(data.data()!);
+    });
   }
 
   Future<List<UserData>> searchUsers(String searchQuery) async {

@@ -7,8 +7,6 @@ import 'package:hey_buddy/features/chat/domain/usecase/get_all_conversations_use
 import 'package:hey_buddy/features/chat/domain/usecase/get_conversation_usecase.dart';
 import 'package:hey_buddy/features/chat/domain/usecase/get_last_chat_usecase.dart';
 import 'package:hey_buddy/features/chat/domain/usecase/send_chat_usecase.dart';
-import 'package:hey_buddy/features/chat/domain/usecase/update_online_status_usecase.dart';
-import 'package:hey_buddy/features/chat/domain/usecase/update_last_index_usecase.dart';
 
 final chatRemoteDatasourceProvider = Provider((ref) {
   final firestore = ref.read(firebaseFirestoreProvider);
@@ -43,14 +41,4 @@ final getChatsUsecaseProvider = Provider((ref) {
 final getLastChatUsecaseProvider = Provider((ref) {
   final chatRepository = ref.read(chatRepositoryProvider);
   return GetLastChatUsecase(chatRepository);
-});
-
-final updateLastIndexUsecaseProvider = Provider((ref) {
-  final chatRepository = ref.read(chatRepositoryProvider);
-  return UpdateLastIndexUsecase(chatRepository);
-});
-
-final updateOnlineStatusUsecaseProvider = Provider((ref) {
-  final chatRepository = ref.read(chatRepositoryProvider);
-  return UpdateOnlineStatusUsecase(chatRepository);
 });

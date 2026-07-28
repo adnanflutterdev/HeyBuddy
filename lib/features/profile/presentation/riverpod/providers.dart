@@ -11,6 +11,7 @@ import 'package:hey_buddy/features/profile/domain/usecases/update_my_data_usecas
 import 'package:hey_buddy/features/profile/domain/usecases/get_my_data_usecase.dart';
 import 'package:hey_buddy/features/profile/data/repository/my_data_repository_impl.dart';
 import 'package:hey_buddy/features/profile/data/data_sources/my_data_remote_source.dart';
+import 'package:hey_buddy/features/profile/domain/usecases/update_online_status_usecase.dart';
 import 'package:hey_buddy/features/profile/domain/usecases/withdraw_request_usecase.dart';
 
 final myDataSourceProvider = Provider((ref) {
@@ -77,4 +78,9 @@ final removeFriendUsecaseProvider = Provider((ref) {
 final withdrawRequestUsecaseProvider = Provider((ref) {
   final userRepository = ref.read(myDataRepositoryProvider);
   return WithdrawRequestUsecase(userRepository);
+});
+
+final updateOnlineStatusUsecaseProvider = Provider((ref) {
+  final userRepository = ref.read(myDataRepositoryProvider);
+  return UpdateOnlineStatusUsecase(userRepository);
 });

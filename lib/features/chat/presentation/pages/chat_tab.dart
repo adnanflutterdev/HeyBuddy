@@ -102,12 +102,17 @@ class _ChatTabState extends ConsumerState<ChatTab> {
               padding: AppPadding.symmetric(10, 12),
               itemBuilder: (context, index) {
                 final conversation = myConversations[index];
-                final fDataRef = ref.watch(userDataProvider(conversation.fUid));
+                final fDataRef = ref.watch(
+                  userDataStreamProvider(conversation.fUid),
+                );
                 final friend = myFriends.firstWhere(
                   (friend) => friend.friendId == conversation.fUid,
                 );
                 return fDataRef.when(
                   data: (fData) {
+                    if (fData == null) {
+                      return const SizedBox.shrink();
+                    }
                     return FriendCard(
                       fData: fData,
                       conversation: conversation,

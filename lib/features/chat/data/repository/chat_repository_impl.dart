@@ -3,10 +3,8 @@ import 'package:hey_buddy/core/model/result.dart';
 import 'package:hey_buddy/core/typedefs/typedefs.dart';
 import 'package:hey_buddy/features/chat/data/datasource/chat_remote_data_source.dart';
 import 'package:hey_buddy/features/chat/data/models/chat_model.dart';
-import 'package:hey_buddy/features/chat/data/models/online_status_model.dart';
 import 'package:hey_buddy/features/chat/domain/entity/chat.dart';
 import 'package:hey_buddy/features/chat/domain/entity/conversation.dart';
-import 'package:hey_buddy/features/chat/domain/entity/online_status.dart';
 import 'package:hey_buddy/features/chat/domain/repository/chat_repository.dart';
 
 class ChatRepositoryImpl extends ChatRepository {
@@ -81,43 +79,5 @@ class ChatRepositoryImpl extends ChatRepository {
     }
   }
 
-  @override
-  ResultFuture<void> updateOnlineStatus({
-    required String fUid,
-    required String chatDocId,
-    required OnlineStatus onlineStatus,
-  }) async {
-    try {
-      await remote.updateActiveStatus(
-        fUid: fUid,
-        chatDocId: chatDocId,
-        onlineStatus: OnlineStatusModel.fromEntity(onlineStatus),
-      );
-      return Result.success('Active status updated');
-    } on FirebaseException catch (e) {
-      return Result.failure(e.message ?? 'Failed to update active status');
-    } catch (e) {
-      return Result.failure('Failed to update active status');
-    }
-  }
 
-  @override
-  ResultFuture<void> updateLastIndex({
-    required String uid,
-    required String chatDocId,
-    required int newIndex,
-  }) async {
-    try {
-      await remote.updateLastIndex(
-        uid: uid,
-        chatDocId: chatDocId,
-        newIndex: newIndex,
-      );
-      return Result.success('Last index updated');
-    } on FirebaseException catch (e) {
-      return Result.failure(e.message ?? 'Failed to update last index');
-    } catch (e) {
-      return Result.failure('Failed to update last index');
-    }
-  }
 }

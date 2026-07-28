@@ -5,19 +5,13 @@ import 'package:hey_buddy/core/usecase/usecase.dart';
 import 'package:hey_buddy/features/chat/domain/entity/chat.dart';
 import 'package:hey_buddy/features/chat/domain/entity/conversation.dart';
 import 'package:hey_buddy/features/chat/domain/usecase/send_chat_usecase.dart';
-import 'package:hey_buddy/features/chat/domain/usecase/update_online_status_usecase.dart';
-import 'package:hey_buddy/features/chat/domain/usecase/update_last_index_usecase.dart';
 import 'package:hey_buddy/features/chat/presentation/riverpod/providers.dart';
 
 class ChatNotifier extends StateNotifier<AsyncValue> {
   final SendChatUsecase sendChatUsecase;
-  final UpdateLastIndexUsecase updateLastIndexUsecase;
-  final UpdateOnlineStatusUsecase updateOnlineStatusUsecase;
 
   ChatNotifier(
     this.sendChatUsecase,
-    this.updateLastIndexUsecase,
-    this.updateOnlineStatusUsecase,
   ) : super(const AsyncData(null));
 
   ResultFuture<void> sendChat(SendChatParams params) async {
@@ -26,34 +20,12 @@ class ChatNotifier extends StateNotifier<AsyncValue> {
     state = const AsyncData(null);
     return result;
   }
-
-  ResultFuture<void> updateLastIndex(
-    UpdateLastIndexUsecaseParams params,
-  ) async {
-    state = const AsyncLoading();
-    final result = await updateLastIndexUsecase(params);
-    state = const AsyncData(null);
-    return result;
-  }
-
-  ResultFuture<void> updateActiveStatus(
-    UpdateOnlineStatusUsecaseParams params,
-  ) async {
-    state = const AsyncLoading();
-    final result = await updateOnlineStatusUsecase(params);
-    state = const AsyncData(null);
-    return result;
-  }
 }
 
 final chatProvider = StateNotifierProvider((ref) {
   final sendChatUsecase = ref.read(sendChatUsecaseProvider);
-  final updateLastIndexUsecase = ref.read(updateLastIndexUsecaseProvider);
-  final updateOnlineStatusUsecase = ref.read(updateOnlineStatusUsecaseProvider);
   return ChatNotifier(
-    sendChatUsecase,
-    updateLastIndexUsecase,
-    updateOnlineStatusUsecase,
+    sendChatUsecase
   );
 });
 

@@ -22,4 +22,6 @@ abstract class MyDataRepository {
   ResultFuture<void> rejectFriendRequest(String myId, String friendId);
   ResultFuture<void> removeFriend(String myId, String friendId);
   ResultFuture<void> withdrawRequest(String myId, String userId);
+
+  ResultFuture<void> updateOnlineStatus(String uid, bool isOnline);
 }

@@ -168,7 +168,9 @@ class AccountModel extends Account {
           ? AccountType.public
           : AccountTypeX.fromFirebase(account['accountType']),
       createdAt: (account['createdAt'] as Timestamp).toDate(),
-      lastActive: (account['lastActive'] as Timestamp).toDate(),
+      lastActive: account['lastActive'] != null
+          ? (account['lastActive'] as Timestamp).toDate()
+          : null,
     );
   }
 
@@ -178,7 +180,7 @@ class AccountModel extends Account {
       "isVerified": isVerified,
       "accountType": accountType.name,
       "createdAt": Timestamp.fromDate(createdAt),
-      "lastActive": Timestamp.fromDate(lastActive),
+      "lastActive": lastActive != null ? Timestamp.fromDate(lastActive!) : null,
     };
   }
 }

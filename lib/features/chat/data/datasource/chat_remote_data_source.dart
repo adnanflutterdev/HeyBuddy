@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hey_buddy/features/chat/data/models/chat_model.dart';
 import 'package:hey_buddy/features/chat/data/models/conversation_model.dart';
-import 'package:hey_buddy/features/chat/data/models/online_status_model.dart';
 
 class ChatRemoteDataSource {
   final FirebaseFirestore firestore;
@@ -99,29 +98,5 @@ class ChatRemoteDataSource {
     });
   }
 
-  Future<void> updateLastIndex({
-    required String uid,
-    required String chatDocId,
-    required int newIndex,
-  }) async {
-    await firestore
-        .collection('user')
-        .doc(uid)
-        .collection('conversations')
-        .doc(chatDocId)
-        .update({'lastIndex': newIndex});
-  }
 
-  Future<void> updateActiveStatus({
-    required String fUid,
-    required String chatDocId,
-    required OnlineStatusModel onlineStatus,
-  }) async {
-    await firestore
-        .collection('user')
-        .doc(fUid)
-        .collection('conversations')
-        .doc(chatDocId)
-        .update({'onlineStatus': onlineStatus.toFirebase()});
-  }
 }

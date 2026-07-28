@@ -10,10 +10,13 @@ class MyDataRemoteSource {
 
   MyDataRemoteSource(this.firestore);
 
-  Future<Map<String, dynamic>?> getMyData(String uid) async {
+  Future<UserDataModel?> getMyData(String uid) async {
     final doc = await firestore.collection('user').doc(uid).get();
 
-    return doc.data();
+    if (doc.data() == null) {
+      return null;
+    }
+    return UserDataModel.fromFirebase(doc.data()!);
   }
 
   Stream<List<Friend>> getFriends(String uid) {
@@ -166,5 +169,15 @@ class MyDataRemoteSource {
         .collection('friend_requests')
         .doc(myId)
         .delete();
+  }
+
+  Future<void> updateOnlineStatus({
+    required String uid,
+    required bool isOnline,
+  }) async {
+    await firestore.collection('user').doc(uid).update({
+      'account.isOnline': isOnline,
+      'account.lastActive': isOnline ? null : FieldValue.serverTimestamp(),
+    });
   }
 }

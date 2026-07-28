@@ -16,11 +16,9 @@ import 'package:hey_buddy/core/widgets/app_material_button.dart';
 import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
 import 'package:hey_buddy/core/widgets/profile_image.dart';
 import 'package:hey_buddy/features/chat/data/models/chat_model.dart';
-import 'package:hey_buddy/features/chat/data/models/online_status_model.dart';
 import 'package:hey_buddy/features/chat/data/models/seen_model.dart';
 import 'package:hey_buddy/features/chat/domain/entity/chat.dart';
 import 'package:hey_buddy/features/chat/domain/entity/conversation.dart';
-import 'package:hey_buddy/features/chat/domain/entity/online_status.dart';
 import 'package:hey_buddy/features/chat/domain/entity/reply_to.dart';
 import 'package:hey_buddy/features/chat/domain/entity/seen.dart';
 import 'package:hey_buddy/features/chat/domain/usecase/send_chat_usecase.dart';
@@ -29,13 +27,13 @@ import 'package:hey_buddy/features/chat/presentation/riverpod/chat_reply_provide
 import 'package:hey_buddy/features/chat/presentation/widgets/build_chats.dart';
 import 'package:hey_buddy/features/profile/domain/entity/friend.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
+import 'package:hey_buddy/features/users/presentation/riverpod/users_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:uuid/uuid.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
-  const ChatScreen({super.key, required this.fData, required this.friend});
-  final UserData fData;
+  const ChatScreen({super.key, required this.friend});
   final Friend friend;
 
   @override
@@ -98,32 +96,45 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final conversationRef = ref.watch(
       getConversationProvider((uid, widget.friend.chatsDocId)),
     );
-    return conversationRef.when(
-      data: (conversation) {
-        return Scaffold(
-          appBar: CustomAppBar(
-            height: 70,
-            leadingWidth: 40,
-            titleWidget: _buildAppBarContent(conversation),
-            actions: [
-              AppMaterialButton(
-                iconSize: 25,
-                isTransparent: true,
-                icon: Icons.more_vert,
-                padding: AppPadding.p4,
-                onPressed: () {},
+
+    final fDataRef = ref.watch(userDataStreamProvider(widget.friend.friendId));
+    return fDataRef.when(
+      data: (fData) {
+        if (fData == null) {
+          return const Scaffold(
+            body: Center(child: Text('Failed to retrive your friend\'s data')),
+          );
+        }
+        return conversationRef.when(
+          data: (conversation) {
+            return Scaffold(
+              appBar: CustomAppBar(
+                height: 70,
+                leadingWidth: 40,
+                titleWidget: _buildAppBarContent(conversation, fData),
+                actions: [
+                  AppMaterialButton(
+                    iconSize: 25,
+                    isTransparent: true,
+                    icon: Icons.more_vert,
+                    padding: AppPadding.p4,
+                    onPressed: () {},
+                  ),
+                ],
               ),
-            ],
-          ),
-          body: SafeArea(
-            child: Column(
-              spacing: 10,
-              children: [
-                _buildChats(conversation),
-                _buildTextField(conversation),
-              ],
-            ),
-          ),
+              body: SafeArea(
+                child: Column(
+                  spacing: 10,
+                  children: [
+                    _buildChats(conversation, fData),
+                    _buildTextField(conversation, fData),
+                  ],
+                ),
+              ),
+            );
+          },
+          error: error,
+          loading: loader,
         );
       },
       error: error,
@@ -131,29 +142,26 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
   }
 
-  Widget _buildAppBarContent(Conversation? conversation) {
-    OnlineStatus? onlineStatus = OnlineStatusModel(
-      isOnline: true,
-      lastSeen: DateTime.now(),
-    );
-    bool isOnline = onlineStatus.isOnline;
-    DateTime? lastSeen = onlineStatus.lastSeen;
+  Widget _buildAppBarContent(Conversation? conversation, UserData fData) {
+    bool isOnline = fData.account.isOnline;
+    DateTime? lastSeen = fData.account.lastActive;
     String onlineStatusMessage = isOnline
         ? '● Online'
         : lastSeen != null
         ? DateFormat.yMEd().format(lastSeen)
         : 'Offline';
+
     return Row(
       spacing: 10,
       children: [
-        ProfileImage(imageUrl: widget.fData.profile.profileImage),
+        ProfileImage(imageUrl: fData.profile.profileImage),
         Expanded(
           child: Column(
             mainAxisAlignment: .center,
             crossAxisAlignment: .start,
             children: [
               Text(
-                widget.fData.details.name,
+                fData.details.name,
                 style: context.style.h3.copyWith(
                   color: context.colors.neonBlue,
                 ),
@@ -173,7 +181,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
   }
 
-  Widget _buildChats(Conversation? conversation) {
+  Widget _buildChats(Conversation? conversation, UserData fData) {
     final uid = ref.watch(uidProvider);
     final chatsRef = ref.watch(
       getChatsProvider((uid, widget.friend.chatsDocId)),
@@ -182,7 +190,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       data: (chats) {
         return BuildChats(
           chats: chats,
-          fData: widget.fData,
+          fData: fData,
           friend: widget.friend,
           conversation: conversation,
           scrollController: scrollController,
@@ -193,7 +201,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
   }
 
-  Widget _buildTextField(Conversation? conversation) {
+  Widget _buildTextField(Conversation? conversation, UserData fData) {
     final replyTo = ref.watch(chatReplyProvider);
     return Padding(
       padding: AppPadding.symmetric(8, 4),
@@ -201,7 +209,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         crossAxisAlignment: .end,
         spacing: 4,
         children: [
-          _buildMessageField(replyTo),
+          _buildMessageField(replyTo, fData),
           ValueListenableBuilder(
             valueListenable: messageController,
             builder: (context, message, _) {
@@ -225,7 +233,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
   }
 
-  Widget _buildMessageField(ReplyTo? replyTo) {
+  Widget _buildMessageField(ReplyTo? replyTo, UserData fData) {
     final uid = ref.watch(uidProvider);
     return Expanded(
       child: ValueListenableBuilder(
@@ -280,7 +288,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                 )
                               else
                                 Text(
-                                  widget.fData.details.username,
+                                  fData.details.username,
                                   style: context.style.b2.copyWith(
                                     color: context.colors.neonGreen,
                                   ),

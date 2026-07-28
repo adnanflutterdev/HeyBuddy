@@ -56,13 +56,13 @@ class _ChatBubbleState extends ConsumerState<ChatBubble>
     if (isMessageUnseen) {
       _newMessageController.repeat();
 
-      Timer(const Duration(seconds: 2), () {
+      Timer(const Duration(seconds: 3), () {
         if (mounted) {
           _newMessageController.stop();
         }
       });
 
-      Timer(const Duration(seconds: 10), () {
+      Timer(const Duration(seconds: 6), () {
         if (mounted) {
           setState(() {
             hideNewMessageIndicator = true;
@@ -139,18 +139,19 @@ class _ChatBubbleState extends ConsumerState<ChatBubble>
         //
         // Date section
         if (pDateTime == null || pDateTime.first != cDateTime.first) ...[
+          AppSpacing.h12,
           Container(
             decoration: BoxDecoration(
               color: context.colors.appbar,
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
-                const BoxShadow(blurRadius: 3, color: Colors.black26),
+                BoxShadow(blurRadius: 3, color: context.colors.shadow),
               ],
             ),
             padding: AppPadding.symmetric(8, 4),
             child: Text(cDateTime.first, style: context.style.bs2),
           ),
-          AppSpacing.h8,
+          AppSpacing.h12,
         ],
         //
         // New message indicator
@@ -216,7 +217,7 @@ class _ChatBubbleState extends ConsumerState<ChatBubble>
                       : context.colors.otherBubble,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                padding: AppPadding.symmetric(10, 4),
+                padding: AppPadding.symmetric(8, 6),
                 child: _buildChatContent(myUid, isMine, message, cDateTime),
               ),
             ),

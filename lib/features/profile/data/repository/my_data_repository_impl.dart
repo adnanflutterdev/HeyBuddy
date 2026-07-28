@@ -17,14 +17,12 @@ class MyDataRepositoryImpl extends MyDataRepository {
   @override
   ResultFuture<UserData> getMyData(String uid) async {
     try {
-      Map<String, dynamic>? doc = await remote.getMyData(uid);
-
-      UserDataModel user = UserDataModel.fromFirebase(doc ?? {});
+      UserData? user = await remote.getMyData(uid);
 
       return Result<UserData>.success('Got User Data', data: user);
     } on FirebaseException catch (e) {
       return Result.failure(e.message ?? 'Falied to fetch your data');
-    } catch (_) {
+    } catch (e) {
       return Result.failure('Falied to fetch your data');
     }
   }
@@ -149,6 +147,18 @@ class MyDataRepositoryImpl extends MyDataRepository {
       return Result.failure(e.message ?? 'Falied to withdraw request');
     } catch (_) {
       return Result.failure('Falied to withdraw request');
+    }
+  }
+
+  @override
+  ResultFuture<void> updateOnlineStatus(String uid, bool isOnline) async {
+    try {
+      await remote.updateOnlineStatus(uid: uid, isOnline: isOnline);
+      return Result.success('Active status updated');
+    } on FirebaseException catch (e) {
+      return Result.failure(e.message ?? 'Failed to update active status');
+    } catch (e) {
+      return Result.failure('Failed to update active status');
     }
   }
 }

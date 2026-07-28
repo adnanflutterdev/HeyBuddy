@@ -36,7 +36,13 @@ abstract class Details {
   final String email;
   final DateTime? dob;
   final Gender? gender;
-  Details({required this.name,required this.username, required this.email, this.dob, this.gender});
+  Details({
+    required this.name,
+    required this.username,
+    required this.email,
+    this.dob,
+    this.gender,
+  });
 }
 
 abstract class Account {
@@ -44,7 +50,7 @@ abstract class Account {
   final bool isVerified;
   final AccountType accountType;
   final DateTime createdAt;
-  final DateTime lastActive;
+  final DateTime? lastActive;
   Account({
     required this.isOnline,
     required this.isVerified,

@@ -40,13 +40,40 @@ class FriendCard extends ConsumerWidget {
           children: [
             GestureDetector(
               onTap: () {
-                AppNavigator.push(ChatScreen(fData: fData, friend: friend));
+                AppNavigator.push(ChatScreen(friend: friend));
               },
               child: ColoredBox(
                 color: Colors.transparent,
                 child: Row(
                   children: [
-                    ProfileImage(imageUrl: fData.profile.profileImage),
+                    SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Stack(
+                        children: [
+                          ProfileImage(imageUrl: fData.profile.profileImage),
+                          if (fData.account.isOnline)
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  shape: .circle,
+                                  color: context.colors.neonGreen,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: context.colors.shadow,
+                                      blurRadius: 2,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
                     AppSpacing.w12,
                     Expanded(
                       child: Column(

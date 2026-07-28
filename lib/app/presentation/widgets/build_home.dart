@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/app/model/tab_model.dart';
+import 'package:hey_buddy/app/riverpod/online_status_provider.dart';
 import 'package:hey_buddy/app/riverpod/tab_provider.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/size_extention.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_padding.dart';
+import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/utils/loader.dart';
 import 'package:hey_buddy/core/widgets/app_logo.dart';
 import 'package:hey_buddy/core/widgets/app_material_button.dart';
@@ -19,6 +21,7 @@ import 'package:hey_buddy/features/clip/presentation/pages/clip_tab.dart';
 import 'package:hey_buddy/features/clip/presentation/pages/clip_upload_screen.dart';
 import 'package:hey_buddy/features/post/presentation/pages/post_tab.dart';
 import 'package:hey_buddy/features/post/presentation/pages/post_upload_screeen.dart';
+import 'package:hey_buddy/features/profile/domain/usecases/update_online_status_usecase.dart';
 import 'package:hey_buddy/features/profile/presentation/pages/my_profile.dart';
 import 'package:hey_buddy/features/profile/presentation/riverpod/my_data_provider.dart';
 import 'package:hey_buddy/features/users/presentation/pages/users_tab.dart';
@@ -30,14 +33,11 @@ class BuildHome extends ConsumerStatefulWidget {
   ConsumerState<BuildHome> createState() => _BuildHomeState();
 }
 
-class _BuildHomeState extends ConsumerState<BuildHome> {
+class _BuildHomeState extends ConsumerState<BuildHome>
+    with WidgetsBindingObserver {
+  //
+  late List<Widget> pages;
   final PageController _pageController = PageController(initialPage: 2);
-  late List<Widget> pages = [
-    const PostTab(),
-    ClipTab(pageController: _pageController),
-    const ChatTab(),
-    const UsersTab(),
-  ];
 
   List<TabModel> tabs = [
     TabModel(label: 'Home', icon: Icons.home_filled),
@@ -45,7 +45,30 @@ class _BuildHomeState extends ConsumerState<BuildHome> {
     TabModel(label: 'Chat', icon: Icons.chat_rounded),
     TabModel(label: 'Users', icon: Icons.group),
   ];
-  late double width = context.width / 4;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    pages = [
+      const PostTab(),
+      ClipTab(pageController: _pageController),
+      const ChatTab(),
+      const UsersTab(),
+    ];
+    updateOnlineStatus(true);
+  }
+
+  Future<void> updateOnlineStatus(bool isOnline) async {
+    final uid = ref.read(uidProvider);
+    UpdateOnlineStatusUsecaseParams params = UpdateOnlineStatusUsecaseParams(
+      uid: uid,
+      isOnline: isOnline,
+    );
+    if (mounted) {
+      await ref.read(onlineStatusProvider.notifier).updateActiveStatus(params);
+    }
+  }
 
   void createNew() {
     showModalBottomSheet(
@@ -60,16 +83,14 @@ class _BuildHomeState extends ConsumerState<BuildHome> {
               children: [
                 LabeledIconButton(
                   onPressed: () {
-                    AppNavigator.pop();
-                    AppNavigator.push(const PostUploadScreeen());
+                    AppNavigator.pushReplaceMent(const PostUploadScreeen());
                   },
                   icon: Icons.photo,
                   label: 'Upload Post',
                 ),
                 LabeledIconButton(
                   onPressed: () {
-                    AppNavigator.pop();
-                    AppNavigator.push(const ClipUploadScreen());
+                    AppNavigator.pushReplaceMent(const ClipUploadScreen());
                   },
                   icon: Icons.movie_sharp,
                   label: 'Upload Clip',
@@ -101,7 +122,8 @@ class _BuildHomeState extends ConsumerState<BuildHome> {
               borderColor: context.colors.error,
               bgColor: context.colors.onError,
               style: context.style.b2.copyWith(color: context.colors.error),
-              onPressed: () {
+              onPressed: () async {
+                updateOnlineStatus(false);
                 SystemNavigator.pop();
               },
             ),
@@ -109,6 +131,16 @@ class _BuildHomeState extends ConsumerState<BuildHome> {
         );
       },
     );
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    super.didChangeAppLifecycleState(state);
+    if (state == .resumed) {
+      await updateOnlineStatus(true);
+    } else {
+      await updateOnlineStatus(false);
+    }
   }
 
   @override
@@ -192,6 +224,7 @@ class _BuildHomeState extends ConsumerState<BuildHome> {
   }
 
   Widget _buildNavbar(int tabIndex) {
+    double width = context.width / 4;
     if (tabIndex == 1) {
       return const SizedBox.shrink();
     }

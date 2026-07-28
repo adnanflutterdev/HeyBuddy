@@ -10,7 +10,7 @@ import 'package:hey_buddy/features/profile/presentation/riverpod/providers.dart'
 final myDataProvider = FutureProvider<UserData>((ref) async {
   final getMyDatausecase = ref.read(getMyDataUsecaseProvider);
   final authState = ref.watch(authStateProvider);
-  final uid = authState.value?.uid ?? '';
+  final uid = authState.value?.uid ?? 'null';
   final result = await getMyDatausecase(GetMyDataParams(uid));
   return result.data ?? Future.error(result.message);
 });

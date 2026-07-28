@@ -71,6 +71,17 @@ class ChatRepositoryImpl extends ChatRepository {
   }
 
   @override
+  ResultStream<Chat?> getLastChat(String uid, String chatDocId) {
+    try {
+      return remote.getLastChat(uid, chatDocId);
+    } on FirebaseException catch (e) {
+      return Stream.error(e.message ?? 'Failed to send chat');
+    } catch (e) {
+      return Stream.error('Failed to send chat');
+    }
+  }
+
+  @override
   ResultFuture<void> updateOnlineStatus({
     required String fUid,
     required String chatDocId,

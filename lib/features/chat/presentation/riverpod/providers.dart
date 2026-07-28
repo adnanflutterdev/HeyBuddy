@@ -5,6 +5,7 @@ import 'package:hey_buddy/features/chat/data/repository/chat_repository_impl.dar
 import 'package:hey_buddy/features/chat/domain/usecase/get_chats_usecase.dart';
 import 'package:hey_buddy/features/chat/domain/usecase/get_all_conversations_usecase.dart';
 import 'package:hey_buddy/features/chat/domain/usecase/get_conversation_usecase.dart';
+import 'package:hey_buddy/features/chat/domain/usecase/get_last_chat_usecase.dart';
 import 'package:hey_buddy/features/chat/domain/usecase/send_chat_usecase.dart';
 import 'package:hey_buddy/features/chat/domain/usecase/update_online_status_usecase.dart';
 import 'package:hey_buddy/features/chat/domain/usecase/update_last_index_usecase.dart';
@@ -37,6 +38,11 @@ final getConversationUsecaseProvider = Provider((ref) {
 final getChatsUsecaseProvider = Provider((ref) {
   final chatRepository = ref.read(chatRepositoryProvider);
   return GetChatsUsecase(chatRepository);
+});
+
+final getLastChatUsecaseProvider = Provider((ref) {
+  final chatRepository = ref.read(chatRepositoryProvider);
+  return GetLastChatUsecase(chatRepository);
 });
 
 final updateLastIndexUsecaseProvider = Provider((ref) {

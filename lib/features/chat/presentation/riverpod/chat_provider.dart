@@ -78,3 +78,11 @@ final getChatsProvider = StreamProvider.family<List<Chat>, (String, String)>((
   final getChatsUsecase = ref.read(getChatsUsecaseProvider);
   return getChatsUsecase(DualIdParam(first: params.$1, second: params.$2));
 });
+
+final getLastChatProvider = StreamProvider.family<Chat?, (String, String)>((
+  ref,
+  params,
+) {
+  final getLastChatUsecase = ref.read(getLastChatUsecaseProvider);
+  return getLastChatUsecase(DualIdParam(first: params.$1, second: params.$2));
+});

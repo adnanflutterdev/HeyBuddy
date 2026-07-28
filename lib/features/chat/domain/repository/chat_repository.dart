@@ -10,6 +10,8 @@ abstract class ChatRepository {
     String chatDocId,
   );
   ResultStream<List<Chat>> getChats(String uid, String chatDocId);
+  ResultStream<Chat?> getLastChat(String uid, String chatDocId);
+
 
   ResultFuture<void> sendChat({
     required String myUid,

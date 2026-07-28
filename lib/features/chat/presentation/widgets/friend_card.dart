@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hey_buddy/config/extensions/color_extension.dart';
 import 'package:hey_buddy/config/extensions/text_theme_extension.dart';
 import 'package:hey_buddy/core/const/app_navigator.dart';
 import 'package:hey_buddy/core/const/app_spacing.dart';
+import 'package:hey_buddy/core/riverpod/firebase_provider.dart';
 import 'package:hey_buddy/core/utils/datetime_format.dart';
+import 'package:hey_buddy/core/utils/error_state.dart';
+import 'package:hey_buddy/core/utils/loader.dart';
 import 'package:hey_buddy/core/widgets/profile_image.dart';
 import 'package:hey_buddy/features/chat/domain/entity/conversation.dart';
 import 'package:hey_buddy/features/chat/presentation/pages/chat_screen.dart';
+import 'package:hey_buddy/features/chat/presentation/riverpod/chat_provider.dart';
 import 'package:hey_buddy/features/chat/presentation/widgets/last_message.dart';
 import 'package:hey_buddy/features/profile/domain/entity/friend.dart';
 import 'package:hey_buddy/features/profile/domain/entity/user_entity.dart';
 
-class FriendCard extends StatelessWidget {
+class FriendCard extends ConsumerWidget {
   const FriendCard({
     super.key,
     required this.fData,
@@ -23,68 +28,74 @@ class FriendCard extends StatelessWidget {
   final Conversation? conversation;
 
   @override
-  Widget build(BuildContext context) {
-    final lastChat = conversation?.lastChat;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uid = ref.watch(uidProvider);
+    final lastChatRef = ref.watch(
+      getLastChatProvider((uid, friend.chatsDocId)),
+    );
 
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () {
-            AppNavigator.push(
-              ChatScreen(
-                fData: fData,
-                friend: friend,
-              ),
-            );
-          },
-          child: ColoredBox(
-            color: Colors.transparent,
-            child: Row(
-              children: [
-                ProfileImage(imageUrl: fData.profile.profileImage),
-                AppSpacing.w12,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: '@',
-                              style: context.style.b1.copyWith(
-                                color: context.colors.neonBlue,
-                              ),
+    return lastChatRef.when(
+      data: (lastChat) {
+        return Column(
+          children: [
+            GestureDetector(
+              onTap: () {
+                AppNavigator.push(ChatScreen(fData: fData, friend: friend));
+              },
+              child: ColoredBox(
+                color: Colors.transparent,
+                child: Row(
+                  children: [
+                    ProfileImage(imageUrl: fData.profile.profileImage),
+                    AppSpacing.w12,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: .start,
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: '@',
+                                  style: context.style.b1.copyWith(
+                                    color: context.colors.neonBlue,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: fData.details.username,
+                                  style: context.style.b2.copyWith(
+                                    color: context.colors.primaryText,
+                                  ),
+                                ),
+                              ],
                             ),
-                            TextSpan(
-                              text: fData.details.username,
-                              style: context.style.b2.copyWith(
-                                color: context.colors.primaryText,
-                              ),
+                          ),
+                          if (lastChat == null)
+                            Text(fData.details.name)
+                          else
+                            LastMessage(
+                              lastChat: lastChat,
+                              chatsDocId: friend.chatsDocId,
                             ),
-                          ],
-                        ),
+                        ],
                       ),
-                      if (lastChat == null)
-                        Text(fData.details.name)
-                      else
-                        LastMessage(
-                          lastChat: lastChat,
-                          chatsDocId: friend.chatsDocId,
-                        ),
-                    ],
-                  ),
+                    ),
+                    if (lastChat != null)
+                      Text(
+                        DatetimeFormat.format(lastChat.timestamps.createdAt),
+                      ),
+                  ],
                 ),
-                if (lastChat != null)
-                  Text(DatetimeFormat.format(lastChat.timestamps.createdAt)),
-              ],
+              ),
             ),
-          ),
-        ),
-        AppSpacing.h8,
-        const Divider(thickness: 0.5),
-        AppSpacing.h8,
-      ],
+            AppSpacing.h8,
+            const Divider(thickness: 0.5),
+            AppSpacing.h8,
+          ],
+        );
+      },
+      error: error,
+      loading: loader,
     );
   }
 }

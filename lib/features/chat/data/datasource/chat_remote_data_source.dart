@@ -55,11 +55,9 @@ class ChatRemoteDataSource {
     await fChat.collection('chats').doc(chat.chatId).set(chat.toFirebase());
 
     await myChat.update({
-      'lastChat': chat.toFirebase(),
       'updatedAt': Timestamp.fromDate(chat.timestamps.createdAt),
     });
     await fChat.update({
-      'lastChat': chat.toFirebase(),
       'updatedAt': Timestamp.fromDate(chat.timestamps.createdAt),
     });
   }
@@ -78,6 +76,27 @@ class ChatRemoteDataSource {
           .map((chat) => ChatModel.fromFirebase(chat.data()))
           .toList(),
     );
+  }
+
+  Stream<ChatModel?> getLastChat(String uid, String chatDocId) {
+    final chats = firestore
+        .collection('user')
+        .doc(uid)
+        .collection('conversations')
+        .doc(chatDocId)
+        .collection('chats')
+        .orderBy('timestamps.createdAt', descending: true)
+        .limit(1);
+
+    return chats.snapshots().map((querySnaps) {
+      final docs = querySnaps.docs;
+      
+      if (docs.isEmpty) {
+        return null;
+      }
+
+      return ChatModel.fromFirebase(docs.first.data());
+    });
   }
 
   Future<void> updateLastIndex({

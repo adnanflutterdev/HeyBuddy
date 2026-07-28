@@ -16,6 +16,7 @@ import 'package:hey_buddy/core/widgets/app_material_button.dart';
 import 'package:hey_buddy/core/widgets/custom_app_bar.dart';
 import 'package:hey_buddy/core/widgets/profile_image.dart';
 import 'package:hey_buddy/features/chat/data/models/chat_model.dart';
+import 'package:hey_buddy/features/chat/data/models/online_status_model.dart';
 import 'package:hey_buddy/features/chat/data/models/seen_model.dart';
 import 'package:hey_buddy/features/chat/domain/entity/chat.dart';
 import 'package:hey_buddy/features/chat/domain/entity/conversation.dart';
@@ -82,10 +83,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     Result result = await ref.read(chatProvider.notifier).sendChat(params);
 
-    scrollController.scrollTo(
-      index: (conversation?.lastIndex ?? -1) + 1,
-      duration: const Duration(milliseconds: 500),
-    );
+    // scrollController.scrollTo(
+    //   index: (conversation?.lastIndex ?? -1) + 1,
+    //   duration: const Duration(milliseconds: 500),
+    // );
     if (!result.success && mounted) {
       showMessenger(context, result: result);
     }
@@ -131,9 +132,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Widget _buildAppBarContent(Conversation? conversation) {
-    OnlineStatus? onlineStatus = conversation?.onlineStatus;
-    bool isOnline = onlineStatus?.isOnline ?? false;
-    DateTime? lastSeen = onlineStatus?.lastSeen;
+    OnlineStatus? onlineStatus = OnlineStatusModel(
+      isOnline: true,
+      lastSeen: DateTime.now(),
+    );
+    bool isOnline = onlineStatus.isOnline;
+    DateTime? lastSeen = onlineStatus.lastSeen;
     String onlineStatusMessage = isOnline
         ? '● Online'
         : lastSeen != null
